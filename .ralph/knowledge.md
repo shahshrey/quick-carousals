@@ -223,3 +223,33 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **data-testid naming**: Use snake_case for testids (e.g., `auth_title`) as per project conventions
   - **Task completion workflow**: Read files → Update files → Validate with curl → Mark complete → Commit → Log learnings
 ---
+
+---
+## Iteration 5 - setup-05
+- **What was done**: Updated i18n dictionaries with QuickCarousals branding across all language files
+- **Files changed**: 
+  - apps/nextjs/src/config/dictionaries/en.json (updated with QuickCarousals marketing copy)
+  - apps/nextjs/src/config/dictionaries/ja.json (Japanese translations)
+  - apps/nextjs/src/config/dictionaries/ko.json (Korean translations)
+  - apps/nextjs/src/config/dictionaries/zh.json (Chinese translations)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **i18n files location**: `apps/nextjs/src/config/dictionaries/*.json` - separate file per language
+  - **Dictionary structure**: Nested JSON with keys like `marketing`, `price`, `login`, `common`, `business`, `dropdown`
+  - **Branding updates required**: Changed all references from "Saasfly" to "QuickCarousals", updated marketing copy to reflect LinkedIn carousel creation product
+  - **JSON validation critical**: Use `jq '.' file.json` to validate JSON syntax before committing
+  - **Character encoding gotcha**: Chinese quotation marks (""） break JSON - use standard double quotes or Chinese corner brackets (「」)
+  - **Validation workflow**: Check both content (`grep -q 'QuickCarousals'`) and JSON validity (`jq '.'`) for each file
+  - **Product-specific copy**: Updated marketing text to emphasize:
+    - LinkedIn-first carousel creation
+    - 3-minute creation time
+    - Auto-fit text feature
+    - 8 style kits
+    - Brand kit functionality
+    - PDF/PNG export
+  - **Translation approach**: Maintained similar structure across all languages, adapted marketing messages to cultural context
+  - **Working commands**:
+    - `jq '.' file.json > /dev/null && echo 'PASS' || echo 'FAIL'` - validate JSON
+    - `grep -q 'QuickCarousals' file.json && echo 'PASS' || echo 'FAIL'` - check branding
+---
