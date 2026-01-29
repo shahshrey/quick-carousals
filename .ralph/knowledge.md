@@ -71,3 +71,16 @@
   - Command that worked
 ---
 -->
+
+---
+## Iteration 1 - setup-01
+- **What was done**: Validated package metadata and README configuration
+- **Files changed**: .ralph/tasks.json (marked task as complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - The setup-01 task was already completed in previous work - all package.json files had correct names, README was rewritten for QuickCarousals, and .env.example existed with documentation
+  - Validation commands: `jq -r '.name' package.json` successfully verified package naming
+  - `grep -q 'QuickCarousals' README.md` confirmed README was properly updated
+  - Use `jq` to update tasks.json: `jq '(.[] | select(.id == "setup-01") | .passes) = true' .ralph/tasks.json`
+  - Always validate BEFORE marking complete - even if work appears done, run validation commands to verify
+---
