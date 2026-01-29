@@ -306,19 +306,23 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Database validation**: Use PostgreSQL queries to verify seed data: `SELECT COUNT(*) FILTER (WHERE condition)` syntax for conditional counts
   - **Working command**: `bun db:seed` to run seed script with proper environment loading
 ---
-It got stuck here during last iteration:
-
-╭── ⚡ Shell
-│  $ grep -q 'model TemplateLayout' /Users/shrey/Downloads/quick-carousals/packages/db/prisma/schema.prisma && echo 'PASS: TemplateLayout model exists' || echo 'FAIL'
-
-╭── ⚡ Shell
-│  $ grep -q 'layersBlueprint' /Users/shrey/Downloads/quick-carousals/packages/db/prisma/schema.prisma && echo 'PASS: layersBlueprint field exists' || echo 'FAIL'
-
-╭── ⚡ Shell
-│  $ docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT COUNT(*) FROM \"TemplateLayout\";" 2>&1
-│  ✓ Exit 0 1s
-╰───────────────
-│  ✓ Exit 0 2s
-╰───────────────
-│  ✓ Exit 0 3s
-╰───────────────
+## Iteration 10 - setup-08
+- **What was done**: Validated TemplateLayout model and seed data (task was already completed by previous iteration, but database needed to be started)
+- **Files changed**: 
+  - .ralph/tasks.json (marked setup-08 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **CRITICAL: Always check service status FIRST** - The database container was stopped, which caused validation to fail
+  - **Service restart workflow**: `docker-compose up -d` to start services, then `sleep 3 && docker ps` to verify
+  - **The task was already complete**: TemplateLayout model existed in schema, table was created, and 9 layouts were seeded
+  - **Previous iteration completed the work**: The model, seed script, and db:push were all done - just needed to validate
+  - **Database validation commands**:
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "\d \"TableName\""` - show table structure
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT COUNT(*) FROM \"TableName\";"` - count records
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT * FROM \"TableName\" ORDER BY id;"` - list records
+  - **TemplateLayout structure validated**:
+    - 9 layouts seeded: hook_big_headline, promise_two_column, value_bullets, value_numbered_steps, value_text_left_visual_right, value_centered_quote, recap_grid, cta_centered, generic_single_focus
+    - All fields present: id (text), name (text), category (text), slideType (text), layersBlueprint (jsonb)
+    - Seed script in packages/db/prisma/seed.ts includes TemplateLayout data with idempotency check
+  - **Type generation verified**: Prisma types in packages/db/prisma/types.ts include TemplateLayout
+---
