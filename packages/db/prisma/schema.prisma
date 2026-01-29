@@ -48,6 +48,15 @@ model StyleKit {
   isPremium    Boolean @default(false)
 }
 
+// QuickCarousals TemplateLayout model - layout blueprints for slides
+model TemplateLayout {
+  id              String @id // e.g., 'hook_big_headline'
+  name            String
+  category        String
+  slideType       String
+  layersBlueprint Json
+}
+
 model Customer {
   id                     Int               @id @default(autoincrement())
   authUserId             String

@@ -69,6 +69,13 @@ export type StyleKit = {
   spacingRules: unknown;
   isPremium: Generated<boolean>;
 };
+export type TemplateLayout = {
+  id: string;
+  name: string;
+  category: string;
+  slideType: string;
+  layersBlueprint: unknown;
+};
 export type User = {
   id: Generated<string>;
   name: string | null;
@@ -88,6 +95,7 @@ export type DB = {
   Profile: Profile;
   Session: Session;
   StyleKit: StyleKit;
+  TemplateLayout: TemplateLayout;
   User: User;
   VerificationToken: VerificationToken;
 };
