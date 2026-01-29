@@ -140,7 +140,7 @@
       ],
       "expected": "Profile model exists with clerkUserId, subscriptionTier, timestamps. db:push succeeds."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-07",

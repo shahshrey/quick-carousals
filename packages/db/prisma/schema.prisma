@@ -17,6 +17,27 @@ enum SubscriptionPlan {
   BUSINESS
 }
 
+enum SubscriptionTier {
+  FREE
+  CREATOR
+  PRO
+}
+
+// QuickCarousals Profile model - extends Clerk user with subscription info
+model Profile {
+  id               String           @id @default(dbgenerated("gen_random_uuid()"))
+  clerkUserId      String           @unique
+  email            String           @unique
+  name             String?
+  avatarUrl        String?
+  subscriptionTier SubscriptionTier @default(FREE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([clerkUserId])
+  @@index([email])
+}
+
 model Customer {
   id                     Int               @id @default(autoincrement())
   authUserId             String
