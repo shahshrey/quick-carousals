@@ -280,7 +280,7 @@
       ],
       "expected": "Export model exists with exportType, status, fileUrl, errorMessage, projectId. ExportType and ExportStatus enums defined."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-13",

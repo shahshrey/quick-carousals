@@ -9,6 +9,8 @@ import type {
   SubscriptionPlan,
   SubscriptionTier,
   ProjectStatus,
+  ExportType,
+  ExportStatus,
   Status,
 } from "./enums";
 
@@ -50,6 +52,16 @@ export type Customer = {
   stripeCurrentPeriodEnd: Timestamp | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Generated<Timestamp>;
+};
+export type Export = {
+  id: Generated<string>;
+  projectId: string;
+  exportType: ExportType;
+  status: Generated<ExportStatus>;
+  fileUrl: string | null;
+  errorMessage: string | null;
+  createdAt: Generated<Timestamp>;
+  completedAt: Timestamp | null;
 };
 export type K8sClusterConfig = {
   id: Generated<number>;
@@ -131,6 +143,7 @@ export type DB = {
   Account: Account;
   BrandKit: BrandKit;
   Customer: Customer;
+  Export: Export;
   K8sClusterConfig: K8sClusterConfig;
   Profile: Profile;
   Project: Project;

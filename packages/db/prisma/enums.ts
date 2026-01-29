@@ -18,6 +18,19 @@ export const ProjectStatus = {
   ARCHIVED: "ARCHIVED",
 } as const;
 export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus];
+export const ExportType = {
+  PDF: "PDF",
+  PNG: "PNG",
+  THUMBNAIL: "THUMBNAIL",
+} as const;
+export type ExportType = (typeof ExportType)[keyof typeof ExportType];
+export const ExportStatus = {
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  COMPLETED: "COMPLETED",
+  FAILED: "FAILED",
+} as const;
+export type ExportStatus = (typeof ExportStatus)[keyof typeof ExportStatus];
 export const Status = {
   PENDING: "PENDING",
   CREATING: "CREATING",

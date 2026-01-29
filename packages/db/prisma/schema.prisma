@@ -29,6 +29,19 @@ enum ProjectStatus {
   ARCHIVED
 }
 
+enum ExportType {
+  PDF
+  PNG
+  THUMBNAIL
+}
+
+enum ExportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 // QuickCarousals Profile model - extends Clerk user with subscription info
 model Profile {
   id               String           @id @default(dbgenerated("gen_random_uuid()"))
@@ -82,6 +95,7 @@ model Project {
   brandKit    BrandKit?     @relation(fields: [brandKitId], references: [id])
   styleKit    StyleKit      @relation(fields: [styleKitId], references: [id])
   slides      Slide[]
+  exports     Export[]
 
   @@index([userId])
   @@index([brandKitId])
@@ -128,6 +142,23 @@ model Slide {
   
   @@index([projectId])
   @@index([layoutId])
+}
+
+// QuickCarousals Export model - tracks export jobs with status and file URL
+model Export {
+  id           String       @id @default(dbgenerated("gen_random_uuid()"))
+  projectId    String
+  exportType   ExportType
+  status       ExportStatus @default(PENDING)
+  fileUrl      String?
+  errorMessage String?
+  createdAt    DateTime     @default(now())
+  completedAt  DateTime?
+  
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@index([projectId])
+  @@index([status])
 }
 
 model Customer {
