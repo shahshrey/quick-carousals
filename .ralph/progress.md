@@ -165,3 +165,52 @@
 
 ### 2026-01-30 04:34:13
 **Session 9 started** (model: sonnet-4.5-thinking)
+
+## Iteration 9 - 2026-01-30 04:45 UTC
+
+**Task**: setup-07 - Add StyleKit model to Prisma schema
+
+**Status**: ✅ COMPLETE
+
+**What was accomplished**:
+1. Added StyleKit model to Prisma schema with:
+   - id (string, primary key)
+   - name (string)
+   - typography (Json)
+   - colors (Json)
+   - spacingRules (Json)
+   - isPremium (boolean, default false)
+
+2. Created comprehensive seed script (`packages/db/prisma/seed.ts`) with:
+   - 8 default style kits matching PRD specifications
+   - 4 free kits: Minimal Clean, High Contrast Punch, Marker Highlight, Sticky Note
+   - 4 premium kits: Corporate Pro, Gradient Modern, Dark Mode Punch, Soft Pastel
+   - Idempotency check to prevent duplicate seeding
+   - Detailed logging of seed progress
+
+3. Applied schema changes:
+   - Ran `bun db:push` to apply schema to database
+   - Generated Kysely types with `bunx prisma generate`
+   - Verified table structure in PostgreSQL
+
+4. Successfully seeded database:
+   - All 8 StyleKits created
+   - Premium flag correctly set for gating
+   - Verified with database queries
+
+**Validation**:
+- ✅ StyleKit model exists in schema.prisma
+- ✅ isPremium field present with correct default
+- ✅ Kysely types generated with StyleKit interface
+- ✅ Database table created with proper structure
+- ✅ 8 style kits seeded (4 free, 4 premium)
+
+**Files modified**:
+- packages/db/prisma/schema.prisma
+- packages/db/prisma/seed.ts (created)
+- packages/db/package.json (added pg dependency and seed script)
+- packages/db/prisma/types.ts (generated)
+- packages/db/prisma/enums.ts (generated)
+- .ralph/tasks.json (marked complete)
+
+**Next task**: setup-08 - Add TemplateLayout model to schema
