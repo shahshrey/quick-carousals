@@ -253,3 +253,25 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `jq '.' file.json > /dev/null && echo 'PASS' || echo 'FAIL'` - validate JSON
     - `grep -q 'QuickCarousals' file.json && echo 'PASS' || echo 'FAIL'` - check branding
 ---
+
+---
+## Iteration 7 - setup-06
+- **What was done**: Added Profile model to Prisma schema with SubscriptionTier enum
+- **Files changed**: 
+  - packages/db/prisma/schema.prisma (added Profile model and SubscriptionTier enum)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Prisma schema workflow**: Always run `cd packages/db && bun db:push` after schema changes to apply to database
+  - **Database verification**: Use `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "\d \"TableName\""` to verify table structure
+  - **Profile model structure**: Successfully added with:
+    - SubscriptionTier enum (FREE, CREATOR, PRO) - distinct from existing SubscriptionPlan enum
+    - clerkUserId field (unique, indexed) - links to Clerk authentication
+    - email field (unique, indexed)
+    - subscriptionTier with FREE default
+    - Standard timestamps (createdAt, updatedAt)
+  - **Indexes created automatically**: Prisma creates both unique constraints and indexes for @unique fields, plus additional @@index directives
+  - **Type generation**: Prisma generates Kysely types automatically (types.ts, enums.ts) via the prisma-kysely generator
+  - **Validation from correct directory**: Run validation commands from repo root, not from subdirectories
+  - **Database is healthy**: PostgreSQL Docker container running on localhost:5432, connection working properly
+---

@@ -142,3 +142,14 @@
 
 ### 2026-01-30 04:31:11
 **Session 7 started** (model: sonnet-4.5-thinking)
+
+### 2026-01-30 [Current Time]
+**Iteration 7 Complete: setup-06**
+- Added Profile model to Prisma schema
+- Created SubscriptionTier enum (FREE, CREATOR, PRO)
+- Profile model includes: clerkUserId, email, name, avatarUrl, subscriptionTier, timestamps
+- Applied schema changes to database via `bun db:push`
+- Verified Profile table created successfully in PostgreSQL with all fields and indexes
+- All validation checks passed
+- Task marked complete in tasks.json
+- Committed changes: "ralph: [setup-06] Add Profile model to Prisma schema"
