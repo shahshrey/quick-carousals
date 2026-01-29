@@ -19,7 +19,7 @@
       ],
       "expected": "package.json name is 'quickcarousals', README mentions QuickCarousals, .env.example exists with documented variables"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-02",
