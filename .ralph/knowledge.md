@@ -199,3 +199,27 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Task was already complete**: When validation passes immediately, it means previous iterations did the work - just validate and mark complete
   - **Screenshot directory**: Must create `.ralph/screenshots/setup/` before saving screenshots
 ---
+
+---
+## Iteration 4 - setup-04
+- **What was done**: Updated auth pages (login, login-clerk, register) with QuickCarousals branding and added data-testid attributes
+- **Files changed**: 
+  - apps/nextjs/src/app/[lang]/(auth)/login/page.tsx (updated metadata and content)
+  - apps/nextjs/src/app/[lang]/(auth)/login-clerk/[[...rest]]/page.tsx (updated metadata and content)
+  - apps/nextjs/src/app/[lang]/(auth)/register/page.tsx (updated metadata and content)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Multiple login routes exist**: This project has both `/login` and `/login-clerk` - the latter is the actual Clerk-based auth route
+  - **Auth pages follow similar structure**: All auth pages (login, login-clerk, register) share similar structure with metadata, heading, and helper text
+  - **Validation without browser tools**: When browser tools aren't working, curl + grep is effective:
+    - `curl -s URL | grep -o 'data-testid="auth_title"'` to verify testid
+    - `curl -s URL | grep -o 'QuickCarousals'` to verify branding
+    - `curl -s URL -o /dev/null -w "%{http_code}"` to check HTTP status
+  - **Consistent branding approach**: 
+    - Metadata: "Log in to QuickCarousals" / "Join QuickCarousals"
+    - Heading: "Welcome back to QuickCarousals" / "Start creating with QuickCarousals"
+    - Helper text: Reference "LinkedIn carousels" to be specific about the product
+  - **data-testid naming**: Use snake_case for testids (e.g., `auth_title`) as per project conventions
+  - **Task completion workflow**: Read files → Update files → Validate with curl → Mark complete → Commit → Log learnings
+---

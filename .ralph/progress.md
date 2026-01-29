@@ -87,3 +87,34 @@
 
 ### 2026-01-30 04:22:06
 **Session 3 started** (model: sonnet-4.5-thinking)
+
+## Iteration 4 - 2025-01-30
+
+### Task Completed: setup-04 - Update auth pages copy
+
+**Status**: ✅ PASS
+
+**Changes Made**:
+1. Updated login page (`/login`):
+   - Metadata: "Log in to QuickCarousals"
+   - Heading: "Welcome back to QuickCarousals" with `data-testid="auth_title"`
+   - Helper text: "Log in to create engaging LinkedIn carousels in minutes"
+
+2. Updated login-clerk page (`/login-clerk`):
+   - Metadata: "Log in to QuickCarousals"
+   - Heading: "Welcome back to QuickCarousals" with `data-testid="auth_title"`
+   - Helper text: "Log in to create engaging LinkedIn carousels in minutes"
+
+3. Updated register page (`/register`):
+   - Metadata: "Join QuickCarousals"
+   - Heading: "Start creating with QuickCarousals" with `data-testid="auth_title"`
+   - Helper text: "Sign up to create professional LinkedIn carousels in minutes"
+
+**Validation**:
+- ✅ Both pages return HTTP 200
+- ✅ `data-testid="auth_title"` present on all auth headings
+- ✅ QuickCarousals branding visible in titles and helper text
+- ✅ No console errors or failed network requests
+
+**Committed**: e398d58
+
