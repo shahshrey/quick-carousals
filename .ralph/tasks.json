@@ -163,7 +163,7 @@
       ],
       "expected": "StyleKit model exists with id, name, typography, colors, spacingRules, isPremium. Seed script creates 8 default kits."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-08",

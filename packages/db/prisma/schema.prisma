@@ -38,6 +38,16 @@ model Profile {
   @@index([email])
 }
 
+// QuickCarousals StyleKit model - curated design templates
+model StyleKit {
+  id           String  @id // e.g., 'minimal_clean'
+  name         String
+  typography   Json
+  colors       Json
+  spacingRules Json
+  isPremium    Boolean @default(false)
+}
+
 model Customer {
   id                     Int               @id @default(autoincrement())
   authUserId             String

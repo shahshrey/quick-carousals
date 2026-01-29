@@ -5,6 +5,13 @@ export const SubscriptionPlan = {
 } as const;
 export type SubscriptionPlan =
   (typeof SubscriptionPlan)[keyof typeof SubscriptionPlan];
+export const SubscriptionTier = {
+  FREE: "FREE",
+  CREATOR: "CREATOR",
+  PRO: "PRO",
+} as const;
+export type SubscriptionTier =
+  (typeof SubscriptionTier)[keyof typeof SubscriptionTier];
 export const Status = {
   PENDING: "PENDING",
   CREATING: "CREATING",
