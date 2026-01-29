@@ -70,7 +70,7 @@
       ],
       "expected": "hero_headline visible with QuickCarousals value prop, features section present, no console errors"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-04",
