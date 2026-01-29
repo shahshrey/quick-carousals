@@ -50,7 +50,8 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   const isWebhooksRoute = req.nextUrl.pathname.startsWith("/api/webhooks/");
-  if (isWebhooksRoute) {
+  const isHealthCheck = req.nextUrl.pathname === "/api/health";
+  if (isWebhooksRoute || isHealthCheck) {
     return NextResponse.next();
   }
   const pathname = req.nextUrl.pathname;

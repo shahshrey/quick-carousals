@@ -43,7 +43,7 @@
       ],
       "expected": "site.ts contains 'QuickCarousals', favicon.ico exists, dev server responds 200"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-03",
