@@ -311,3 +311,31 @@
 
 ### 2026-01-30 05:11:37
 **Session 5 started** (model: sonnet-4.5-thinking)
+
+## Iteration 12 - setup-10 ✅
+
+**Task**: Add Project model to Prisma schema
+
+**Completed**:
+- Added ProjectStatus enum to packages/db/prisma/schema.prisma with values: DRAFT, PUBLISHED, ARCHIVED
+- Added Project model with:
+  - All required fields: id, userId, title, brandKitId (optional), styleKitId, status (with DRAFT default)
+  - userId relation to Profile with onDelete: Cascade
+  - brandKit optional relation to BrandKit
+  - styleKit required relation to StyleKit
+  - @@index([userId]), @@index([brandKitId]), @@index([styleKitId]) for efficient queries
+  - Standard timestamps (createdAt, updatedAt)
+- Added projects array relation to Profile, BrandKit, and StyleKit models
+- Applied schema changes with `bun db:push`
+- Generated Kysely types with `bunx prisma generate`
+- Verified table structure and enum values in PostgreSQL database
+
+**Validation**: All validation commands passed
+- Project model exists in schema ✓
+- ProjectStatus enum exists in schema ✓
+- Table created in database with correct structure ✓
+- Enum created with correct values (DRAFT, PUBLISHED, ARCHIVED) ✓
+- All relations properly configured ✓
+- Types and enums generated correctly ✓
+
+**Next Task**: setup-11 - Add Slide model to Prisma schema
