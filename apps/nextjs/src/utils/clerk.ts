@@ -54,6 +54,13 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
   if (isWebhooksRoute || isHealthCheck) {
     return NextResponse.next();
   }
+
+  // Skip Clerk auth for public marketing routes early
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  if (isPublicRoute(req)) {
+    return NextResponse.next();
+  }
   const pathname = req.nextUrl.pathname;
   // Check if there is any supported locale in the pathname
   const pathnameIsMissingLocale = i18n.locales.every(
@@ -69,12 +76,6 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
         req.url,
       ),
     );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  if (isPublicRoute(req)) {
-    return null;
   }
 
   const { userId, sessionClaims } = await auth()

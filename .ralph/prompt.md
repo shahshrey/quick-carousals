@@ -86,11 +86,43 @@ Implement the ONE task shown above. Follow these steps:
 # Start dev server
 bun dev  # or npm run dev
 
-# Use agent browser cli to verify
-- Open the page in browser
-- Take a screenshot: agent-browser screenshot $SCREENSHOT_DIR/[task-id].png
-- Check for console errors: agent-browser errors
-- Click through the UI, verify it works visually
+# Use Chrome DevTools MCP to verify the page works
+# IMPORTANT: Open the URL in your Chrome browser FIRST, then use these tools:
+
+# 1. Navigate to the page (opens in Chrome)
+CallMcpTool({
+  "server": "user-chrome-devtools",
+  "toolName": "navigate_page",
+  "arguments": {"type": "url", "url": "http://localhost:3000/en"}
+})
+
+# 2. Take a screenshot
+CallMcpTool({
+  "server": "user-chrome-devtools",
+  "toolName": "take_screenshot",
+  "arguments": {"path": "$SCREENSHOT_DIR/[task-id].png"}
+})
+
+# 3. Check console for errors
+CallMcpTool({
+  "server": "user-chrome-devtools",
+  "toolName": "list_console_messages",
+  "arguments": {"types": ["error", "warn"]}
+})
+
+# 4. Check network requests (look for 500 errors, failed requests)
+CallMcpTool({
+  "server": "user-chrome-devtools",
+  "toolName": "list_network_requests",
+  "arguments": {"resourceTypes": ["document", "xhr", "fetch"]}
+})
+
+# 5. Get snapshot of page structure
+CallMcpTool({
+  "server": "user-chrome-devtools",
+  "toolName": "take_snapshot",
+  "arguments": {}
+})
 ```
 
 ### For API/Backend Changes:

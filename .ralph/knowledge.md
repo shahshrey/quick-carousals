@@ -32,21 +32,30 @@
 ## 🔧 Working Commands
 
 ```bash
+# Local Services
+docker-compose up -d           # Start PostgreSQL
+supabase start                 # Start Supabase (DB, Auth, Storage, Realtime)
+docker ps --filter "name=quickcarousals"  # Check Docker containers
+supabase status                # Check Supabase status
+
 # Development server
 bun install                    # Install all dependencies (from repo root)
 cd apps/nextjs && bun dev      # Start dev server on :3000
 
-# Database
-# bun db:push                  # Push schema to database (not yet configured)
-
-# Testing
-# bun test                     # Run tests (not yet configured)
+# Database connections
+# PostgreSQL: postgresql://quickcarousals:quickcarousals_dev_password@localhost:5432/quickcarousals
+# Supabase: postgresql://postgres:postgres@127.0.0.1:54325/postgres
+# Redis: Upstash Cloud (see UPSTASH_REDIS_REST_URL in .env)
 
 # Validation
 jq -r '.name' package.json     # Check package name
 grep -q 'QuickCarousals' apps/nextjs/src/config/site.ts  # Check branding
 test -f apps/nextjs/public/favicon.ico  # Check favicon exists
 curl -s http://localhost:3000/_next/static/development/_buildManifest.js  # Check server health
+
+# Browser debugging (Chrome DevTools MCP) or browser agent cli
+
+
 
 # Task management
 jq '.[] | select(.id == "task-id")' .ralph/tasks.json  # Get task details
@@ -60,6 +69,15 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
 ---
 
 ## 🧠 Codebase Patterns
+
+### Local Services (All Configured ✅)
+- **PostgreSQL** (Docker): localhost:5432 - Main database
+- **Supabase** (Local): http://127.0.0.1:54321 - Auth, Storage, Realtime, DB
+  - Studio GUI: http://127.0.0.1:54323 (for database management)
+  - S3 Storage: Built-in at http://127.0.0.1:54321/storage/v1/s3 (no Cloudflare R2 needed)
+- **Redis**: Upstash Cloud (not local, see .env for credentials)
+- **API Keys**: All real keys configured in .env/.env.local
+  - ✅ Clerk (auth), Stripe (payments), GitHub OAuth, Resend (email), OpenAI (AI)
 
 ### Project Structure
 - **Monorepo**: Workspace root contains multiple apps and packages
@@ -83,6 +101,11 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
 - **API routes**: Located in `apps/nextjs/src/app/api/[route]/route.ts`
 - **Runtime**: Can use `export const runtime = "edge"` for edge functions
 - **Dev server**: Runs on port 3000, Next Devtools tries to use ports 12882-12883
+
+### Browser Debugging
+- **Use Chrome DevTools MCP** instead of curl for frontend testing
+- Available tools: navigate_page, list_console_messages, list_network_requests, take_screenshot
+- See .ralph/prompt.md section "Testing Your Changes" for CallMcpTool examples
 
 ---
 

@@ -74,30 +74,36 @@ export default async function IndexPage({
             <BackgroundLines className="h-full">
               <div className="flex flex-col pt-4 md:pt-36 lg:pt-36 xl:pt-36">
                 <div className="mt-20">
-                  <div
+                  <h1
+                    data-testid="hero_headline"
                     className="mb-6 max-w-4xl text-left text-4xl font-semibold dark:text-zinc-100 md:text-5xl xl:text-5xl md:leading-[4rem] xl:leading-[4rem]">
-                    {dict.marketing.title || "Ship your apps to the world easier with "}
-                    <ColourfulText text="Saasfly"/>
-                  </div>
+                    Turn an idea into a <ColourfulText text="LinkedIn-ready carousel"/> in 3 minutes
+                  </h1>
                 </div>
 
                 <div className="mt-4">
                   <span className="text-neutral-500 dark:text-neutral-400 sm:text-lg">
-                    {dict.marketing.sub_title || "Your complete All-in-One solution for building SaaS services."}
+                    Create professional PDF carousels that don't look templated. No design skills required.
                   </span>
                 </div>
 
                 <div
                   className="mb-4 mt-6 flex w-full flex-col justify-center space-y-4 sm:flex-row sm:justify-start sm:space-x-8 sm:space-y-0 z-10">
-                  <Link href="https://github.com/saasfly/saasfly" target="_blank">
+                  <Link href="/en/register">
                     <Button
                       className="bg-blue-600 hover:bg-blue-500 text-white rounded-full text-lg px-6 h-12 font-medium">
-                      {dict.marketing.get_started}
+                      Start Creating Free
                       <Icons.ArrowRight className="h-5 w-5"/>
                     </Button>
                   </Link>
 
-                  <CodeCopy/>
+                  <Link href="/en/pricing">
+                    <Button
+                      variant="outline"
+                      className="rounded-full text-lg px-6 h-12 font-medium">
+                      View Pricing
+                    </Button>
+                  </Link>
                 </div>
 
                 <div className="flex xl:flex-row flex-col items-center justify-start mt-4 w-full">

@@ -8,12 +8,12 @@ export function FeaturesGrid({ dict } : { dict: Record<string, string> | undefin
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Icons.Blocks className="w-6 h-6 text-purple-500" />
+              <Icons.Sparkles className="w-6 h-6 text-purple-500" />
             </div>
-            <h2 className="text-lg font-semibold">{dict?.monorepo_title}</h2>
+            <h2 className="text-lg font-semibold">AI-Powered Generation</h2>
           </div>
           <p className="leading-relaxed text-neutral-500 dark:text-neutral-400 font-medium">
-            {dict?.monorepo_desc}
+            Turn any topic or text into a professional carousel in minutes with smart AI that understands LinkedIn.
           </p>
         </div>
       </Card>
@@ -22,12 +22,12 @@ export function FeaturesGrid({ dict } : { dict: Record<string, string> | undefin
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Icons.Languages className="w-6 h-6 text-purple-500" />
+              <Icons.Palette className="w-6 h-6 text-purple-500" />
             </div>
-            <h2 className="text-lg font-semibold">{dict?.i18n_title}</h2>
+            <h2 className="text-lg font-semibold">8 Style Kits</h2>
           </div>
           <p className="leading-relaxed text-neutral-500 dark:text-neutral-400 font-medium">
-            {dict?.i18n_desc}
+            Curated professional styles that guarantee your carousels look polished, not templated.
           </p>
         </div>
       </Card>
@@ -36,12 +36,12 @@ export function FeaturesGrid({ dict } : { dict: Record<string, string> | undefin
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Icons.Billing className="w-6 h-6 text-purple-500" />
+              <Icons.Edit className="w-6 h-6 text-purple-500" />
             </div>
-            <h2 className="text-lg font-semibold">{dict?.payments_title}</h2>
+            <h2 className="text-lg font-semibold">Visual Editor</h2>
           </div>
           <p className="leading-relaxed text-neutral-500 dark:text-neutral-400 font-medium">
-            {dict?.payments_desc}
+            Click-to-edit canvas with auto-fit text that prevents ugly overflows. No design skills needed.
           </p>
         </div>
       </Card>
@@ -50,12 +50,12 @@ export function FeaturesGrid({ dict } : { dict: Record<string, string> | undefin
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-              <Icons.ShieldCheck className="w-6 h-6 text-purple-500" />
+              <Icons.Download className="w-6 h-6 text-purple-500" />
             </div>
-            <h2 className="text-lg font-semibold">{dict?.nextauth_title}</h2>
+            <h2 className="text-lg font-semibold">Export Ready</h2>
           </div>
           <p className="leading-relaxed text-neutral-500 dark:text-neutral-400 font-medium">
-            {dict?.nextauth_desc}
+            Download as PDF or PNG, ready to post on LinkedIn with perfect formatting every time.
           </p>
         </div>
       </Card>

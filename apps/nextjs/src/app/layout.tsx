@@ -41,20 +41,19 @@ export const metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "Next.js",
-    "Shadcn ui",
-    "Sass",
-    "Fast ",
-    "Simple ",
-    "Easy",
-    "Cloud Native",
+    "LinkedIn carousel",
+    "carousel generator",
+    "LinkedIn content",
+    "PDF carousel",
+    "content creation",
+    "social media design",
   ],
   authors: [
     {
-      name: "saasfly",
+      name: "QuickCarousals",
     },
   ],
-  creator: "Saasfly",
+  creator: "QuickCarousals",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -68,7 +67,7 @@ export const metadata = {
     // shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  metadataBase: new URL("https://show.saasfly.io/"),
+  metadataBase: new URL(siteConfig.url),
   // manifest: `${siteConfig.url}/site.webmanifest`,
 };
 
