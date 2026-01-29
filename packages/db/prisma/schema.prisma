@@ -81,6 +81,7 @@ model Project {
   user        Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
   brandKit    BrandKit?     @relation(fields: [brandKitId], references: [id])
   styleKit    StyleKit      @relation(fields: [styleKitId], references: [id])
+  slides      Slide[]
 
   @@index([userId])
   @@index([brandKitId])
@@ -106,6 +107,27 @@ model TemplateLayout {
   category        String
   slideType       String
   layersBlueprint Json
+  
+  slides          Slide[]
+}
+
+// QuickCarousals Slide model - individual carousel slides with layers
+model Slide {
+  id         String   @id @default(dbgenerated("gen_random_uuid()"))
+  projectId  String
+  orderIndex Int
+  layoutId   String
+  slideType  String
+  layers     Json     @default("[]")
+  content    Json     @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  project    Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  layout     TemplateLayout  @relation(fields: [layoutId], references: [id])
+  
+  @@index([projectId])
+  @@index([layoutId])
 }
 
 model Customer {

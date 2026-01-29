@@ -257,7 +257,7 @@
       ],
       "expected": "Slide model exists with orderIndex, layoutId, slideType, layers (JSON), content, projectId relation"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-12",

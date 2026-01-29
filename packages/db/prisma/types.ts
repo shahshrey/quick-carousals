@@ -89,6 +89,17 @@ export type Session = {
   userId: string;
   expires: Timestamp;
 };
+export type Slide = {
+  id: Generated<string>;
+  projectId: string;
+  orderIndex: number;
+  layoutId: string;
+  slideType: string;
+  layers: Generated<unknown>;
+  content: Generated<unknown>;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
 export type StyleKit = {
   id: string;
   name: string;
@@ -124,6 +135,7 @@ export type DB = {
   Profile: Profile;
   Project: Project;
   Session: Session;
+  Slide: Slide;
   StyleKit: StyleKit;
   TemplateLayout: TemplateLayout;
   User: User;
