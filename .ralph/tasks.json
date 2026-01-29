@@ -301,7 +301,7 @@
       ],
       "expected": "GET /api/health returns {\"status\":\"ok\"} with 200 status"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-14",
