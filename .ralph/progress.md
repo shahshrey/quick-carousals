@@ -393,3 +393,40 @@
 
 ### 2026-01-30 05:18:42
 **Session 9 started** (model: sonnet-4.5-thinking)
+
+## Iteration 14 - 2026-01-30
+**Task**: setup-12 - Add Export model to Prisma schema
+**Status**: ✅ COMPLETE
+
+### What was implemented:
+1. Added ExportType enum with values: PDF, PNG, THUMBNAIL
+2. Added ExportStatus enum with values: PENDING, PROCESSING, COMPLETED, FAILED
+3. Created Export model with:
+   - exportType (ExportType)
+   - status (ExportStatus with PENDING default)
+   - fileUrl (optional String)
+   - errorMessage (optional String)
+   - projectId relation with onDelete: Cascade
+   - completedAt (optional DateTime)
+   - Indexes on projectId and status
+4. Updated Project model to add `exports Export[]` relation
+5. Applied schema with `bun db:push`
+6. Generated Kysely types with `bunx prisma generate`
+
+### Validation:
+- ✅ Export model exists in schema.prisma
+- ✅ ExportType enum exists in schema.prisma
+- ✅ ExportStatus enum exists in schema.prisma
+- ✅ Export table created in PostgreSQL with correct structure
+- ✅ ExportType enum created in database (PDF, PNG, THUMBNAIL)
+- ✅ ExportStatus enum created in database (PENDING, PROCESSING, COMPLETED, FAILED)
+- ✅ Export type found in generated types.ts
+- ✅ ExportStatus enum found in generated enums.ts
+- ✅ ExportType enum found in generated enums.ts
+
+### Files modified:
+- packages/db/prisma/schema.prisma
+- packages/db/prisma/types.ts (generated)
+- packages/db/prisma/enums.ts (generated)
+- .ralph/tasks.json
+
