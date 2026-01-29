@@ -1,8 +1,8 @@
 {
   "price": {
-    "title": "便宜，透明的价格！",
+    "title": "简单，透明的价格！",
     "pricing": "价格",
-    "slogan": "全速启动！",
+    "slogan": "今天就开始创建轮播图！",
     "monthly_bill": "月度账单",
     "annual_bill": "年度账单",
     "annual_info": "年度收费时将收取",
@@ -19,17 +19,17 @@
     "": ""
   },
   "marketing": {
-    "introducing": "介绍 Saasfly",
-    "title": "更轻松地将您的应用推向全球，尽在 ",
-    "sub_title": "简单易上手，具备企业级品质的 Next.js 模板。打造 SaaS 服务的终极一体化解决方案，助力业务增长。",
+    "introducing": "介绍 QuickCarousals",
+    "title": "几分钟内创建 LinkedIn 轮播图 ",
+    "sub_title": "将想法转化为看起来不像模板的专业 PDF 轮播图。创建引人入胜的 LinkedIn 内容的最快方式。",
     "get_started": "快速开始",
     "view_on_github": "在 GitHub 上查看",
     "explore_product": "探索产品",
     "features": "特色",
-    "sub_features": "云原生：为初创公司简化技术、降低成本而生。",
-    "k8s_features": "开发快速、简单",
-    "devops_features": "应用轻松部署",
-    "price_features": "经济高效为生产环境打造。",
+    "sub_features": "LinkedIn 优先：专业轮播图，无需设计烦恼。",
+    "k8s_features": "3 分钟从主题到轮播图",
+    "devops_features": "文本自动调整，保证完美设计",
+    "price_features": "精选样式套装，始终看起来专业。",
     "main_nav_features": "特色",
     "main_nav_pricing": "价格",
     "main_nav_products": "产品",
@@ -39,41 +39,41 @@
     "signup": "注册",
     "": "",
     "contributors": {
-      "contributors_desc": "位贡献者使Saasfly更强大了",
+      "contributors_desc": "位创作者信任 QuickCarousals",
       "developers_first": "帮助了超过 ",
-      "developers_second": " 位开发者"
+      "developers_second": " 位创作者"
     },
     "right_side": {
-      "deploy_on_vercel_title": "部署到 Vercel",
-      "deploy_on_vercel_desc": "轻松上手，快速看到成果。",
-      "ship_on_cloudflare_title": "使用 Cloudflare 发布应用",
-      "ship_on_cloudflare_desc": "使用我们基于 Cloudflare 构建的平台，助力您的业务增长。",
-      "showcase_title": "最佳实践，与您分享",
-      "showcase_desc": "发现精彩应用，与开发者交流心得，向全球展示你的才华。"
+      "deploy_on_vercel_title": "专业设计",
+      "deploy_on_vercel_desc": "8 个精选样式套装，保证美观的轮播图。",
+      "ship_on_cloudflare_title": "导出就绪",
+      "ship_on_cloudflare_desc": "下载为 LinkedIn 的 PDF 或其他平台的 PNG。",
+      "showcase_title": "轮播图展示",
+      "showcase_desc": "看看创作者们用 QuickCarousals 制作了什么，为您的下一篇文章获得灵感。"
     },
     "features_grid": {
-      "monorepo_title": "Monorepo",
-      "monorepo_desc": "将多个项目统一管理，让代码共享更轻松，协作更高效。支持微服务架构、多平台应用以及大型项目。",
-      "i18n_title": "多语言支持",
-      "i18n_desc": "轻松实现多语言支持，为用户提供母语般的亲切体验，助您拓展国际市场，提升品牌形象。",
-      "payments_title": "全球化支付",
-      "payments_desc": "为您提供安全、便捷、高效的支付解决方案。全球化支持，多种支付方式，灵活定制，让您的业务轻松拓展，畅通无阻。",
-      "nextauth_title": "NextAuth",
-      "nextauth_desc": "让你的应用拥有安全可靠的身份验证，为用户提供丝滑流畅的登录体验。支持社交登录、邮箱验证以及自定义认证。"
+      "monorepo_title": "智能布局",
+      "monorepo_desc": "AI 为您的内容选择完美的布局。绝不会出现难看的文本溢出。",
+      "i18n_title": "文本自动调整",
+      "i18n_desc": "文本自动调整以完美适配。如果内容太长，点击「用 AI 修复」。",
+      "payments_title": "品牌套装",
+      "payments_desc": "保存您的颜色、字体和徽标。立即将您的品牌应用到所有轮播图。",
+      "nextauth_title": "样式套装",
+      "nextauth_desc": "从 8 种专业设计的样式中选择。从简约清新到大胆现代。"
     },
     "sponsor": {
-      "title": "我们深受赞助商的喜爱",
-      "donate": "给我们买杯咖啡，您的品牌会出现在这里"
+      "title": "深受 LinkedIn 创作者喜爱",
+      "donate": "支持 QuickCarousals"
     },
     "video": {
-      "first_text": "观看视频，然后",
+      "first_text": "观看如何创建",
       "second_text1": "在 ",
-      "second_text2": "构建你的应用程序",
-      "time_text": "1 小时内"
+      "second_text2": "创建轮播图",
+      "time_text": "3 分钟内"
     },
     "people_comment": {
-      "title": "听听大家怎么说",
-      "desc": "不要只听我们说。以下是真实用户对 Saasfly 的评价。"
+      "title": "创作者们的评价",
+      "desc": "不要只听我们说。以下是真实创作者对 QuickCarousals 的评价。"
     }
   },
   "login": {
@@ -89,22 +89,22 @@
     "": ""
   },
   "common": {
-    "copyright": "版权所有 © ${currentYear} Nextify公司。保留所有权利。",
+    "copyright": "版权所有 © ${currentYear} QuickCarousals。保留所有权利。",
     "dashboard": {
       "main_nav_documentation": "文档",
       "main_nav_support": "支持",
-      "sidebar_nav_clusters": "集群",
+      "sidebar_nav_clusters": "项目",
       "sidebar_nav_billing": "账单",
       "sidebar_nav_settings": "设置",
-      "title_text": "创建和管理集群。",
+      "title_text": "创建和管理轮播图。",
       "": ""
     }
   },
   "business": {
     "k8s": {
-      "new_cluster": "创建新的集群",
-      "no_cluster_title": "没有创建集群",
-      "no_cluster_content": "您还没有任何集群。开始创建集群吧。",
+      "new_cluster": "新建轮播图",
+      "no_cluster_title": "没有创建轮播图",
+      "no_cluster_content": "您还没有任何轮播图。开始创建您的第一个轮播图吧。",
       "": ""
     },
     "billing": {

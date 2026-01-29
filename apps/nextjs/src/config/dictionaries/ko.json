@@ -1,8 +1,8 @@
 {
   "price": {
-    "title": "저렴하고 투명한 가격!",
+    "title": "간단하고 투명한 가격!",
     "pricing": "가격 책정",
-    "slogan": "전속력으로 시작하세요!",
+    "slogan": "오늘 캐러셀 제작을 시작하세요!",
     "monthly_bill": "월간 청구",
     "annual_bill": "연간 청구",
     "annual_info": "연간 청구시 청구됩니다",
@@ -19,17 +19,17 @@
     "": ""
   },
   "marketing": {
-    "introducing": "Saasfly 소개",
-    "title": "다국어 지원으로, 당신의 앱을 전 세계 사용자에게, ",
-    "sub_title": "이것 하나로 끝! 사용하기 쉽고 엔터프라이즈급 Next.js 보일러플레이트. SaaS 서비스 구축을 위한 완벽한 솔루션입니다.",
+    "introducing": "QuickCarousals 소개",
+    "title": "몇 분 만에 LinkedIn 캐러셀 제작 ",
+    "sub_title": "템플릿처럼 보이지 않는 전문적인 PDF 캐러셀로 아이디어를 변환. 매력적인 LinkedIn 콘텐츠를 가장 빠르게 제작.",
     "get_started": "시작하기",
     "view_on_github": "GitHub 에서 보기",
     "explore_product": "제품 탐색",
     "features": "특징",
-    "sub_features": "클라우드 네이티브: 스타트업을 위한 기술 단순화 및 비용 절감.",
-    "k8s_features": "빠르고 간단한 개발",
-    "devops_features": "간편한 애플리케이션 배포",
-    "price_features": "생산 환경을 위한 경제적 효율성.",
+    "sub_features": "LinkedIn 특화: 디자인 고민 없이 전문적인 캐러셀.",
+    "k8s_features": "주제에서 3분 만에 캐러셀 제작",
+    "devops_features": "텍스트 자동 조정, 완벽한 디자인 보장",
+    "price_features": "항상 전문적으로 보이는 엄선된 스타일 키트.",
     "main_nav_features": "특징",
     "main_nav_pricing": "가격",
     "main_nav_products": "제품",
@@ -39,41 +39,41 @@
     "signup": "가입하기",
     "": "",
     "contributors": {
-      "contributors_desc": "명의 기여자들이 Saasfly를 더 강하게 만들었습니다",
+      "contributors_desc": "명의 크리에이터가 QuickCarousals를 신뢰",
       "developers_first": "",
-      "developers_second": " 명 이상의 개발자들의 성공을 돕습니다"
+      "developers_second": " 명 이상의 크리에이터 지원"
     },
     "right_side": {
-      "deploy_on_vercel_title": "Vercel을 통한 배포",
-      "deploy_on_vercel_desc": "간단하게 시작하고 빠르게 결과를 얻으세요.",
-      "ship_on_cloudflare_title": "Cloudflare에서 앱을 배포하세요",
-      "ship_on_cloudflare_desc": "저희 Cloudflare 기반 플랫폼은 귀사의 비즈니스 성장에 도움이 될 것입니다.",
-      "showcase_title": "최고의 실천, 함께 공유",
-      "showcase_desc": "다른 사람들이 무엇을 만들고 있는지 확인하고, 그들과 자유롭게 대화하세요. 그리고 당신의 멋진 앱을 전 세계에 자랑스럽게 보여주세요."
+      "deploy_on_vercel_title": "전문적인 디자인",
+      "deploy_on_vercel_desc": "아름다운 캐러셀을 보장하는 8가지 엄선된 스타일 키트.",
+      "ship_on_cloudflare_title": "내보내기 준비 완료",
+      "ship_on_cloudflare_desc": "LinkedIn용 PDF 또는 다른 플랫폼용 PNG로 다운로드.",
+      "showcase_title": "캐러셀 쇼케이스",
+      "showcase_desc": "QuickCarousals로 제작된 캐러셀을 보고 다음 게시물의 영감을 얻으세요."
     },
     "features_grid": {
-      "monorepo_title": "Monorepo",
-      "monorepo_desc": "코드 공유와 효율적인 협업을 위해 여러 프로젝트를 통합 관리합니다. 마이크로서비스, 멀티 플랫폼, 대규모 프로젝트를 지원합니다.",
-      "i18n_title": "다중 언어 지원",
-      "i18n_desc": "쉽게 다국어 지원을 구현하여 사용자에게 모국어와 같은 친근한 경험을 제공하고 국제 시장을 확장하며 브랜드 이미지를 향상시킵니다.",
-      "payments_title": "글로벌 결제",
-      "payments_desc": "당신의 비즈니스를 위한 안전하고 편리한 맞춤형 결제 솔루션을 제공합니다. 글로벌 지원으로 전 세계 시장으로 진출하세요.",
-      "nextauth_title": "NextAuth",
-      "nextauth_desc": "안전하고 편리한 인증으로 앱을 강화하세요. 소셜 로그인, 이메일 인증, 맞춤 인증을 지원합니다."
+      "monorepo_title": "스마트 레이아웃",
+      "monorepo_desc": "AI가 콘텐츠에 완벽한 레이아웃을 선택. 텍스트 넘침은 절대 없습니다.",
+      "i18n_title": "텍스트 자동 조정",
+      "i18n_desc": "텍스트가 완벽하게 맞도록 자동 조정. 너무 긴 경우 'AI로 수정'을 클릭.",
+      "payments_title": "브랜드 키트",
+      "payments_desc": "색상, 글꼴, 로고를 저장. 모든 캐러셀에 즉시 브랜드 적용.",
+      "nextauth_title": "스타일 키트",
+      "nextauth_desc": "8가지 전문 디자인 중 선택. 미니멀 클린부터 대담한 모던까지."
     },
     "sponsor": {
-      "title": "스폰서 여러분의 사랑을 받고 있습니다",
-      "donate": "저희에게 커피 한 잔 사주세요, 당신의 브랜드는 바로 여기"
+      "title": "LinkedIn 크리에이터에게 사랑받고 있습니다",
+      "donate": "QuickCarousals 지원"
     },
     "video": {
-      "first_text": "비디오를 보고",
+      "first_text": "캐러셀 제작 방법 보기",
       "second_text1": "",
-      "second_text2": " 안에 앱을 만드세요",
-      "time_text": "1 시간"
+      "second_text2": " 안에 캐러셀 제작",
+      "time_text": "3 분"
     },
     "people_comment": {
-      "title": "사람들의 반응을 살펴보세요",
-      "desc": "저희 말만 믿지 마세요. 실제 사용자들이 Saasfly에 대해 어떻게 말하는지 확인해 보세요."
+      "title": "크리에이터의 반응",
+      "desc": "저희 말만 믿지 마세요. QuickCarousals에 대한 실제 크리에이터들의 반응을 확인해 보세요."
     }
   },
   "login": {
@@ -89,29 +89,29 @@
     "": ""
   },
   "common": {
-    "copyright": "저작권 © ${currentYear} Nextify 주식회사. 모든 권리 보유.",
+    "copyright": "저작권 © ${currentYear} QuickCarousals. 모든 권리 보유.",
     "dashboard": {
       "main_nav_documentation": "문서",
       "main_nav_support": "지원",
-      "sidebar_nav_clusters": "클러스터",
+      "sidebar_nav_clusters": "프로젝트",
       "sidebar_nav_billing": "청구",
       "sidebar_nav_settings": "설정",
-      "title_text": "클러스터 생성 및 관리。",
+      "title_text": "캐러셀 생성 및 관리.",
       "": ""
     },
     "": ""
   },
   "business": {
     "k8s": {
-      "new_cluster": "새 클러스터 생성",
-      "no_cluster_title": "클러스터가 생성되지 않았습니다",
-      "no_cluster_content": "아직 클러스터가 없습니다. 클러스터 생성을 시작하세요."
+      "new_cluster": "새 캐러셀",
+      "no_cluster_title": "캐러셀이 생성되지 않았습니다",
+      "no_cluster_content": "아직 캐러셀이 없습니다. 첫 번째 캐러셀 생성을 시작하세요."
     },
     "billing": {
       "billing": "청구",
       "content": "구독 및 청구 세부 정보 관리",
-      "noSubscription": "어떠한 플랜에도 가입하지 않았습니다。",
-      "subscriptionInfo": "현재 <strong>{plan}</strong> 플랜을 사용 중입니다。구독은 <strong>{date}</strong>에 갱신됩니다。",
+      "noSubscription": "어떠한 플랜에도 가입하지 않았습니다.",
+      "subscriptionInfo": "현재 <strong>{plan}</strong> 플랜을 사용 중입니다. 구독은 <strong>{date}</strong>에 갱신됩니다.",
       "manage_subscription": "구독 관리",
       "upgrade": "업그레이드",
       "": ""

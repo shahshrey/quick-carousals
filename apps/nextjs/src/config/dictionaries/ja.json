@@ -1,8 +1,8 @@
 {
   "price": {
-    "title": "安価で透明な価格！",
+    "title": "シンプルで透明な価格！",
     "pricing": "価格設定",
-    "slogan": "全速力でスタート！",
+    "slogan": "今日からカルーセル作成を始めよう！",
     "monthly_bill": "月額請求",
     "annual_bill": "年間請求",
     "annual_info": "年間請求時に請求されます",
@@ -19,17 +19,17 @@
     "": ""
   },
   "marketing": {
-    "introducing": "Saasfly の紹介",
-    "title": "より簡単にあなたのアプリを世界へ、 ",
-    "sub_title": "使いやすさが魅力のエンタープライズグレードNext.jsボイラープレート。SaaSサービス構築を完全サポートするオールインワンソリューション。",
+    "introducing": "QuickCarousals の紹介",
+    "title": "数分でLinkedInカルーセルを作成 ",
+    "sub_title": "テンプレートっぽくない、プロフェッショナルなPDFカルーセルを作成。魅力的なLinkedInコンテンツを最速で。",
     "get_started": "始める",
     "view_on_github": "GitHub で見る",
     "explore_product": "製品を探す",
     "features": "特徴",
-    "sub_features": "クラウドネイティブ：スタートアップのための技術の簡素化とコスト削減。",
-    "k8s_features": "高速でシンプルな開発",
-    "devops_features": "アプリケーションの簡単なデプロイ",
-    "price_features": "生産環境に対する経済的効率性。",
+    "sub_features": "LinkedIn特化：デザインの悩みなしでプロフェッショナルなカルーセル。",
+    "k8s_features": "トピックから3分でカルーセル作成",
+    "devops_features": "テキスト自動調整、完璧なデザイン保証",
+    "price_features": "常にプロフェッショナルに見える厳選スタイルキット。",
     "main_nav_features": "特徴",
     "main_nav_pricing": "価格",
     "main_nav_products": "製品",
@@ -39,41 +39,41 @@
     "signup": "サインアップ",
     "": "",
     "contributors": {
-      "contributors_desc": "人の貢献者がSaasflyをより強くした",
+      "contributors_desc": "人のクリエイターがQuickCarousalsを信頼",
       "developers_first": "",
-      "developers_second": " 人以上の開発者を支え、共に成長"
+      "developers_second": " 人以上のクリエイターをサポート"
     },
     "right_side": {
-      "deploy_on_vercel_title": "Vercelによるデプロイ",
-      "deploy_on_vercel_desc": "数秒でスタート、すぐに結果を実感。",
-      "ship_on_cloudflare_title": "Cloudflareでアプリをデプロイしよう",
-      "ship_on_cloudflare_desc": "クラウドフレア基盤のプラットフォームを通じて、ビジネスを拡大しましょう。",
-      "showcase_title": "ベストプラクティス、皆様と共有",
-      "showcase_desc": "他の人が何を作っているか確認して、彼らと自由に話しましょう。そして、あなたの素晴らしいアプリを世界に堂々と見せつけましょう。"
+      "deploy_on_vercel_title": "プロフェッショナルなデザイン",
+      "deploy_on_vercel_desc": "美しいカルーセルを保証する8つの厳選スタイルキット。",
+      "ship_on_cloudflare_title": "エクスポート準備完了",
+      "ship_on_cloudflare_desc": "LinkedIn用のPDFまたは他のプラットフォーム用のPNGとしてダウンロード。",
+      "showcase_title": "カルーセルショーケース",
+      "showcase_desc": "QuickCarousalsで作成されたカルーセルを見て、次の投稿のインスピレーションを得よう。"
     },
     "features_grid": {
-      "monorepo_title": "Monorepo",
-      "monorepo_desc": "複数のプロジェクトを一元管理することで、コード共有が簡単になり、コラボレーションが効率化されます。",
-      "i18n_title": "国際化",
-      "i18n_desc": "多言語対応はもう簡単。ネイティブ言語での体験を提供し、ビジネスをグローバルに展開しましょう。",
-      "payments_title": "国際決済",
-      "payments_desc": "安全・便利・効率的な決済プラットフォームで、グローバルビジネスの成長を加速させましょう。",
-      "nextauth_title": "NextAuth",
-      "nextauth_desc": "安全でシームレスな認証により、アプリの利便性を高め、ユーザーにストレスフリーなログイン体験を提供。"
+      "monorepo_title": "スマートレイアウト",
+      "monorepo_desc": "AIがコンテンツに最適なレイアウトを選択。テキストのはみ出しは絶対なし。",
+      "i18n_title": "テキスト自動調整",
+      "i18n_desc": "テキストが完璧にフィットするよう自動調整。長すぎる場合は「AIで修正」をクリック。",
+      "payments_title": "ブランドキット",
+      "payments_desc": "カラー、フォント、ロゴを保存。すべてのカルーセルに即座にブランドを適用。",
+      "nextauth_title": "スタイルキット",
+      "nextauth_desc": "8つのプロフェッショナルデザインから選択。ミニマルクリーンから大胆モダンまで。"
     },
     "sponsor": {
-      "title": "スポンサーの皆様に愛されています",
-      "donate": "コーヒーブレイクのお供に、あなたのブランドを"
+      "title": "LinkedInクリエイターに愛されています",
+      "donate": "QuickCarousalsをサポート"
     },
     "video": {
-      "first_text": "動画を見て",
+      "first_text": "カルーセル作成方法を見る",
       "second_text1": "",
-      "second_text2": "でアプリを作っちゃお",
-      "time_text": "1 時間"
+      "second_text2": "でカルーセルを作成",
+      "time_text": "3 分"
     },
     "people_comment": {
-      "title": "ユーザーのリアルな声",
-      "desc": "私たちの言うことだけを信じないでください。Saasflyについての実際のユーザーの声をご覧ください。"
+      "title": "クリエイターの声",
+      "desc": "私たちの言うことだけを信じないでください。QuickCarousalsについての実際のクリエイターの声をご覧ください。"
     }
   },
   "login": {
@@ -89,23 +89,23 @@
     "": ""
   },
   "common": {
-    "copyright": "著作権 © ${currentYear} Nextify株式会社。全ての権利を保有。",
+    "copyright": "著作権 © ${currentYear} QuickCarousals。全ての権利を保有。",
     "dashboard": {
       "main_nav_documentation": "ドキュメンテーション",
       "main_nav_support": "サポート",
-      "sidebar_nav_clusters": "クラスター",
+      "sidebar_nav_clusters": "プロジェクト",
       "sidebar_nav_billing": "請求",
       "sidebar_nav_settings": "設定",
-      "title_text": "クラスターの作成と管理。",
+      "title_text": "カルーセルの作成と管理。",
       "": ""
     },
     "": ""
   },
   "business": {
     "k8s": {
-      "new_cluster": "新しいクラスターを作成する",
-      "no_cluster_title": "クラスターが作成されていません",
-      "no_cluster_content": "まだクラスターがありません。クラスターの作成を始めましょう。"
+      "new_cluster": "新しいカルーセル",
+      "no_cluster_title": "カルーセルが作成されていません",
+      "no_cluster_content": "まだカルーセルがありません。最初のカルーセル作成を始めましょう。"
     },
     "billing": {
       "billing": "請求書",

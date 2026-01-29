@@ -118,7 +118,7 @@
       ],
       "expected": "en.json contains 'QuickCarousals', all dictionary files are valid JSON"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-06",
