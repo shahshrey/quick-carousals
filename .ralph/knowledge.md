@@ -171,3 +171,31 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Working command**: `cd apps/nextjs && bun dev` (runs from apps/nextjs directory, uses ../../.env.local)
   - **Kill old processes**: Check `lsof -ti:3000` and kill before restarting
 ---
+
+---
+## Iteration 3 - setup-03
+- **What was done**: Validated landing page with QuickCarousals branding and hero_headline testid
+- **Files changed**: 
+  - .ralph/tasks.json (marked task complete)
+  - .ralph/screenshots/setup/landing-page.png (validation screenshot)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Landing page was already complete** from previous work - hero section, features, and CTAs were already updated for QuickCarousals
+  - **Chrome DevTools MCP validation workflow**:
+    - Use `chrome-devtools-navigate_page` to open the URL
+    - Use `chrome-devtools-take_snapshot` to get page structure
+    - Use `chrome-devtools-list_console_messages` with types ["error", "warn"] to check for errors
+    - Use `chrome-devtools-list_network_requests` to verify successful page loads (200 status)
+    - Use `chrome-devtools-take_screenshot` to capture visual evidence
+    - Use `chrome-devtools-evaluate_script` to verify DOM elements programmatically
+  - **Validation script pattern**: Can execute JavaScript in the browser context to verify elements exist:
+    ```javascript
+    () => {
+      const element = document.querySelector('[data-testid="hero_headline"]');
+      return { exists: !!element, textContent: element?.textContent };
+    }
+    ```
+  - **Expected warnings**: Clerk development mode warnings are normal and don't indicate errors
+  - **Task was already complete**: When validation passes immediately, it means previous iterations did the work - just validate and mark complete
+  - **Screenshot directory**: Must create `.ralph/screenshots/setup/` before saving screenshots
+---
