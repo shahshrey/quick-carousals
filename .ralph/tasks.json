@@ -96,7 +96,7 @@
       ],
       "expected": "Login and register pages load without errors, show QuickCarousals branding"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-05",

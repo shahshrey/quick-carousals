@@ -8,8 +8,8 @@ import type { Locale } from "~/config/i18n-config";
 import { getDictionary } from "~/lib/get-dictionary";
 
 export const metadata = {
-  title: "Create an account",
-  description: "Create an account to get started.",
+  title: "Join QuickCarousals",
+  description: "Create your QuickCarousals account and start building LinkedIn carousels today",
 };
 
 export default async function RegisterPage({
@@ -37,11 +37,11 @@ export default async function RegisterPage({
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             {/*<Icons.Logo className="mx-auto h-6 w-6" />*/}
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create an account
+            <h1 className="text-2xl font-semibold tracking-tight" data-testid="auth_title">
+              Start creating with QuickCarousals
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email below to create your account
+              Sign up to create professional LinkedIn carousels in minutes
             </p>
           </div>
           <UserAuthForm lang={lang} dict={dict.login} disabled={true} />

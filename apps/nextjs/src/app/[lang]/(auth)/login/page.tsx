@@ -12,8 +12,8 @@ import type { Locale } from "~/config/i18n-config";
 import { getDictionary } from "~/lib/get-dictionary";
 
 export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
+  title: "Log in to QuickCarousals",
+  description: "Log in to your QuickCarousals account to create LinkedIn carousels",
 };
 
 export default async function LoginPage({
@@ -47,11 +47,11 @@ export default async function LoginPage({
             height="64"
             alt=""
           />
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {dict.login.welcome_back}
+          <h1 className="text-2xl font-semibold tracking-tight" data-testid="auth_title">
+            Welcome back to QuickCarousals
           </h1>
           <p className="text-sm text-muted-foreground">
-            {dict.login.signin_title}
+            Log in to create engaging LinkedIn carousels in minutes
           </p>
         </div>
         <UserAuthForm lang={lang} dict={dict.login} />
