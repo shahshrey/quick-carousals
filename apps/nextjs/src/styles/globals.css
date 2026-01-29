@@ -4,68 +4,74 @@
 
 @layer base {
   :root {
+    /* QuickCarousals Brand Colors */
     --background: 0deg 0% 100%;
     --foreground: 222.2deg 47.4% 11.2%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 217 33% 95%;
+    --muted-foreground: 217 10% 46%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 222.2 47.4% 11.2%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 217 33% 90%;
+    --input: 217 33% 90%;
 
     --card: 0deg 0% 100%;
     --card-foreground: 222.2deg 47.4% 11.2%;
 
-    --primary: 222.2deg 47.4% 11.2%;
-    --primary-foreground: 210deg 40% 98%;
+    /* Primary: Blue (#2563eb) */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210deg 40% 96.1%;
-    --secondary-foreground: 222.2deg 47.4% 11.2%;
+    /* Secondary: Light blue accent */
+    --secondary: 217 92% 96%;
+    --secondary-foreground: 217 91% 60%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    /* Accent: Soft blue */
+    --accent: 217 92% 94%;
+    --accent-foreground: 217 91% 40%;
 
-    --destructive: 0deg 100% 50%;
-    --destructive-foreground: 210deg 40% 98%;
+    --destructive: 0deg 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 215deg 20.2% 65.1%;
+    --ring: 217 91% 60%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    /* --background: 224 71% 4%; */
+    /* QuickCarousals Dark Mode */
+    --background: 222 47% 11%;
     --foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 217 10% 64%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 217 92% 76%;
 
-    --popover: 240 10% 3.9%;
+    --popover: 222 47% 11%;
     --popover-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
 
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
+    --card: 222 47% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
+    /* Primary: Lighter blue for dark mode (#60a5fa) */
+    --primary: 217 92% 76%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 217 92% 76%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 0 0% 98%;
 
-    --ring: 216 34% 17%;
+    --ring: 217 92% 76%;
 
     --radius: 0.5rem;
   }

@@ -1,9 +1,9 @@
 export const siteConfig = {
-  name: "Saasfly",
-  description: "We provide an easier way to build saas service in production",
-  url: "https://github.com/saasfly/saasfly",
+  name: "QuickCarousals",
+  description: "Turn an idea into a LinkedIn-ready PDF carousel in 3 minutes that doesn't look templated",
+  url: "https://quickcarousals.com",
   ogImage: "",
   links: {
-    github: "https://github.com/saasfly/saasfly",
+    github: "https://github.com/quickcarousals/quickcarousals",
   },
 };
