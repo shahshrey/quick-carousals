@@ -12,6 +12,12 @@ export const SubscriptionTier = {
 } as const;
 export type SubscriptionTier =
   (typeof SubscriptionTier)[keyof typeof SubscriptionTier];
+export const ProjectStatus = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+  ARCHIVED: "ARCHIVED",
+} as const;
+export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus];
 export const Status = {
   PENDING: "PENDING",
   CREATING: "CREATING",

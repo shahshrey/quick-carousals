@@ -233,7 +233,7 @@
       ],
       "expected": "Project model exists with title, brandKitId, styleKitId, status, userId. ProjectStatus enum defined."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-11",

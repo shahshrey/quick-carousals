@@ -5,7 +5,12 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-import type { SubscriptionPlan, SubscriptionTier, Status } from "./enums";
+import type {
+  SubscriptionPlan,
+  SubscriptionTier,
+  ProjectStatus,
+  Status,
+} from "./enums";
 
 export type Account = {
   id: Generated<string>;
@@ -68,6 +73,16 @@ export type Profile = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
+export type Project = {
+  id: Generated<string>;
+  userId: string;
+  title: string;
+  brandKitId: string | null;
+  styleKitId: string;
+  status: Generated<ProjectStatus>;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
 export type Session = {
   id: Generated<string>;
   sessionToken: string;
@@ -107,6 +122,7 @@ export type DB = {
   Customer: Customer;
   K8sClusterConfig: K8sClusterConfig;
   Profile: Profile;
+  Project: Project;
   Session: Session;
   StyleKit: StyleKit;
   TemplateLayout: TemplateLayout;

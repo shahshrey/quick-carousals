@@ -23,6 +23,12 @@ enum SubscriptionTier {
   PRO
 }
 
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
 // QuickCarousals Profile model - extends Clerk user with subscription info
 model Profile {
   id               String           @id @default(dbgenerated("gen_random_uuid()"))
@@ -35,6 +41,7 @@ model Profile {
   updatedAt        DateTime         @updatedAt
 
   brandKits        BrandKit[]
+  projects         Project[]
 
   @@index([clerkUserId])
   @@index([email])
@@ -55,8 +62,29 @@ model BrandKit {
   updatedAt    DateTime @updatedAt
 
   user         Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects     Project[]
 
   @@index([userId])
+}
+
+// QuickCarousals Project model - carousel projects linking users, styles, and brand kits
+model Project {
+  id          String        @id @default(dbgenerated("gen_random_uuid()"))
+  userId      String
+  title       String
+  brandKitId  String?
+  styleKitId  String
+  status      ProjectStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        Profile       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  brandKit    BrandKit?     @relation(fields: [brandKitId], references: [id])
+  styleKit    StyleKit      @relation(fields: [styleKitId], references: [id])
+
+  @@index([userId])
+  @@index([brandKitId])
+  @@index([styleKitId])
 }
 
 // QuickCarousals StyleKit model - curated design templates
@@ -67,6 +95,8 @@ model StyleKit {
   colors       Json
   spacingRules Json
   isPremium    Boolean @default(false)
+
+  projects     Project[]
 }
 
 // QuickCarousals TemplateLayout model - layout blueprints for slides
