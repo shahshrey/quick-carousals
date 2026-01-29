@@ -275,3 +275,27 @@
 
 ### 2026-01-30 05:08:34
 **Session 3 started** (model: sonnet-4.5-thinking)
+
+## Iteration 11 - setup-09 ✅
+
+**Task**: Add BrandKit model to Prisma schema
+
+**Completed**:
+- Added BrandKit model to packages/db/prisma/schema.prisma with:
+  - All required fields: id, userId, name, colors (Json), fonts (Json), logoUrl, handle, footerStyle, isDefault
+  - userId relation to Profile with onDelete: Cascade
+  - @@index([userId]) for efficient queries
+  - Standard timestamps (createdAt, updatedAt)
+- Added brandKits array relation to Profile model
+- Applied schema changes with `bun db:push`
+- Generated Kysely types with `bunx prisma generate`
+- Verified table structure in PostgreSQL database
+
+**Validation**: All validation commands passed
+- BrandKit model exists in schema ✓
+- userId relation present ✓
+- onDelete: Cascade configured ✓
+- userId index created ✓
+- Table created in database with correct structure ✓
+
+**Next Task**: setup-10 - Add Project model to Prisma schema
