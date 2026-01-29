@@ -185,7 +185,7 @@
       ],
       "expected": "TemplateLayout model exists with id, name, category, slideType, layersBlueprint (JSON). Seed script creates 9 layout types."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-09",
