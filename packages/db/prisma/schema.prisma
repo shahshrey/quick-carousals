@@ -34,8 +34,29 @@ model Profile {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
 
+  brandKits        BrandKit[]
+
   @@index([clerkUserId])
   @@index([email])
+}
+
+// QuickCarousals BrandKit model - personal branding assets
+model BrandKit {
+  id           String   @id @default(dbgenerated("gen_random_uuid()"))
+  userId       String
+  name         String
+  colors       Json     @default("{}")
+  fonts        Json     @default("{}")
+  logoUrl      String?
+  handle       String?
+  footerStyle  String?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // QuickCarousals StyleKit model - curated design templates

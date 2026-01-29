@@ -21,6 +21,19 @@ export type Account = {
   id_token: string | null;
   session_state: string | null;
 };
+export type BrandKit = {
+  id: Generated<string>;
+  userId: string;
+  name: string;
+  colors: Generated<unknown>;
+  fonts: Generated<unknown>;
+  logoUrl: string | null;
+  handle: string | null;
+  footerStyle: string | null;
+  isDefault: Generated<boolean>;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
 export type Customer = {
   id: Generated<number>;
   authUserId: string;
@@ -90,6 +103,7 @@ export type VerificationToken = {
 };
 export type DB = {
   Account: Account;
+  BrandKit: BrandKit;
   Customer: Customer;
   K8sClusterConfig: K8sClusterConfig;
   Profile: Profile;

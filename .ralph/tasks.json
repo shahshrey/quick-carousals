@@ -208,7 +208,7 @@
       ],
       "expected": "BrandKit model exists with colors, fonts, logoUrl, handle, footerStyle, userId relation (onDelete: Cascade)"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "setup-10",
