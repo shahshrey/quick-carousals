@@ -1563,3 +1563,88 @@ Let me check the current project structure for w...
 [05:25:47] 💬 ASSISTANT: Now let me verify it was updated:...
 [05:25:50] SHELL jq '.[] | select(.id == "setup-13") | .passes' /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json → exit 0
 [05:25:56] 💬 ASSISTANT: Perfect! Now let me commit the changes:...
+[05:25:59] SHELL cd /Users/shrey/Downloads/quick-carousals && git add -A && git commit -m "ralph: [setup-13] - Create API health endpoint and error handling utilities
+
+- Health endpoint already existed at /api/health returning {status: 'ok'}
+- Created shared ApiError class with factory methods for common HTTP errors
+- Added Zod validation helpers for request body, query params, and path params
+- Created comprehensive README documenting error handling and validation patterns
+- All utilities follow the project's existing patterns and conventions" → exit 0
+[05:26:04] 💬 ASSISTANT: Excellent! Now let me update the knowledge.md file with learnings from this iteration:...
+[05:26:05] READ /Users/shrey/Downloads/quick-carousals/.ralph/knowledge.md (441 lines, 0B)
+[05:26:18] 💬 ASSISTANT: Now let me append the learnings to the knowledge.md file:...
+[05:26:20] SHELL cat >> /Users/shrey/Downloads/quick-carousals/.ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 15 - setup-13
+- **What was done**: Created API error handling utilities and Zod validation helpers
+- **Files changed**: 
+  - apps/nextjs/src/lib/api-error.ts (created shared ApiError class)
+  - apps/nextjs/src/lib/validations/api.ts (created Zod validation helpers)
+  - apps/nextjs/src/lib/README.md (created comprehensive documentation)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Health endpoint already existed**: /api/health was created in iteration 2 and was already complete
+  - **Error handling pattern**: Created reusable ApiError class with factory methods for common HTTP errors (400, 401, 403, 404, 429, 500)
+  - **Validation helpers pattern**: Created four validation functions:
+    - `validateBody()` - for JSON request bodies
+    - `validateSearchParams()` - for URL query parameters  
+    - `validateParams()` - for path parameters
+    - `validate()` - for generic data validation
+  - **Error response shape**: All errors follow consistent shape with code, message, optional details, and optional requestId
+  - **withErrorHandler wrapper**: Created wrapper function to catch and format errors consistently across all API routes
+  - **Zod integration**: All validation helpers throw ApiError with formatted Zod issues when validation fails
+  - **Documentation is crucial**: Created comprehensive README with examples showing how to use error handling and validation utilities
+  - **Next.js API route patterns**: 
+    - Use NextResponse.json() for responses
+    - Export GET/POST/PATCH/DELETE as named exports
+    - Can use `export const runtime = "edge"` for edge functions
+  - **Validation workflow**: The task validation commands are REFERENCE EXAMPLES - the health endpoint already existed and was working, just needed to validate it works
+  - **Dev server management**: 
+    - Start in background: `cd apps/nextjs && bun dev > /tmp/nextjs-dev.log 2>&1 &`
+    - Check if running: `lsof -ti:3000`
+    - Always wait a few seconds after starting before testing
+  - **Working commands for this task**:
+    - `curl -s http://localhost:3000/api/health | jq .` - test health endpoint
+    - `curl -s http://localhost:3000/api/health | jq -e '.status == "ok"'` - validate specific field
+    - `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health` - check HTTP status
+---
+EOF → exit 0
+[05:26:29] 💬 ASSISTANT: Perfect! Now let me update the progress.md file:...
+[05:26:31] SHELL cat >> /Users/shrey/Downloads/quick-carousals/.ralph/progress.md << 'EOF'
+
+## Iteration 15 - 2026-01-29
+
+**Task**: setup-13 - Create API health endpoint and error handling
+
+**Status**: ✅ COMPLETE
+
+**Changes**:
+1. Verified existing health endpoint at `/api/health` (already created in iteration 2)
+2. Created shared ApiError class (`apps/nextjs/src/lib/api-error.ts`)
+   - Consistent error response shape across all API endpoints
+   - Factory methods for common HTTP errors (validation, unauthorized, forbidden, notFound, rateLimited, internal)
+   - `withErrorHandler` wrapper for async route handlers
+3. Created Zod validation helpers (`apps/nextjs/src/lib/validations/api.ts`)
+   - `validateBody()` - validate JSON request bodies
+   - `validateSearchParams()` - validate URL query parameters
+   - `validateParams()` - validate path parameters
+   - `validate()` - generic data validation
+4. Created comprehensive documentation (`apps/nextjs/src/lib/README.md`)
+   - Usage examples for all error types
+   - Validation patterns with code samples
+   - Complete API route example
+
+**Validation**:
+- ✅ Health endpoint returns `{"status":"ok"}` with 200 status
+- ✅ Dev server running on http://localhost:3000
+- ✅ Database services running (PostgreSQL on port 5432)
+
+**Commits**:
+- `ralph: [setup-13] - Create API health endpoint and error handling utilities`
+
+**Next Task**: setup-14 - Add auth guards to API routes
+
+EOF → exit 0
+[05:26:36] 💬 ASSISTANT: Excellent! Now let me commit these documentation updates:...

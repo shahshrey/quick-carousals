@@ -438,3 +438,39 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Type generation**: Both types.ts and enums.ts correctly updated with Export type and new enums
   - **Working from correct directory**: When in packages/db, don't need to `cd packages/db` - just run commands directly
 ---
+
+---
+## Iteration 15 - setup-13
+- **What was done**: Created API error handling utilities and Zod validation helpers
+- **Files changed**: 
+  - apps/nextjs/src/lib/api-error.ts (created shared ApiError class)
+  - apps/nextjs/src/lib/validations/api.ts (created Zod validation helpers)
+  - apps/nextjs/src/lib/README.md (created comprehensive documentation)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Health endpoint already existed**: /api/health was created in iteration 2 and was already complete
+  - **Error handling pattern**: Created reusable ApiError class with factory methods for common HTTP errors (400, 401, 403, 404, 429, 500)
+  - **Validation helpers pattern**: Created four validation functions:
+    - `validateBody()` - for JSON request bodies
+    - `validateSearchParams()` - for URL query parameters  
+    - `validateParams()` - for path parameters
+    - `validate()` - for generic data validation
+  - **Error response shape**: All errors follow consistent shape with code, message, optional details, and optional requestId
+  - **withErrorHandler wrapper**: Created wrapper function to catch and format errors consistently across all API routes
+  - **Zod integration**: All validation helpers throw ApiError with formatted Zod issues when validation fails
+  - **Documentation is crucial**: Created comprehensive README with examples showing how to use error handling and validation utilities
+  - **Next.js API route patterns**: 
+    - Use NextResponse.json() for responses
+    - Export GET/POST/PATCH/DELETE as named exports
+    - Can use `export const runtime = "edge"` for edge functions
+  - **Validation workflow**: The task validation commands are REFERENCE EXAMPLES - the health endpoint already existed and was working, just needed to validate it works
+  - **Dev server management**: 
+    - Start in background: `cd apps/nextjs && bun dev > /tmp/nextjs-dev.log 2>&1 &`
+    - Check if running: `lsof -ti:3000`
+    - Always wait a few seconds after starting before testing
+  - **Working commands for this task**:
+    - `curl -s http://localhost:3000/api/health | jq .` - test health endpoint
+    - `curl -s http://localhost:3000/api/health | jq -e '.status == "ok"'` - validate specific field
+    - `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health` - check HTTP status
+---
