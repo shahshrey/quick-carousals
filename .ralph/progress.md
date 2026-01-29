@@ -229,3 +229,37 @@
 
 ### 2026-01-30 05:04:31
 **Session 1 started** (model: sonnet-4.5-thinking)
+
+## Iteration 10 - 2026-01-30 05:05 UTC
+
+**Task**: setup-08 - Add TemplateLayout model to Prisma schema
+
+**Status**: ✅ COMPLETE
+
+**What was accomplished**:
+1. **Database service was DOWN** - Started PostgreSQL container via `docker-compose up -d`
+2. Validated TemplateLayout model (already completed by previous iteration):
+   - Model exists in schema.prisma with id, name, category, slideType, layersBlueprint
+   - Database table created with correct structure (text fields + jsonb for layersBlueprint)
+   - 9 template layouts seeded successfully
+3. Verified seed data contains all 9 layouts:
+   - hook_big_headline (Hook: Big Headline)
+   - promise_two_column (Promise: Two Column)
+   - value_bullets (Value: Bullet List)
+   - value_numbered_steps (Value: Numbered Steps)
+   - value_text_left_visual_right (Value: Text Left, Visual Right)
+   - value_centered_quote (Value: Centered Quote)
+   - recap_grid (Recap: Grid Summary)
+   - cta_centered (CTA: Centered Call to Action)
+   - generic_single_focus (Generic: Single Focus)
+
+**Validation**:
+- ✅ TemplateLayout model exists in schema.prisma
+- ✅ layersBlueprint field present (Json type)
+- ✅ Database table structure correct
+- ✅ 9 layouts seeded successfully
+- ✅ Prisma types generated
+
+**Critical Learning**: Always check if Docker services are running BEFORE attempting database validation!
+
+**Next task**: setup-09 - Add BrandKit model to schema
