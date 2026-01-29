@@ -351,3 +351,33 @@
 
 ### 2026-01-30 05:15:39
 **Session 7 started** (model: sonnet-4.5-thinking)
+
+## Iteration 13 - setup-11 ✅
+
+**Task:** Add Slide model to Prisma schema
+
+**Completed:**
+- Added Slide model with all required fields:
+  - id (UUID primary key)
+  - projectId (relation to Project with cascade delete)
+  - orderIndex (Int for slide ordering)
+  - layoutId (relation to TemplateLayout)
+  - slideType (String categorization)
+  - layers (Json with default "[]")
+  - content (Json with default "{}")
+  - createdAt and updatedAt timestamps
+- Added bidirectional relations to Project and TemplateLayout models
+- Created indexes on projectId and layoutId for efficient queries
+- Applied schema changes with `bun db:push`
+- Generated Kysely types with `bunx prisma generate`
+- Validated table structure in PostgreSQL database
+
+**Validation:**
+- ✅ Slide model exists in schema.prisma
+- ✅ All required fields present (orderIndex, layoutId, slideType, layers, content)
+- ✅ Database table created with correct structure
+- ✅ Kysely types generated in types.ts
+- ✅ Relations working (Project.slides, TemplateLayout.slides)
+
+**Status:** COMPLETE
+
