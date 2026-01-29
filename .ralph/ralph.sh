@@ -41,6 +41,9 @@ DEBUG=false
 WARN_THRESHOLD=150000
 ROTATE_THRESHOLD=170000
 
+# Timeout for stuck agent (in seconds) - 30 minutes
+AGENT_TIMEOUT="${RALPH_AGENT_TIMEOUT:-1800}"
+
 # Task paths
 TASKS_JSON=".ralph/tasks.json"
 PRD_FILE=".ralph/PRD.md"
@@ -67,6 +70,7 @@ Options:
   -w, --workspace PATH     Workspace directory (default: current dir)
   -m, --model MODEL        Model to use (default: opus-4.5-thinking)
   -i, --iterations N       Max iterations (default: 20)
+  -t, --timeout SECONDS    Kill agent if stuck for N seconds (default: 1800 = 30 min)
   -b, --branch NAME        Create/use this branch
   --pr                     Open PR when complete
   --init                   Initialize .ralph directory only
@@ -79,6 +83,7 @@ Examples:
   ./ralph.sh -v                           # Verbose mode - see all tool outputs
   ./ralph.sh -w /path/to/project          # Run in specific project
   ./ralph.sh -m sonnet-4.5-thinking -i 10 # Use different model, 10 iterations
+  ./ralph.sh -t 900                       # Kill stuck agent after 15 minutes
   ./ralph.sh -b feature/my-feature --pr   # Work on branch, open PR when done
 
 Requirements:
@@ -101,6 +106,10 @@ parse_args() {
         ;;
       -i|--iterations)
         MAX_ITERATIONS="$2"
+        shift 2
+        ;;
+      -t|--timeout)
+        AGENT_TIMEOUT="$2"
         shift 2
         ;;
       -b|--branch)
@@ -1047,9 +1056,14 @@ run_iteration() {
   # Run cursor-agent and parse output
   local signal=""
   local fifo="$WORKSPACE/.ralph/.parser_fifo_$$"
+  local watchdog_file="$WORKSPACE/.ralph/.watchdog_$$"
 
-  rm -f "$fifo"
+  rm -f "$fifo" "$watchdog_file"
   mkfifo "$fifo"
+
+  # Track iteration start time for timeout
+  local iteration_start=$(date +%s)
+  echo "$iteration_start" > "$watchdog_file"
 
   # Start agent, pipe through parser
   (
@@ -1058,12 +1072,54 @@ run_iteration() {
   ) &
   local agent_pid=$!
 
+  # Start watchdog process to kill agent if stuck for too long
+  (
+    while true; do
+      sleep 60  # Check every minute
+      
+      # Check if agent is still running
+      if ! kill -0 $agent_pid 2>/dev/null; then
+        break  # Agent finished, exit watchdog
+      fi
+      
+      # Check elapsed time
+      local now=$(date +%s)
+      local start=$(cat "$watchdog_file" 2>/dev/null || echo "$now")
+      local elapsed=$((now - start))
+      
+      if [[ $elapsed -ge $AGENT_TIMEOUT ]]; then
+        local timeout_mins=$((AGENT_TIMEOUT / 60))
+        printf "\n${C_BG_YELLOW}${C_BLACK}${C_BOLD} ⏰ TIMEOUT ${C_RESET} ${C_YELLOW}Agent stuck for ${timeout_mins}+ minutes. Killing and restarting...${C_RESET}\n" >&2
+        log_activity "⏰ TIMEOUT: Agent killed after ${elapsed}s (threshold: ${AGENT_TIMEOUT}s)"
+        
+        # Kill the agent process tree
+        pkill -P $agent_pid 2>/dev/null || true
+        kill -9 $agent_pid 2>/dev/null || true
+        
+        # Signal timeout via fifo
+        echo "TIMEOUT" > "$fifo" 2>/dev/null || true
+        break
+      fi
+      
+      # Update watchdog file with last activity (to show we're monitoring)
+      touch "$watchdog_file"
+    done
+  ) &
+  local watchdog_pid=$!
+
   # Read signals from parser
   while IFS= read -r line; do
+    # Update watchdog on any activity
+    echo "$(date +%s)" > "$watchdog_file" 2>/dev/null || true
+    
     case "$line" in
       COMPLETE|GUTTER|ROTATE|DEFER|NEXT)
         signal="$line"
         kill $agent_pid 2>/dev/null || true
+        break
+        ;;
+      TIMEOUT)
+        signal="TIMEOUT"
         break
         ;;
       WARN)
@@ -1076,8 +1132,11 @@ run_iteration() {
     esac
   done < "$fifo"
 
+  # Cleanup
+  kill $watchdog_pid 2>/dev/null || true
   wait $agent_pid 2>/dev/null || true
-  rm -f "$fifo"
+  wait $watchdog_pid 2>/dev/null || true
+  rm -f "$fifo" "$watchdog_file"
 
   # Check if knowledge was updated AFTER iteration
   local knowledge_after=""
@@ -1221,6 +1280,14 @@ run_loop() {
         sleep $delay
         # Don't increment - retry same iteration
         ;;
+      TIMEOUT)
+        log_progress "**Session $iteration ended** - ⏰ TIMEOUT (agent killed)"
+        local timeout_mins=$((AGENT_TIMEOUT / 60))
+        printf "\n${C_YELLOW}⏰ Agent was stuck for %d+ minutes. Restarting with fresh context...${C_RESET}\n" "$timeout_mins"
+        # Increment iteration to start fresh
+        iteration=$((iteration + 1))
+        sleep 5  # Brief pause before restart
+        ;;
       *)
         # Agent finished without explicit signal - continue anyway
         local remaining=$(count_remaining)
@@ -1297,6 +1364,8 @@ main() {
   printf "${C_DIM}│${C_RESET}  ${C_DIM}Workspace:${C_RESET}   ${C_BRIGHT_WHITE}%s${C_RESET}\n" "$WORKSPACE"
   printf "${C_DIM}│${C_RESET}  ${C_DIM}Model:${C_RESET}       ${C_BRIGHT_CYAN}%s${C_RESET}\n" "$MODEL"
   printf "${C_DIM}│${C_RESET}  ${C_DIM}Iterations:${C_RESET}  ${C_BRIGHT_WHITE}%d${C_RESET} ${C_DIM}max${C_RESET}\n" "$MAX_ITERATIONS"
+  local timeout_mins=$((AGENT_TIMEOUT / 60))
+  printf "${C_DIM}│${C_RESET}  ${C_DIM}Timeout:${C_RESET}     ${C_BRIGHT_WHITE}%d${C_RESET} ${C_DIM}min (auto-restart if stuck)${C_RESET}\n" "$timeout_mins"
   [[ -n "$BRANCH" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Branch:${C_RESET}      ${C_BRIGHT_GREEN}%s${C_RESET}\n" "$BRANCH"
   [[ "$OPEN_PR" == "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Open PR:${C_RESET}     ${C_GREEN}Yes${C_RESET}\n"
   [[ "$DEBUG" == "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Debug:${C_RESET}       ${C_YELLOW}Yes${C_RESET} ${C_DIM}(raw JSON)${C_RESET}\n"
