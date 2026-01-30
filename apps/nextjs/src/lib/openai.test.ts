@@ -1,0 +1,735 @@
+/**
+ * OpenAI Service Tests
+ * 
+ * Tests for the OpenAI service including:
+ * - Successful generation with valid input
+ * - Error handling for OpenAI failures
+ * - Retry logic for transient errors
+ * - Timeout handling
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  generateStructuredOutput,
+  generateSlidePlan,
+  OpenAIError,
+  OpenAITimeoutError,
+  OpenAIRateLimitError,
+  OpenAIValidationError,
+  SlidePlanSchema,
+  SlideContentSchema,
+} from './openai';
+import { z } from 'zod';
+
+// Mock OpenAI module
+const mockCreate = vi.fn();
+const mockOpenAI = {
+  chat: {
+    completions: {
+      create: mockCreate,
+    },
+  },
+};
+
+vi.mock('openai', () => {
+  return {
+    default: vi.fn(function() {
+      return mockOpenAI;
+    }),
+  };
+});
+
+// ============================================================================
+// Test Setup
+// ============================================================================
+
+describe('OpenAI Service', () => {
+  let originalEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    // Save original env
+    originalEnv = { ...process.env };
+
+    // Set test environment variables
+    process.env.OPENAI_API_KEY = 'sk-test-key-123';
+    process.env.OPENAI_MODEL = 'gpt-4-test';
+
+    // Clear all mocks
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore original env
+    process.env = originalEnv;
+    vi.restoreAllMocks();
+  });
+
+  // ============================================================================
+  // Successful Generation Tests
+  // ============================================================================
+
+  describe('generateStructuredOutput - Success Cases', () => {
+    it('should successfully generate valid structured output', async () => {
+      // Arrange
+      const testSchema = z.object({
+        message: z.string(),
+        count: z.number(),
+      });
+
+      const mockResponse = {
+        message: 'Hello, World!',
+        count: 42,
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify(mockResponse),
+            },
+          },
+        ],
+      });
+
+      // Act
+      const result = await generateStructuredOutput({
+        userMessage: 'Generate test data',
+        schema: testSchema,
+      });
+
+      // Assert
+      expect(result).toEqual(mockResponse);
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          model: 'gpt-4-test',
+          messages: expect.arrayContaining([
+            expect.objectContaining({ role: 'system' }),
+            expect.objectContaining({ role: 'user', content: 'Generate test data' }),
+          ]),
+          response_format: { type: 'json_object' },
+        })
+      );
+    });
+
+    it('should use custom system prompt when provided', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const customSystemPrompt = 'You are a custom assistant.';
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({ result: 'success' }),
+            },
+          },
+        ],
+      });
+
+      // Act
+      await generateStructuredOutput({
+        systemPrompt: customSystemPrompt,
+        userMessage: 'Test',
+        schema: testSchema,
+      });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({ 
+              role: 'system', 
+              content: customSystemPrompt 
+            }),
+          ]),
+        })
+      );
+    });
+
+    it('should respect custom temperature setting', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({ result: 'success' }),
+            },
+          },
+        ],
+      });
+
+      // Act
+      await generateStructuredOutput({
+        userMessage: 'Test',
+        schema: testSchema,
+        temperature: 0.9,
+      });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          temperature: 0.9,
+        })
+      );
+    });
+  });
+
+  // ============================================================================
+  // Error Handling Tests
+  // ============================================================================
+
+  describe('generateStructuredOutput - Error Handling', () => {
+    it('should throw OpenAIError when API key is missing', async () => {
+      // Arrange
+      delete process.env.OPENAI_API_KEY;
+      const testSchema = z.object({ result: z.string() });
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+        })
+      ).rejects.toThrow('OPENAI_API_KEY environment variable is required');
+    });
+
+    it('should throw OpenAIError when response is empty', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+
+      mockCreate.mockResolvedValue({
+        choices: [],
+      });
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAIError);
+
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          enableRetry: false,
+        })
+      ).rejects.toThrow('OpenAI returned empty response');
+    });
+
+    it('should throw OpenAIValidationError when response is not valid JSON', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: 'This is not valid JSON',
+            },
+          },
+        ],
+      });
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAIValidationError);
+    });
+
+    it('should throw OpenAIValidationError when response does not match schema', async () => {
+      // Arrange
+      const testSchema = z.object({
+        requiredField: z.string(),
+      });
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({ wrongField: 'value' }),
+            },
+          },
+        ],
+      });
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAIValidationError);
+    });
+  });
+
+  // ============================================================================
+  // Retry Logic Tests
+  // ============================================================================
+
+  describe('generateStructuredOutput - Retry Logic', () => {
+    it('should retry on transient errors (500)', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const serverError = { status: 500, message: 'Internal Server Error' };
+
+      // Fail twice, then succeed
+      mockCreate
+        .mockRejectedValueOnce(serverError)
+        .mockRejectedValueOnce(serverError)
+        .mockResolvedValueOnce({
+          choices: [
+            {
+              message: {
+                content: JSON.stringify({ result: 'success' }),
+              },
+            },
+          ],
+        });
+
+      // Act
+      const result = await generateStructuredOutput({
+        userMessage: 'Test',
+        schema: testSchema,
+      });
+
+      // Assert
+      expect(result).toEqual({ result: 'success' });
+      expect(mockCreate).toHaveBeenCalledTimes(3);
+    });
+
+    it('should retry on timeout errors', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+
+      // First call times out (simulate by taking too long)
+      mockCreate.mockImplementationOnce(
+        () => new Promise((resolve) => setTimeout(resolve, 1000))
+      );
+
+      // Second call succeeds
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({ result: 'success' }),
+            },
+          },
+        ],
+      });
+
+      // Act
+      const result = await generateStructuredOutput({
+        userMessage: 'Test',
+        schema: testSchema,
+        timeout: 100, // Very short timeout to trigger timeout
+      });
+
+      // Assert
+      expect(result).toEqual({ result: 'success' });
+      expect(mockCreate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not retry when enableRetry is false', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const serverError = { status: 500, message: 'Internal Server Error' };
+
+      mockCreate.mockRejectedValueOnce(serverError);
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAIError);
+
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw after max retries exceeded', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const serverError = { status: 500, message: 'Internal Server Error' };
+
+      // Fail all 3 attempts
+      mockCreate
+        .mockRejectedValueOnce(serverError)
+        .mockRejectedValueOnce(serverError)
+        .mockRejectedValueOnce(serverError);
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+        })
+      ).rejects.toThrow('Failed after 3 attempts');
+
+      expect(mockCreate).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not retry on non-retryable errors (400)', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const badRequestError = { status: 400, message: 'Bad Request' };
+
+      mockCreate.mockRejectedValueOnce(badRequestError);
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+        })
+      ).rejects.toThrow(OpenAIError);
+
+      // Should only call once (no retries)
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // ============================================================================
+  // Timeout Handling Tests
+  // ============================================================================
+
+  describe('generateStructuredOutput - Timeout Handling', () => {
+    it('should timeout if request takes too long', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+
+      // Simulate a slow request
+      mockCreate.mockImplementationOnce(
+        () => new Promise((resolve) => setTimeout(resolve, 5000))
+      );
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          timeout: 100, // 100ms timeout
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAITimeoutError);
+    });
+
+    it('should respect custom timeout value', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const customTimeout = 200;
+
+      // Simulate a slow request
+      mockCreate.mockImplementationOnce(
+        () => new Promise((resolve) => setTimeout(resolve, 1000))
+      );
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+          timeout: customTimeout,
+          enableRetry: false,
+        })
+      ).rejects.toThrow(OpenAITimeoutError);
+    }, 3000); // Increase test timeout to 3 seconds
+  });
+
+  // ============================================================================
+  // Rate Limit Handling Tests
+  // ============================================================================
+
+  describe('generateStructuredOutput - Rate Limit Handling', () => {
+    it('should throw OpenAIRateLimitError on 429 status', async () => {
+      // Arrange
+      const testSchema = z.object({ result: z.string() });
+      const rateLimitError = { status: 429, message: 'Too Many Requests' };
+
+      mockCreate.mockRejectedValueOnce(rateLimitError);
+
+      // Act & Assert
+      await expect(
+        generateStructuredOutput({
+          userMessage: 'Test',
+          schema: testSchema,
+        })
+      ).rejects.toThrow(OpenAIRateLimitError);
+    });
+  });
+
+  // ============================================================================
+  // generateSlidePlan Tests
+  // ============================================================================
+
+  describe('generateSlidePlan', () => {
+    it('should successfully generate a slide plan', async () => {
+      // Arrange
+      const mockSlidePlan = {
+        slides: [
+          {
+            slideType: 'hook',
+            goal: 'Grab attention',
+            headline: 'Amazing Topic Revealed',
+            body: ['Point 1', 'Point 2'],
+          },
+          {
+            slideType: 'value',
+            goal: 'Provide value',
+            headline: 'Key Insight',
+            body: ['Detail 1', 'Detail 2', 'Detail 3'],
+          },
+          {
+            slideType: 'cta',
+            goal: 'Call to action',
+            headline: 'Take Action Now',
+            body: ['Follow', 'Comment', 'Share'],
+          },
+        ],
+        tone: 'professional',
+        targetSlideCount: 10,
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify(mockSlidePlan),
+            },
+          },
+        ],
+      });
+
+      // Act
+      const result = await generateSlidePlan('Test Topic');
+
+      // Assert
+      expect(result).toEqual(mockSlidePlan);
+      expect(result.slides).toHaveLength(3);
+      expect(result.slides[0].slideType).toBe('hook');
+      expect(mockCreate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should respect custom slide count', async () => {
+      // Arrange
+      const mockSlidePlan = {
+        slides: Array(8).fill({
+          slideType: 'value',
+          goal: 'Test',
+          headline: 'Test',
+          body: ['Test'],
+        }),
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify(mockSlidePlan),
+            },
+          },
+        ],
+      });
+
+      // Act
+      await generateSlidePlan('Test Topic', { slideCount: 8 });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              role: 'system',
+              content: expect.stringContaining('8 slides'),
+            }),
+          ]),
+        })
+      );
+    });
+
+    it('should respect custom tone', async () => {
+      // Arrange
+      const mockSlidePlan = {
+        slides: [
+          {
+            slideType: 'hook',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+          {
+            slideType: 'value',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+          {
+            slideType: 'cta',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ],
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify(mockSlidePlan),
+            },
+          },
+        ],
+      });
+
+      // Act
+      await generateSlidePlan('Test Topic', { tone: 'bold' });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              role: 'system',
+              content: expect.stringContaining('Tone: bold'),
+            }),
+          ]),
+        })
+      );
+    });
+  });
+
+  // ============================================================================
+  // Schema Validation Tests
+  // ============================================================================
+
+  describe('Schema Validation', () => {
+    it('should validate SlideContent schema correctly', () => {
+      // Arrange
+      const validSlide = {
+        slideType: 'value',
+        goal: 'Provide key insight',
+        headline: 'This is a valid headline',
+        body: ['Point 1', 'Point 2', 'Point 3'],
+        emphasis: ['Key phrase'],
+      };
+
+      // Act & Assert
+      expect(() => SlideContentSchema.parse(validSlide)).not.toThrow();
+    });
+
+    it('should reject invalid slide types', () => {
+      // Arrange
+      const invalidSlide = {
+        slideType: 'invalid_type',
+        goal: 'Test',
+        headline: 'Test',
+        body: ['Test'],
+      };
+
+      // Act & Assert
+      expect(() => SlideContentSchema.parse(invalidSlide)).toThrow();
+    });
+
+    it('should reject headlines that are too long', () => {
+      // Arrange
+      const invalidSlide = {
+        slideType: 'value',
+        goal: 'Test',
+        headline: 'This is an extremely long headline that exceeds the maximum allowed length of 60 characters',
+        body: ['Test'],
+      };
+
+      // Act & Assert
+      expect(() => SlideContentSchema.parse(invalidSlide)).toThrow();
+    });
+
+    it('should reject body with too many bullets', () => {
+      // Arrange
+      const invalidSlide = {
+        slideType: 'value',
+        goal: 'Test',
+        headline: 'Test',
+        body: ['1', '2', '3', '4', '5', '6'], // More than 5
+      };
+
+      // Act & Assert
+      expect(() => SlideContentSchema.parse(invalidSlide)).toThrow();
+    });
+
+    it('should validate SlidePlan schema correctly', () => {
+      // Arrange
+      const validPlan = {
+        slides: [
+          {
+            slideType: 'hook',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+          {
+            slideType: 'value',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+          {
+            slideType: 'cta',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ],
+        tone: 'professional',
+        targetSlideCount: 10,
+      };
+
+      // Act & Assert
+      expect(() => SlidePlanSchema.parse(validPlan)).not.toThrow();
+    });
+
+    it('should reject slide plans with too few slides', () => {
+      // Arrange
+      const invalidPlan = {
+        slides: [
+          {
+            slideType: 'hook',
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ], // Less than 3
+      };
+
+      // Act & Assert
+      expect(() => SlidePlanSchema.parse(invalidPlan)).toThrow();
+    });
+
+    it('should reject slide plans with too many slides', () => {
+      // Arrange
+      const invalidPlan = {
+        slides: Array(25).fill({
+          slideType: 'value',
+          goal: 'Test',
+          headline: 'Test',
+          body: ['Test'],
+        }), // More than 20
+      };
+
+      // Act & Assert
+      expect(() => SlidePlanSchema.parse(invalidPlan)).toThrow();
+    });
+  });
+});
