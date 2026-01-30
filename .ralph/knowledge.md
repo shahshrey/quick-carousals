@@ -876,3 +876,28 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Working command**: `bun db:seed` already seeded these in iteration 9
   - **Next task**: feature-08 will validate the remaining 4 premium style kits (Part 2)
 ---
+
+---
+## Iteration 18 - feature-08
+- **What was done**: Validated that all 4 premium style kits (Corporate Pro, Gradient Modern, Dark Mode Punch, Soft Pastel) are properly seeded
+- **Files changed**: 
+  - .ralph/tasks.json (marked feature-08 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already complete from iteration 9**: All 8 style kits (4 free + 4 premium) were seeded in setup-07, feature-08 is just validation
+  - **All 8 style kits confirmed in database**:
+    - Free: minimal_clean, high_contrast_punch, marker_highlight, sticky_note
+    - Premium: corporate_pro, gradient_modern, dark_mode_punch, soft_pastel
+  - **Premium kit characteristics validated**:
+    - Corporate Pro: Clean grid, Source Sans Pro, subtle blue accent (#0052CC), brand-safe
+    - Gradient Modern: Purple gradient background, Poppins headlines, modern pink accent (#F093FB)
+    - Dark Mode Punch: Dark background (#0D0D0D), vibrant cyan accent (#00E5FF), Poppins bold headlines
+    - Soft Pastel: Gentle pink tones (#FFF5F5), Lora serif headlines, roomy padding
+  - **All premium kits have isPremium = true**: Correctly flagged for tier-gating
+  - **Complete JSON structure verified**: All kits have typography (headline_font, headline_weight, body_font, body_weight), colors (background, foreground, accent), and spacingRules (padding, line_height)
+  - **Database validation commands**:
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id, name, \"isPremium\" FROM \"StyleKit\" ORDER BY id;"` - list all kits
+    - `grep -riq 'dark\|pastel\|corporate\|gradient' packages/db` - verify seed file contains all premium kits
+  - **Validation pattern**: When a task is marked as "Part 2" and depends on "Part 1", check if all work was already completed in earlier iterations
+  - **Next task**: feature-09 will create the /api/style-kits endpoint to expose these kits to the frontend
+---
