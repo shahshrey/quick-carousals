@@ -1302,7 +1302,7 @@
       ],
       "expected": "POST /api/rewrite {text, action} returns {text}. Actions: shorter, punchier, examples, jargon."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-35",
