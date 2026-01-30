@@ -12,12 +12,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   generateStructuredOutput,
   generateSlidePlan,
+  generateSlideCopy,
   OpenAIError,
   OpenAITimeoutError,
   OpenAIRateLimitError,
   OpenAIValidationError,
   SlidePlanSchema,
   SlideContentSchema,
+  SlideCopySchema,
+  SlidesCopySchema,
 } from './openai';
 import { z } from 'zod';
 
@@ -518,7 +521,7 @@ describe('OpenAI Service', () => {
       // Assert
       expect(result).toEqual(mockSlidePlan);
       expect(result.slides).toHaveLength(3);
-      expect(result.slides[0].slideType).toBe('hook');
+      expect(result.slides?.[0]?.slideType).toBe('hook');
       expect(mockCreate).toHaveBeenCalledTimes(1);
     });
 
@@ -604,6 +607,245 @@ describe('OpenAI Service', () => {
             expect.objectContaining({
               role: 'system',
               content: expect.stringContaining('Tone: bold'),
+            }),
+          ]),
+        })
+      );
+    });
+  });
+
+  // ============================================================================
+  // generateSlideCopy Tests
+  // ============================================================================
+
+  describe('generateSlideCopy', () => {
+    it('should successfully generate copy for each slide in the plan', async () => {
+      // Arrange
+      const mockPlan = {
+        slides: [
+          {
+            slideType: 'hook' as const,
+            goal: 'Grab attention with bold statement',
+            headline: 'Hook headline',
+            body: ['Hook body'],
+          },
+          {
+            slideType: 'value' as const,
+            goal: 'Provide key insight',
+            headline: 'Value headline',
+            body: ['Value body'],
+          },
+          {
+            slideType: 'cta' as const,
+            goal: 'Encourage engagement',
+            headline: 'CTA headline',
+            body: ['CTA body'],
+          },
+        ],
+      };
+
+      const mockCopy = {
+        slides: [
+          {
+            headline: 'Stop scrolling: This changes everything',
+            body: ['The old way is broken', 'Here\'s why it matters'],
+            emphasis_text: ['changes everything'],
+          },
+          {
+            headline: 'The key insight you need',
+            body: ['First principle', 'Second principle', 'Third principle'],
+            emphasis_text: ['key insight'],
+          },
+          {
+            headline: 'Ready to take action?',
+            body: ['Follow for more', 'Comment your thoughts'],
+            emphasis_text: ['take action'],
+          },
+        ],
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify(mockCopy),
+            },
+          },
+        ],
+      });
+
+      // Dynamically import to avoid top-level import issues
+      const { generateSlideCopy } = await import('./openai');
+
+      // Act
+      const result = await generateSlideCopy(mockPlan);
+
+      // Assert
+      expect(result).toHaveLength(3);
+      expect(result[0]).toHaveProperty('headline');
+      expect(result[0]).toHaveProperty('body');
+      expect(result[0]).toHaveProperty('emphasis_text');
+      expect(result[0]?.body?.length).toBeLessThanOrEqual(5);
+      expect(mockCreate).toHaveBeenCalledOnce();
+    });
+
+    it('should enforce copy constraints in the prompt', async () => {
+      // Arrange
+      const mockPlan = {
+        slides: [
+          {
+            slideType: 'hook' as const,
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ],
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                slides: [
+                  {
+                    headline: 'Test headline',
+                    body: ['Test'],
+                    emphasis_text: [],
+                  },
+                ],
+              }),
+            },
+          },
+        ],
+      });
+
+      const { generateSlideCopy } = await import('./openai');
+
+      // Act
+      await generateSlideCopy(mockPlan);
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              role: 'system',
+              content: expect.stringContaining('Maximum 12 words'),
+            }),
+            expect.objectContaining({
+              role: 'system',
+              content: expect.stringContaining('Maximum 5 bullet points'),
+            }),
+          ]),
+        })
+      );
+    });
+
+    it('should include slide structure in the prompt', async () => {
+      // Arrange
+      const mockPlan = {
+        slides: [
+          {
+            slideType: 'hook' as const,
+            goal: 'Grab attention',
+            headline: 'Test',
+            body: ['Test'],
+          },
+          {
+            slideType: 'value' as const,
+            goal: 'Provide insight',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ],
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                slides: [
+                  {
+                    headline: 'Test',
+                    body: ['Test'],
+                  },
+                  {
+                    headline: 'Test',
+                    body: ['Test'],
+                  },
+                ],
+              }),
+            },
+          },
+        ],
+      });
+
+      const { generateSlideCopy } = await import('./openai');
+
+      // Act
+      await generateSlideCopy(mockPlan, { topic: 'Test Topic' });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              role: 'user',
+              content: expect.stringContaining('Slide 1 (hook): Grab attention'),
+            }),
+            expect.objectContaining({
+              role: 'user',
+              content: expect.stringContaining('Slide 2 (value): Provide insight'),
+            }),
+          ]),
+        })
+      );
+    });
+
+    it('should handle optional topic parameter', async () => {
+      // Arrange
+      const mockPlan = {
+        slides: [
+          {
+            slideType: 'hook' as const,
+            goal: 'Test',
+            headline: 'Test',
+            body: ['Test'],
+          },
+        ],
+      };
+
+      mockCreate.mockResolvedValueOnce({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                slides: [
+                  {
+                    headline: 'Test',
+                    body: ['Test'],
+                  },
+                ],
+              }),
+            },
+          },
+        ],
+      });
+
+      const { generateSlideCopy } = await import('./openai');
+
+      // Act
+      await generateSlideCopy(mockPlan, { topic: 'AI in Marketing' });
+
+      // Assert
+      expect(mockCreate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          messages: expect.arrayContaining([
+            expect.objectContaining({
+              role: 'user',
+              content: expect.stringContaining('Topic: AI in Marketing'),
             }),
           ]),
         })
@@ -730,6 +972,29 @@ describe('OpenAI Service', () => {
 
       // Act & Assert
       expect(() => SlidePlanSchema.parse(invalidPlan)).toThrow();
+    });
+
+    it('should validate SlideCopy schema correctly', () => {
+      // Arrange
+      const validCopy = {
+        headline: 'This is a valid headline',
+        body: ['Point 1', 'Point 2', 'Point 3'],
+        emphasis_text: ['Key phrase'],
+      };
+
+      // Act & Assert
+      expect(() => SlideCopySchema.parse(validCopy)).not.toThrow();
+    });
+
+    it('should reject slide copy with too many body bullets', () => {
+      // Arrange
+      const invalidCopy = {
+        headline: 'Test',
+        body: ['1', '2', '3', '4', '5', '6'], // More than 5
+      };
+
+      // Act & Assert
+      expect(() => SlideCopySchema.parse(invalidCopy)).toThrow();
     });
   });
 });

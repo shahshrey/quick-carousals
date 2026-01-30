@@ -484,7 +484,7 @@
       ],
       "expected": "generateSlideCopy(plan) returns [{headline (≤12 words), body (≤5 bullets), emphasis_text}, ...]"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-04",

@@ -376,3 +376,84 @@ Output valid JSON matching the schema.`;
     schema: SlidePlanSchema,
   });
 }
+
+// ============================================================================
+// Slide Copy Generation (AI Step 2)
+// ============================================================================
+
+/**
+ * Slide copy for a single slide
+ */
+export const SlideCopySchema = z.object({
+  headline: z.string().describe('Headline for the slide (8-12 words max)'),
+  body: z.array(z.string()).max(5).describe('Body content (3-5 bullet points max)'),
+  emphasis_text: z.array(z.string()).optional().describe('Key phrases to emphasize/highlight'),
+});
+
+export type SlideCopy = z.infer<typeof SlideCopySchema>;
+
+/**
+ * Complete copy output for all slides
+ */
+export const SlidesCopySchema = z.object({
+  slides: z.array(SlideCopySchema),
+});
+
+export type SlidesCopy = z.infer<typeof SlidesCopySchema>;
+
+/**
+ * Generate detailed copy for each slide from a slide plan
+ * 
+ * This enforces hard constraints on copy:
+ * - Headline ≤ 12 words
+ * - Body bullets ≤ 5
+ * - 1 idea per slide
+ * 
+ * @param plan - Slide plan with types and goals
+ * @param options - Additional options
+ * @returns Array of slide copy with headline, body, emphasis_text
+ */
+export async function generateSlideCopy(
+  plan: SlidePlan,
+  options: {
+    topic?: string;
+  } = {}
+): Promise<SlideCopy[]> {
+  const { topic = '' } = options;
+
+  // Extract slide types and goals from the plan
+  const slideStructure = plan.slides.map((slide, index) => ({
+    index: index + 1,
+    type: slide.slideType,
+    goal: slide.goal,
+  }));
+
+  const systemPrompt = `You are an expert LinkedIn carousel copywriter. Generate compelling copy for each slide with strict constraints.
+
+CRITICAL CONSTRAINTS:
+- Headline: Maximum 12 words (8-12 is ideal)
+- Body: Maximum 5 bullet points or sentences (3-5 is ideal)
+- Each slide focuses on ONE clear idea
+- Copy must be concise, punchy, and skimmable
+- Use active voice and strong verbs
+- Identify 1-3 key phrases per slide to emphasize (bold/highlight)
+
+TONE: Match the tone of the original plan.
+
+OUTPUT: Generate exact copy for each slide that respects these constraints.`;
+
+  const userMessage = `Generate copy for this carousel plan:
+
+${topic ? `Topic: ${topic}\n\n` : ''}Slide Structure:
+${slideStructure.map(s => `Slide ${s.index} (${s.type}): ${s.goal}`).join('\n')}
+
+Generate headline, body bullets, and emphasis phrases for each slide.`;
+
+  const result = await generateStructuredOutput<SlidesCopy>({
+    systemPrompt,
+    userMessage,
+    schema: SlidesCopySchema,
+  });
+
+  return result.slides;
+}
