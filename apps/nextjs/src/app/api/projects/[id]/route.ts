@@ -1,6 +1,8 @@
 /**
- * Project [id] API endpoint
- * Protected by withAuth middleware - requires valid Clerk session
+ * Project detail API endpoint
+ * GET /api/projects/:id - Get project details
+ * PATCH /api/projects/:id - Update project
+ * DELETE /api/projects/:id - Delete project
  */
 
 import { NextResponse } from "next/server";
@@ -26,23 +28,68 @@ const updateProjectSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   styleKitId: z.string().optional(),
   brandKitId: z.string().optional().nullable(),
-  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
+  status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
+});
+
+/**
+ * GET /api/projects/:id
+ * Returns project details for the authenticated user
+ */
+export const GET = withAuth(async (req, { userId }) => {
+  try {
+    // Extract project ID from URL
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split('/');
+    const projectId = pathParts[pathParts.length - 1];
+
+    // Get Profile ID from clerkUserId
+    const profile = await db
+      .selectFrom("Profile")
+      .where("clerkUserId", "=", userId)
+      .select("id")
+      .executeTakeFirst();
+
+    if (!profile) {
+      throw ApiErrors.notFound("User profile not found");
+    }
+
+    // Fetch project with ownership check
+    const project = await db
+      .selectFrom("Project")
+      .where("id", "=", projectId)
+      .where("userId", "=", profile.id)
+      .select([
+        "id",
+        "title",
+        "brandKitId",
+        "styleKitId",
+        "status",
+        "createdAt",
+        "updatedAt",
+      ])
+      .executeTakeFirst();
+
+    if (!project) {
+      throw ApiErrors.notFound("Project not found");
+    }
+
+    return NextResponse.json(project);
+  } catch (error: any) {
+    if (error.statusCode) throw error;
+    console.error("Error fetching project:", error);
+    throw ApiErrors.internal("Failed to fetch project");
+  }
 });
 
 /**
  * PATCH /api/projects/:id
- * Updates a project
- * 
- * @returns 200 - Updated project
- * @returns 400 - Validation error
- * @returns 401 - Not authenticated
- * @returns 404 - Project not found
+ * Updates project details
  */
 export const PATCH = withAuth(async (req, { userId }) => {
   try {
-    // Get project ID from URL params
+    // Extract project ID from URL
     const url = new URL(req.url);
-    const pathParts = url.pathname.split("/");
+    const pathParts = url.pathname.split('/');
     const projectId = pathParts[pathParts.length - 1];
 
     // Validate request body
@@ -68,37 +115,10 @@ export const PATCH = withAuth(async (req, { userId }) => {
       .executeTakeFirst();
 
     if (!existingProject) {
-      throw ApiErrors.notFound("Project not found or not owned by user");
+      throw ApiErrors.notFound("Project not found");
     }
 
-    // Verify styleKit exists (if being updated)
-    if (body.styleKitId) {
-      const styleKit = await db
-        .selectFrom("StyleKit")
-        .where("id", "=", body.styleKitId)
-        .select("id")
-        .executeTakeFirst();
-
-      if (!styleKit) {
-        throw ApiErrors.validation("Invalid styleKitId");
-      }
-    }
-
-    // Verify brandKit exists and belongs to user (if being updated)
-    if (body.brandKitId) {
-      const brandKit = await db
-        .selectFrom("BrandKit")
-        .where("id", "=", body.brandKitId)
-        .where("userId", "=", profile.id)
-        .select("id")
-        .executeTakeFirst();
-
-      if (!brandKit) {
-        throw ApiErrors.validation("Invalid brandKitId or brand kit not owned by user");
-      }
-    }
-
-    // Build update object (only include provided fields)
+    // Build update object
     const updates: any = {
       updatedAt: new Date(),
     };
@@ -126,17 +146,13 @@ export const PATCH = withAuth(async (req, { userId }) => {
 
 /**
  * DELETE /api/projects/:id
- * Deletes a project and all associated slides
- * 
- * @returns 204 - Project deleted successfully
- * @returns 401 - Not authenticated
- * @returns 404 - Project not found
+ * Deletes a project and all its slides (cascade)
  */
 export const DELETE = withAuth(async (req, { userId }) => {
   try {
-    // Get project ID from URL params
+    // Extract project ID from URL
     const url = new URL(req.url);
-    const pathParts = url.pathname.split("/");
+    const pathParts = url.pathname.split('/');
     const projectId = pathParts[pathParts.length - 1];
 
     // Get Profile ID from clerkUserId
@@ -150,25 +166,18 @@ export const DELETE = withAuth(async (req, { userId }) => {
       throw ApiErrors.notFound("User profile not found");
     }
 
-    // Verify project exists and belongs to user
-    const existingProject = await db
-      .selectFrom("Project")
-      .where("id", "=", projectId)
-      .where("userId", "=", profile.id)
-      .select("id")
-      .executeTakeFirst();
-
-    if (!existingProject) {
-      throw ApiErrors.notFound("Project not found or not owned by user");
-    }
-
-    // Delete project (cascade will delete slides and exports)
-    await db
+    // Delete project (slides cascade automatically)
+    const result = await db
       .deleteFrom("Project")
       .where("id", "=", projectId)
-      .execute();
+      .where("userId", "=", profile.id)
+      .executeTakeFirst();
 
-    return new NextResponse(null, { status: 204 });
+    if (result.numDeletedRows === BigInt(0)) {
+      throw ApiErrors.notFound("Project not found");
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error: any) {
     if (error.statusCode) throw error;
     console.error("Error deleting project:", error);

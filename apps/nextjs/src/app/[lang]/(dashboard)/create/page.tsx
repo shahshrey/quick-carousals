@@ -58,33 +58,72 @@ export default function CreateCarouselPage() {
     setError(null);
 
     try {
+      // Step 1: Generate slides with AI
       const endpoint = mode === 'topic' ? '/api/generate/topic' : '/api/generate/text';
       const body = mode === 'topic' 
         ? { topic, slideCount, tone, applyBrandKit, styleKitId: selectedStyleKit }
         : { text, slideCount, tone, applyBrandKit, styleKitId: selectedStyleKit };
 
-      const response = await fetch(endpoint, {
+      const generateResponse = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+      if (!generateResponse.ok) {
+        const errorData = await generateResponse.json();
         throw new Error(errorData.error?.message || 'Generation failed');
       }
 
-      const data = await response.json();
-      
-      // TODO: Navigate to editor with generated slides
-      // For now, just log the data
-      console.log('Generated slides:', data);
-      
-      // In feature-40, this will navigate to the editor with the project ID
-      // router.push(`/en/editor/${projectId}`);
+      const generateData = await generateResponse.json();
+      const { slides, metadata } = generateData;
+
+      // Step 2: Create project
+      const projectTitle = mode === 'topic' 
+        ? metadata.topic 
+        : `Carousel - ${new Date().toLocaleDateString()}`;
+
+      const projectResponse = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: projectTitle,
+          styleKitId: selectedStyleKit,
+        }),
+      });
+
+      if (!projectResponse.ok) {
+        const errorData = await projectResponse.json();
+        throw new Error(errorData.error?.message || 'Failed to create project');
+      }
+
+      const project = await projectResponse.json();
+
+      // Step 3: Create slides for the project
+      const slidePromises = slides.map((slide: any, index: number) => 
+        fetch('/api/slides', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: project.id,
+            orderIndex: index,
+            layoutId: slide.layoutId,
+            slideType: slide.slideType,
+            content: {
+              headline: slide.headline,
+              body: slide.body || [],
+              emphasis: slide.emphasis || [],
+            },
+          }),
+        })
+      );
+
+      await Promise.all(slidePromises);
+
+      // Step 4: Navigate to editor
+      router.push(`/en/editor/${project.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
       setLoading(false);
     }
   };
@@ -263,7 +302,17 @@ export default function CreateCarouselPage() {
           onClick={handleGenerate}
           disabled={!isValid || loading}
         >
-          {loading ? 'Generating...' : 'Generate Carousel'}
+          {loading ? (
+            <span data-testid="generation_loading" className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Generating...
+            </span>
+          ) : (
+            'Generate Carousel'
+          )}
         </Button>
       </Card>
     </div>
