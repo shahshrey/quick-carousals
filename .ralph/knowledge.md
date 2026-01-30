@@ -1627,3 +1627,42 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'ExportType' packages/db/prisma/schema.prisma && echo 'PASS'` - Verify enum
     - `grep "slide-" apps/nextjs/src/lib/queues/render-worker.ts` - Check filename format
   - **Next task dependency**: This completes export functionality - feature-32 will create export modal UI to trigger PNG exports
+
+---
+## Iteration 70 - feature-32
+- **What was done**: Created export modal UI with PDF/PNG format toggle, filename input, and cover thumbnail checkbox
+- **Files changed**:
+  - apps/nextjs/src/components/editor/ExportModal.tsx (created)
+  - apps/nextjs/src/components/editor/index.ts (added exports)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (integrated modal and export button)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Modal component pattern**: Created self-contained modal with backdrop and portal-like positioning using fixed positioning and z-index
+  - **Export button placement**: Added export button to editor header (top-right) with proper testid for easy validation
+  - **Format toggle UI**: Used button group with visual feedback (checkmark, color change) for PDF/PNG selection
+  - **All required testids present**:
+    - export_button (in test page header)
+    - export_modal (modal container)
+    - format_pdf (PDF format button)
+    - format_png (PNG format button)
+    - filename_input (text input for filename)
+    - start_export_button (primary action button)
+  - **Cover thumbnail checkbox**: Optional checkbox with clear helper text explaining it generates separate thumbnail of first slide
+  - **State management**: Modal open/close state managed in parent component, export options passed via callback
+  - **ExportOptions interface**: Clean type definition with format, filename, and includeCoverThumbnail properties
+  - **Helper text pattern**: Each input has explanatory helper text below it (e.g., "Extension will be added automatically")
+  - **Modal features implemented**:
+    - Backdrop click to close
+    - PDF/PNG format toggle with icons (📄 🖼️)
+    - Filename input with validation
+    - Cover thumbnail checkbox with description
+    - Cancel and Start Export buttons
+    - Descriptive helper text for each option
+  - **Integration with test page**: Export button opens modal, modal calls handler on export, handler logs options and shows alert (placeholder for feature-33)
+  - **Working commands**:
+    - `curl -sL http://localhost:3000/en/editor/test -o /dev/null -w '%{http_code}'` - Test route (200)
+    - `grep -c "data-testid" apps/nextjs/src/components/editor/ExportModal.tsx` - Count testids (5 in modal + 1 in page = 6 total)
+  - **Pre-existing TypeScript errors**: Test page has some pre-existing optional chaining errors (slides[index] possibly undefined) - these existed before my changes and are unrelated to export modal
+  - **Next task dependency**: feature-33 will connect this modal to the actual export API (/api/exports) and handle the download flow
+---

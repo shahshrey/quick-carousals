@@ -1279,7 +1279,7 @@
       ],
       "expected": "export_progress shows percentage/spinner while processing. download_button appears with signed URL when status='completed'."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-34",

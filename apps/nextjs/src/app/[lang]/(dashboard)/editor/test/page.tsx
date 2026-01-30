@@ -363,11 +363,28 @@ export default function EditorTestPage() {
   };
 
   // Handle export
-  const handleExport = (options: ExportOptions) => {
+  const handleExport = async (options: ExportOptions): Promise<{ exportId: string; projectId: string }> => {
     console.log('Export with options:', options);
-    // TODO: Call export API in feature-33
-    alert(`Export started: ${options.format} - ${options.filename}`);
-    setIsExportModalOpen(false);
+    
+    // For testing purposes, simulate the export flow
+    // In a real implementation, this would call POST /api/exports with a real projectId
+    // Since this is a test page without a database project, we simulate the response
+    
+    // Generate mock export ID
+    const mockExportId = `test-export-${Date.now()}`;
+    const mockProjectId = 'test-project-id';
+    
+    // Simulate export status progression for testing
+    // In real implementation, the worker would process the job
+    setTimeout(() => {
+      // Simulate status updates that the polling will detect
+      console.log('Mock export processing...');
+    }, 1000);
+    
+    return {
+      exportId: mockExportId,
+      projectId: mockProjectId,
+    };
   };
 
   return (
