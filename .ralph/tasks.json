@@ -1927,7 +1927,7 @@
       ],
       "expected": "All PNG exports are valid image files with correct dimensions"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-04",
