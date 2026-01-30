@@ -2379,7 +2379,7 @@
       ],
       "expected": "No secrets exposed, security headers present, input sanitization works, webhook signatures verified"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-13",

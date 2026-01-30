@@ -1,0 +1,8 @@
+HTTP/1.1 307 Temporary Redirect
+location: /en/
+x-clerk-auth-reason: dev-browser-missing
+x-clerk-auth-status: signed-out
+Date: Fri, 30 Jan 2026 11:37:00 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
