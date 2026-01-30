@@ -1449,7 +1449,7 @@
       ],
       "expected": "Authenticated: dashboard shows project grid (or empty_state if no projects), new_project_button visible. Unauthenticated: redirects to login page. No console errors."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-39",

@@ -1,102 +1,114 @@
-import React from "react";
-import { redirect } from "next/navigation";
+'use client';
 
-import { authOptions, getCurrentUser } from "@saasfly/auth";
-import {
-  Table,
-  TableCaption,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@saasfly/ui/table";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@saasfly/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@saasfly/ui/card";
 
 import { EmptyPlaceholder } from "~/components/empty-placeholder";
 import { DashboardHeader } from "~/components/header";
-import { K8sCreateButton } from "~/components/k8s/cluster-create-button";
-import { ClusterItem } from "~/components/k8s/cluster-item";
 import { DashboardShell } from "~/components/shell";
-import type { Locale } from "~/config/i18n-config";
-import { getDictionary } from "~/lib/get-dictionary";
-import { trpc } from "~/trpc/server";
-import type { ClustersArray } from "~/types/k8s";
 
-export const metadata = {
-  title: "Dashboard",
-};
+interface Project {
+  id: string;
+  title: string;
+  brandKitId: string | null;
+  styleKitId: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-// export type ClusterType = RouterOutputs["k8s"]["getClusters"][number];
-export default async function DashboardPage({
-  params: { lang },
-}: {
-  params: {
-    lang: Locale;
-  };
-}) {
-  //don't need to check auth here, because we have a global auth check in _app.tsx
-  const user = await getCurrentUser();
-  if (!user) {
-    redirect(authOptions?.pages?.signIn ?? "/login-clerk");
-  }
-  const customer = await trpc.customer.queryCustomer.query({
-    userId: user.id,
-  });
-  if (!customer) {
-    await trpc.customer.insertCustomer.mutate({
-      userId: user.id,
+export default function DashboardPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const response = await fetch('/api/projects');
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProjects();
+  }, []);
+
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
     });
   }
-  // const accout
-  const result: ClustersArray = await trpc.k8s.getClusters.query();
-  if (result) {
-    const clusters = result;
-    const dict = await getDictionary(lang);
-    return (
-      <DashboardShell>
-        <DashboardHeader
-          heading="kubernetes"
-          text={dict.common.dashboard.title_text}
-        >
-          <K8sCreateButton dict={dict.business} />
-        </DashboardHeader>
-        <div>
-          {clusters.length ? (
-            <div className="divide-y divide-border rounded-md border">
-              <div className="flex items-center justify-between p-4">
-                <Table className="divide-y divide-gray-200">
-                  <TableCaption>A list of your k8s cluster .</TableCaption>
-                  <TableHeader>
-                    <TableRow className="hover:bg-gray-50">
-                      <TableHead className="w-[100px]">Name</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>UpdatedAt</TableHead>
-                      <TableHead>Plan</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>ACTION</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  {clusters.map((cluster) => (
-                    <ClusterItem
-                      key={String(cluster.id)}
-                      cluster={cluster}
-                    ></ClusterItem>
-                  ))}
-                </Table>
-              </div>
-            </div>
-          ) : (
-            <EmptyPlaceholder>
-              {/*<EmptyPlaceholder.Icon />*/}
-              <EmptyPlaceholder.Title>
-                {dict.business.k8s.no_cluster_title}
-              </EmptyPlaceholder.Title>
-              <EmptyPlaceholder.Description>
-                {dict.business.k8s.no_cluster_content}
-              </EmptyPlaceholder.Description>
-              <K8sCreateButton variant="outline" dict={dict.business} />
-            </EmptyPlaceholder>
-          )}
-        </div>
-      </DashboardShell>
-    );
-  }
+
+  return (
+    <DashboardShell>
+      <DashboardHeader
+        heading="My Carousels"
+        text="Create and manage your LinkedIn carousels"
+      >
+        <Link href="/create">
+          <Button data-testid="new_project_button">
+            New Carousel
+          </Button>
+        </Link>
+      </DashboardHeader>
+      <div>
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <p className="text-muted-foreground">Loading projects...</p>
+          </div>
+        ) : projects.length > 0 ? (
+          <div 
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+            data-testid="dashboard_projects"
+          >
+            {projects.map((project) => (
+              <Link key={project.id} href={`/editor/${project.id}`}>
+                <Card className="hover:border-primary transition-colors cursor-pointer">
+                  <CardHeader>
+                    <CardTitle className="line-clamp-1">{project.title}</CardTitle>
+                    <CardDescription>
+                      {project.status === 'DRAFT' && 'Draft'}
+                      {project.status === 'PUBLISHED' && 'Published'}
+                      {project.status === 'ARCHIVED' && 'Archived'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      Last updated: {formatDate(project.updatedAt)}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <EmptyPlaceholder data-testid="empty_state">
+            <EmptyPlaceholder.Icon name="File" />
+            <EmptyPlaceholder.Title>
+              No carousels yet
+            </EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Description>
+              Get started by creating your first LinkedIn carousel. It only takes 3 minutes!
+            </EmptyPlaceholder.Description>
+            <Link href="/create">
+              <Button variant="outline">
+                Create Your First Carousel
+              </Button>
+            </Link>
+          </EmptyPlaceholder>
+        )}
+      </div>
+    </DashboardShell>
+  );
 }
