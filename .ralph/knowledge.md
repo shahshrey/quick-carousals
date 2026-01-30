@@ -569,3 +569,36 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - Upload returns path, then generate signed URL separately
     - Comprehensive error handling for validation and upload failures
 ---
+
+---
+## Iteration 19 - infra-03
+- **What was done**: Configured Upstash Redis connection with singleton client pattern
+- **Files changed**: 
+  - apps/nextjs/src/lib/redis.ts (created Redis client singleton)
+  - apps/nextjs/src/lib/README.md (added comprehensive Redis documentation)
+  - apps/nextjs/package.json (added @upstash/redis dependency)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Upstash Redis uses REST API**: Use `@upstash/redis` package, not `ioredis` or `redis` - it's serverless-friendly
+  - **Automatic JSON handling**: Upstash Redis client automatically serializes/deserializes objects - no need for JSON.stringify/parse
+  - **Environment variables already configured**: Redis env vars (UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN) were already in .env.local and .env.example
+  - **Singleton pattern for Redis**: Create singleton to reuse connection across application (important for performance and rate limiting)
+  - **Retry logic built-in**: Configured 3 retries with exponential backoff (up to 10 seconds) for reliability
+  - **Testing Redis connection**: Use `redis.ping()` - should return 'PONG' if connection is successful
+  - **Import path alias**: This codebase uses `~/` not `@/` for imports (as confirmed in iteration 17)
+  - **Redis client validation**: Created test endpoint temporarily to verify connection, then deleted it after validation
+  - **Working Redis test**: 
+    ```bash
+    curl -s http://localhost:3000/api/redis-test | jq .
+    # Should return success: true with connection info
+    ```
+  - **Common Redis operations**:
+    - `redis.set(key, value, { ex: 3600 })` - set with expiration
+    - `redis.get<Type>(key)` - get with type safety
+    - `redis.del(key)` - delete
+    - `redis.incr(key)` - atomic increment
+    - `redis.hset(key, object)` - hash set
+    - `redis.lpush/rpop` - list operations for queues
+  - **Next task dependency**: Redis is now ready for BullMQ configuration in infra-04
+---
