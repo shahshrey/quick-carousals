@@ -1,0 +1,95 @@
+# Visual Regression Baseline Manifest
+# Generated: January 30, 2026
+# Total Expected: 80 baseline images (8 style kits × 10 slides)
+
+## Free Style Kits (40 images)
+minimal_clean/slide_01.png
+minimal_clean/slide_02.png
+minimal_clean/slide_03.png
+minimal_clean/slide_04.png
+minimal_clean/slide_05.png
+minimal_clean/slide_06.png
+minimal_clean/slide_07.png
+minimal_clean/slide_08.png
+minimal_clean/slide_09.png
+minimal_clean/slide_10.png
+high_contrast_punch/slide_01.png
+high_contrast_punch/slide_02.png
+high_contrast_punch/slide_03.png
+high_contrast_punch/slide_04.png
+high_contrast_punch/slide_05.png
+high_contrast_punch/slide_06.png
+high_contrast_punch/slide_07.png
+high_contrast_punch/slide_08.png
+high_contrast_punch/slide_09.png
+high_contrast_punch/slide_10.png
+marker_highlight/slide_01.png
+marker_highlight/slide_02.png
+marker_highlight/slide_03.png
+marker_highlight/slide_04.png
+marker_highlight/slide_05.png
+marker_highlight/slide_06.png
+marker_highlight/slide_07.png
+marker_highlight/slide_08.png
+marker_highlight/slide_09.png
+marker_highlight/slide_10.png
+sticky_note/slide_01.png
+sticky_note/slide_02.png
+sticky_note/slide_03.png
+sticky_note/slide_04.png
+sticky_note/slide_05.png
+sticky_note/slide_06.png
+sticky_note/slide_07.png
+sticky_note/slide_08.png
+sticky_note/slide_09.png
+sticky_note/slide_10.png
+
+## Premium Style Kits (40 images)
+corporate_pro/slide_01.png
+corporate_pro/slide_02.png
+corporate_pro/slide_03.png
+corporate_pro/slide_04.png
+corporate_pro/slide_05.png
+corporate_pro/slide_06.png
+corporate_pro/slide_07.png
+corporate_pro/slide_08.png
+corporate_pro/slide_09.png
+corporate_pro/slide_10.png
+gradient_modern/slide_01.png
+gradient_modern/slide_02.png
+gradient_modern/slide_03.png
+gradient_modern/slide_04.png
+gradient_modern/slide_05.png
+gradient_modern/slide_06.png
+gradient_modern/slide_07.png
+gradient_modern/slide_08.png
+gradient_modern/slide_09.png
+gradient_modern/slide_10.png
+dark_mode_punch/slide_01.png
+dark_mode_punch/slide_02.png
+dark_mode_punch/slide_03.png
+dark_mode_punch/slide_04.png
+dark_mode_punch/slide_05.png
+dark_mode_punch/slide_06.png
+dark_mode_punch/slide_07.png
+dark_mode_punch/slide_08.png
+dark_mode_punch/slide_09.png
+dark_mode_punch/slide_10.png
+soft_pastel/slide_01.png
+soft_pastel/slide_02.png
+soft_pastel/slide_03.png
+soft_pastel/slide_04.png
+soft_pastel/slide_05.png
+soft_pastel/slide_06.png
+soft_pastel/slide_07.png
+soft_pastel/slide_08.png
+soft_pastel/slide_09.png
+soft_pastel/slide_10.png
+
+# Test Topic: "Top 5 productivity tips for remote workers"
+# Resolution: 1080×1350 pixels (LinkedIn portrait)
+# Format: PNG (lossless)
+# Zoom: 100%
+# Expected File Size: 50-80KB per image
+
+# Capture Status: Directory structure created, awaiting authenticated image capture

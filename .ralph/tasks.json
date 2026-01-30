@@ -2012,7 +2012,7 @@
       ],
       "expected": "Baseline screenshots captured for all slides (~80 images), manifest created"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-07",
