@@ -656,7 +656,7 @@
       ],
       "expected": "5 layouts seeded with layersBlueprint JSON: Hook, Big Statement, 3-Bullet, Step-by-Step, Quote"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-11",
