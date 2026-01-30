@@ -1523,3 +1523,39 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `bun run test src/lib/generate-pdf.test.ts` - Run tests (6 passing)
   - **Next task dependency**: feature-29 will create BullMQ worker to process export jobs using this PDF generator
 ---
+
+---
+## Iteration 64 - feature-29
+- **What was done**: Created BullMQ worker for export job processing with PDF/PNG/THUMBNAIL support
+- **Files changed**: 
+  - apps/nextjs/src/lib/queues/render-worker.ts (created)
+  - apps/nextjs/src/lib/queues/index.ts (created)
+  - apps/nextjs/src/lib/README.md (added worker documentation)
+  - .ralph/tasks.json (marked feature-29 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **BullMQ worker pattern**: Create Worker instance that processes jobs from queue, with event handlers for completed/failed/error
+  - **Worker concurrency**: Set concurrency: 2 to process multiple jobs in parallel (configurable based on server resources)
+  - **Job processing workflow**:
+    1. Update Export.status to PROCESSING
+    2. Fetch project + slides + layouts + style kit from database using Kysely
+    3. Render slides using server-side renderer (renderSlideToCanvas / generatePDF)
+    4. Upload to storage bucket with getUserFilePath for user-scoped paths
+    5. Update Export.status to COMPLETED with fileUrl (or FAILED with errorMessage)
+  - **Three export types handled**:
+    - PDF: Render all slides → generatePDF → single file URL
+    - PNG: Render all slides → array of PNG files → JSON array of URLs in fileUrl
+    - THUMBNAIL: Render first slide only → single PNG file URL
+  - **Database queries for rendering**: Must join Slide → TemplateLayout to get layersBlueprint, fetch StyleKit for colors/fonts
+  - **Type safety**: Cast JSON fields to proper TypeScript types (StyleKit, LayersBlueprint, SlideContent)
+  - **Error handling**: Try/catch around entire job, update Export.status to FAILED on error, re-throw to mark job as failed for retry
+  - **Redis connection**: Use same createRedisConnection pattern as render-queue.ts for consistency
+  - **Graceful shutdown**: Handle SIGTERM/SIGINT signals to close worker cleanly before process exit
+  - **Worker deployment**: Can run as standalone process (node render-worker.ts) or as separate container/service
+  - **Retry logic**: Inherited from queue configuration (3 attempts, exponential backoff)
+  - **Working commands**:
+    - `grep -rq 'Worker\|renderQueue' apps/nextjs/src && echo 'PASS'` - verify worker exists
+    - `grep -rq 'ExportStatus\|COMPLETED\|FAILED' apps/nextjs/src && echo 'PASS'` - verify status updates
+    - `grep -c "processPDFExport\|processPNGExport\|processThumbnailExport"` - count export handlers
+  - **Next task dependency**: feature-30 will create /api/exports endpoint to trigger these jobs and check status
+---

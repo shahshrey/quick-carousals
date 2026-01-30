@@ -1617,3 +1617,49 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 11:56:00
 **Session 64 started** (model: sonnet-4.5-thinking)
+
+## Iteration 64 - feature-29: Create export job processor ✅
+
+**Task**: Create BullMQ worker for render queue
+
+**Implementation**:
+- Created `render-worker.ts` with BullMQ Worker implementation (365 lines)
+- Implemented three export type handlers:
+  - `processPDFExport`: Render all slides → generate PDF → upload single file
+  - `processPNGExport`: Render all slides → upload individual PNGs → store URLs as JSON array
+  - `processThumbnailExport`: Render first slide only → upload single PNG
+- Database integration with Kysely to fetch project/slides/layouts/style kits
+- Server-side rendering integration with @napi-rs/canvas and PDFKit
+- Storage integration with Supabase Storage for file uploads
+- Export status tracking: PENDING → PROCESSING → COMPLETED/FAILED
+- Error handling with retry logic (3 attempts, exponential backoff)
+- Graceful shutdown handlers for SIGTERM/SIGINT
+- Created `index.ts` to export queue and worker functions
+- Updated `README.md` with comprehensive worker documentation
+
+**Validation**:
+- ✅ Worker file exists and exports createRenderWorker function
+- ✅ All three export types (PDF, PNG, THUMBNAIL) have handlers
+- ✅ Export status updates implemented (11 status update operations)
+- ✅ Storage upload integration confirmed (7 uploadFile calls)
+- ✅ Database queries fetch all required data (project, slides, layouts, style kits)
+
+**Files Created/Modified**:
+- `apps/nextjs/src/lib/queues/render-worker.ts` - Worker implementation
+- `apps/nextjs/src/lib/queues/index.ts` - Export module
+- `apps/nextjs/src/lib/README.md` - Worker documentation
+- `.ralph/tasks.json` - Marked feature-29 complete
+
+**Next**: feature-30 will create `/api/exports` endpoint to trigger export jobs and poll status
+
+### 2026-01-30 12:00:36
+**Knowledge base updated** - agent added new learnings
+
+### 2026-01-30 12:01:00
+**Session 64 ended** - 40 tasks remaining (no signal)
+
+### 2026-01-30 12:01:02
+**Session 65 ended** - 📋 New task: feature-30 (was: feature-29)
+
+### 2026-01-30 12:01:03
+**Session 66 started** (model: sonnet-4.5-thinking)

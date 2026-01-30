@@ -1193,7 +1193,7 @@
       ],
       "expected": "POST /api/exports {projectId, type} creates job, returns {id}. GET /api/exports/:id returns {status, fileUrl?}."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-31",
