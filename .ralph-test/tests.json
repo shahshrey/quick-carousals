@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_at": null,
+    "last_updated": null,
+    "description": "Manual test cases for QuickCarousals - created by Ralph Test Discovery agent",
+    "coverage_summary": {
+      "total_tests": 0,
+      "by_priority": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "by_category": {
+        "api": 0,
+        "frontend": 0,
+        "database": 0,
+        "integration": 0,
+        "e2e": 0,
+        "security": 0,
+        "performance": 0
+      },
+      "modules_analyzed": 0,
+      "modules_total": 20,
+      "journeys_analyzed": 0,
+      "journeys_total": 6
+    }
+  },
+  "modules": {
+    "auth": {
+      "name": "Authentication & Authorization",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "generation_topic": {
+      "name": "Topic-Based Generation",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "generation_text": {
+      "name": "Text-Based Generation",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "creation_flow": {
+      "name": "Creation Flow UI",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "editor_canvas": {
+      "name": "Canvas Editor Core",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "editor_controls": {
+      "name": "Editor Controls",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "editor_page": {
+      "name": "Editor Page Integration",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "export_system": {
+      "name": "Export System",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "projects_crud": {
+      "name": "Project Management",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "dashboard": {
+      "name": "Dashboard",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "brand_kit": {
+      "name": "Brand Kit",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "style_kits": {
+      "name": "Style Kits",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "billing": {
+      "name": "Billing & Subscriptions",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "feature_gating": {
+      "name": "Feature Gating by Tier",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "rewrite": {
+      "name": "AI Rewrite Actions",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "auto_save": {
+      "name": "Auto-Save",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "text_measurement": {
+      "name": "Text Measurement & Auto-Fit",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "database": {
+      "name": "Database & Data Integrity",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "marketing": {
+      "name": "Marketing Pages",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "infrastructure": {
+      "name": "Infrastructure & Health",
+      "status": "pending_analysis",
+      "test_count": 0
+    }
+  },
+  "user_journeys": {
+    "new_user_onboarding": {
+      "name": "New User Onboarding",
+      "description": "Landing page → Sign up → Dashboard → First carousel",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "topic_to_export": {
+      "name": "Topic → Export (Happy Path)",
+      "description": "Enter topic → Generate → Edit → Export PDF",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "text_to_export": {
+      "name": "Paste Text → Export",
+      "description": "Paste text → Generate → Edit → Export PNG",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "returning_user": {
+      "name": "Returning User Experience",
+      "description": "Login → Dashboard with projects → Edit existing",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "upgrade_flow": {
+      "name": "Subscription Upgrade",
+      "description": "Free → Creator tier upgrade via Stripe",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "error_recovery": {
+      "name": "Error Recovery Flows",
+      "description": "Network errors, generation failures, export failures",
+      "status": "pending_analysis",
+      "test_count": 0
+    }
+  },
+  "cross_cutting": {
+    "security": {
+      "name": "Security Testing",
+      "status": "pending_analysis",
+      "test_count": 0
+    },
+    "error_handling": {
+      "name": "Error Handling",
+      "status": "pending_analysis",
+      "test_count": 0
+    }
+  },
+  "test_cases": [],
+  "known_issues": []
+}

@@ -1,0 +1,643 @@
+[
+  {
+    "id": "discovery-01",
+    "category": "discovery",
+    "description": "Analyze Authentication module and create test cases",
+    "depends_on": [],
+    "module": "auth",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/[lang]/(auth)/login-clerk/[[...rest]]/page.tsx",
+      "apps/nextjs/src/app/[lang]/(auth)/register/page.tsx",
+      "apps/nextjs/src/app/[lang]/(auth)/layout.tsx",
+      "apps/nextjs/src/middleware.ts",
+      "apps/nextjs/src/lib/with-auth.ts"
+    ],
+    "steps": [
+      "Read all auth-related files",
+      "Identify authentication flows (sign up, sign in, sign out)",
+      "Identify authorization patterns (protected routes, API guards)",
+      "Create test cases for: successful login, failed login, registration, session management",
+      "Create test cases for: protected route access without auth",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover auth happy paths and error paths",
+      "expected": "At least 5 test cases covering login, register, logout, protected routes, and auth errors"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-02",
+    "category": "discovery",
+    "description": "Analyze Topic Generation API and create test cases",
+    "depends_on": ["discovery-01"],
+    "module": "generation_topic",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/generate/topic/route.ts",
+      "apps/nextjs/src/lib/openai.ts"
+    ],
+    "steps": [
+      "Read the generate/topic API route",
+      "Read the OpenAI integration code",
+      "Understand the AI pipeline: topic → slide plan → slide copy → layout selection",
+      "Create test cases for: valid topic generation, invalid inputs, rate limits",
+      "Create test cases for: AI response validation, slide count constraints",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover the full AI generation pipeline",
+      "expected": "At least 6 test cases covering valid generation, input validation, auth, rate limits, AI errors"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-03",
+    "category": "discovery",
+    "description": "Analyze Text Generation API and create test cases",
+    "depends_on": ["discovery-02"],
+    "module": "generation_text",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/generate/text/route.ts",
+      "apps/nextjs/src/lib/openai.ts"
+    ],
+    "steps": [
+      "Read the generate/text API route",
+      "Understand smart chunking algorithm for long text",
+      "Identify differences from topic generation",
+      "Create test cases for: short text, long text, text limits",
+      "Create test cases for: chunking behavior, slide count adaptation",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover text input variations",
+      "expected": "At least 5 test cases covering short text, long text, edge cases, validation"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-04",
+    "category": "discovery",
+    "description": "Analyze Creation Flow UI and create test cases",
+    "depends_on": ["discovery-03"],
+    "module": "creation_flow",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx"
+    ],
+    "steps": [
+      "Read the create page component",
+      "Identify UI elements: mode selection, topic/text inputs, options",
+      "Identify form validation and submission logic",
+      "Create test cases for: page load, mode switching, form submission",
+      "Create test cases for: loading states, error display, navigation to editor",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover the full creation UI flow",
+      "expected": "At least 6 test cases covering UI interactions and form behavior"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-05",
+    "category": "discovery",
+    "description": "Analyze Editor Canvas Core and create test cases",
+    "depends_on": ["discovery-04"],
+    "module": "editor_canvas",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/components/editor/EditorCanvas.tsx",
+      "apps/nextjs/src/components/editor/LayerRenderer.tsx",
+      "apps/nextjs/src/components/editor/types.ts"
+    ],
+    "steps": [
+      "Read EditorCanvas component",
+      "Understand Konva.js canvas setup and scaling",
+      "Read LayerRenderer and layer types",
+      "Create test cases for: canvas rendering, text editing, zoom/pan",
+      "Create test cases for: layer interactions, text overflow detection",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover core canvas functionality",
+      "expected": "At least 8 test cases covering canvas rendering, editing, and interactions"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-06",
+    "category": "discovery",
+    "description": "Analyze Editor Controls and create test cases",
+    "depends_on": ["discovery-05"],
+    "module": "editor_controls",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/components/editor/ThumbnailRail.tsx",
+      "apps/nextjs/src/components/editor/SlideThumbnail.tsx",
+      "apps/nextjs/src/components/editor/ThemeControls.tsx",
+      "apps/nextjs/src/components/editor/LayoutVariantSelector.tsx",
+      "apps/nextjs/src/components/editor/StyleKitSelector.tsx"
+    ],
+    "steps": [
+      "Read each editor control component",
+      "Understand thumbnail rail: navigation, reordering, add/delete/duplicate",
+      "Understand theme controls: colors, fonts, spacing",
+      "Understand layout/style kit selectors",
+      "Create test cases for each control's functionality",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover all editor control interactions",
+      "expected": "At least 10 test cases covering thumbnails, theme, layout, and style controls"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-07",
+    "category": "discovery",
+    "description": "Analyze Editor Page Integration and create test cases",
+    "depends_on": ["discovery-06"],
+    "module": "editor_page",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
+      "apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx"
+    ],
+    "steps": [
+      "Read the editor page component",
+      "Understand project loading and data transformation",
+      "Understand component integration (canvas, controls, export)",
+      "Create test cases for: page load, project loading, data display",
+      "Create test cases for: component coordination, state management",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover editor page integration",
+      "expected": "At least 5 test cases covering page loading and integration"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-08",
+    "category": "discovery",
+    "description": "Analyze Export System and create test cases",
+    "depends_on": ["discovery-07"],
+    "module": "export_system",
+    "priority": "critical",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/exports/route.ts",
+      "apps/nextjs/src/app/api/exports/[id]/route.ts",
+      "apps/nextjs/src/lib/render-slide.ts",
+      "apps/nextjs/src/lib/generate-pdf.ts",
+      "apps/nextjs/src/lib/queues/render-queue.ts",
+      "apps/nextjs/src/lib/queues/render-worker.ts",
+      "apps/nextjs/src/components/editor/ExportModal.tsx"
+    ],
+    "steps": [
+      "Read export API routes",
+      "Understand render pipeline: canvas → PNG → PDF",
+      "Understand queue-based processing",
+      "Read ExportModal UI component",
+      "Create test cases for: PDF export, PNG export, progress tracking",
+      "Create test cases for: export errors, download flow",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover the complete export pipeline",
+      "expected": "At least 8 test cases covering PDF, PNG, queue, download"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-09",
+    "category": "discovery",
+    "description": "Analyze Project CRUD APIs and create test cases",
+    "depends_on": ["discovery-08"],
+    "module": "projects_crud",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/projects/route.ts",
+      "apps/nextjs/src/app/api/projects/[id]/route.ts",
+      "apps/nextjs/src/app/api/projects/[id]/slides/route.ts"
+    ],
+    "steps": [
+      "Read project API routes (GET, POST, PATCH, DELETE)",
+      "Understand ownership verification",
+      "Understand slides sub-resource",
+      "Create test cases for: list projects, create, update, delete",
+      "Create test cases for: authorization (can't access other users' projects)",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover CRUD operations and security",
+      "expected": "At least 8 test cases covering all CRUD operations and auth"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-10",
+    "category": "discovery",
+    "description": "Analyze Dashboard and create test cases",
+    "depends_on": ["discovery-09"],
+    "module": "dashboard",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx",
+      "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/layout.tsx"
+    ],
+    "steps": [
+      "Read dashboard page component",
+      "Understand project listing display",
+      "Understand empty state for new users",
+      "Create test cases for: page load, project display, empty state",
+      "Create test cases for: navigation to create, navigation to editor",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover dashboard UI and navigation",
+      "expected": "At least 5 test cases covering dashboard functionality"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-11",
+    "category": "discovery",
+    "description": "Analyze Brand Kit module and create test cases",
+    "depends_on": ["discovery-10"],
+    "module": "brand_kit",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/brand-kits/route.ts",
+      "apps/nextjs/src/app/api/brand-kits/[id]/route.ts",
+      "apps/nextjs/src/app/[lang]/(dashboard)/settings/brand-kit/page.tsx"
+    ],
+    "steps": [
+      "Read brand kit API routes",
+      "Read brand kit settings page",
+      "Understand logo upload, colors, fonts, handle",
+      "Create test cases for: create brand kit, update, delete",
+      "Create test cases for: UI interactions, logo upload, preview",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover brand kit CRUD and UI",
+      "expected": "At least 6 test cases covering brand kit functionality"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-12",
+    "category": "discovery",
+    "description": "Analyze Style Kits module and create test cases",
+    "depends_on": ["discovery-11"],
+    "module": "style_kits",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/style-kits/route.ts",
+      "apps/nextjs/src/app/api/style-kits/[id]/route.ts",
+      "packages/db/prisma/seed.ts"
+    ],
+    "steps": [
+      "Read style kits API routes",
+      "Read seed data for 8 style kits",
+      "Understand free vs premium gating",
+      "Create test cases for: list style kits, get single kit",
+      "Create test cases for: premium kit access by tier",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover style kit access and gating",
+      "expected": "At least 5 test cases covering style kit functionality"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-13",
+    "category": "discovery",
+    "description": "Analyze Billing & Subscriptions and create test cases",
+    "depends_on": ["discovery-12"],
+    "module": "billing",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/stripe/checkout/route.ts",
+      "apps/nextjs/src/app/api/webhooks/stripe/route.ts",
+      "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx",
+      "apps/nextjs/src/hooks/use-subscription.ts"
+    ],
+    "steps": [
+      "Read Stripe checkout route",
+      "Read Stripe webhook handler",
+      "Read billing settings page",
+      "Understand subscription tier management",
+      "Create test cases for: checkout flow, webhook processing",
+      "Create test cases for: tier display, upgrade prompt",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover Stripe integration",
+      "expected": "At least 6 test cases covering billing functionality"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-14",
+    "category": "discovery",
+    "description": "Analyze Feature Gating and create test cases",
+    "depends_on": ["discovery-13"],
+    "module": "feature_gating",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/hooks/use-subscription.ts"
+    ],
+    "steps": [
+      "Read useSubscription hook",
+      "Understand tier limits: carousel count, slide count, style kits, brand kits",
+      "Understand watermark logic",
+      "Create test cases for: free tier limits, creator tier access, pro tier access",
+      "Create test cases for: limit enforcement, upgrade prompts",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover all tier-based restrictions",
+      "expected": "At least 6 test cases covering feature gating"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-15",
+    "category": "discovery",
+    "description": "Analyze Rewrite API and create test cases",
+    "depends_on": ["discovery-14"],
+    "module": "rewrite",
+    "priority": "medium",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "steps": [
+      "Read rewrite API route",
+      "Understand 6 rewrite actions",
+      "Create test cases for: each action type, input validation",
+      "Create test cases for: auth requirement, error handling",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover all rewrite actions",
+      "expected": "At least 5 test cases covering rewrite functionality"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-16",
+    "category": "discovery",
+    "description": "Analyze Auto-Save and create test cases",
+    "depends_on": ["discovery-15"],
+    "module": "auto_save",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/hooks/use-auto-save.ts"
+    ],
+    "steps": [
+      "Read useAutoSave hook",
+      "Understand debounce logic",
+      "Understand save trigger conditions",
+      "Create test cases for: auto-save on change, debounce timing",
+      "Create test cases for: save failure handling",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover auto-save behavior",
+      "expected": "At least 4 test cases covering auto-save"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-17",
+    "category": "discovery",
+    "description": "Analyze Text Measurement and create test cases",
+    "depends_on": ["discovery-16"],
+    "module": "text_measurement",
+    "priority": "high",
+    "files_to_analyze": [
+      "apps/nextjs/src/lib/text-measure.ts"
+    ],
+    "steps": [
+      "Read text-measure utilities",
+      "Understand overflow detection algorithm",
+      "Understand auto-fit calculation",
+      "Create test cases for: overflow detection, font sizing",
+      "Create test cases for: edge cases (empty text, very long text)",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover text measurement logic",
+      "expected": "At least 4 test cases covering text measurement"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-18",
+    "category": "discovery",
+    "description": "Analyze Database Schema and create test cases",
+    "depends_on": ["discovery-17"],
+    "module": "database",
+    "priority": "high",
+    "files_to_analyze": [
+      "packages/db/prisma/schema.prisma",
+      "packages/db/prisma/seed.ts"
+    ],
+    "steps": [
+      "Read Prisma schema",
+      "Understand all models and relationships",
+      "Read seed data",
+      "Create test cases for: seed data presence, relationship integrity",
+      "Create test cases for: cascade deletes, required fields",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover data integrity",
+      "expected": "At least 6 test cases covering database schema"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-19",
+    "category": "discovery",
+    "description": "Analyze Marketing Pages and create test cases",
+    "depends_on": ["discovery-18"],
+    "module": "marketing",
+    "priority": "medium",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+      "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx"
+    ],
+    "steps": [
+      "Read landing page component",
+      "Read pricing page component",
+      "Identify key UI elements and CTAs",
+      "Create test cases for: page load, content display, CTA functionality",
+      "Create test cases for: pricing tier display",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover marketing page functionality",
+      "expected": "At least 4 test cases covering marketing pages"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-20",
+    "category": "discovery",
+    "description": "Analyze Infrastructure & Health and create test cases",
+    "depends_on": ["discovery-19"],
+    "module": "infrastructure",
+    "priority": "medium",
+    "files_to_analyze": [
+      "apps/nextjs/src/app/api/health/route.ts",
+      "apps/nextjs/src/app/api/queues/render/status/route.ts",
+      "apps/nextjs/src/app/error.tsx",
+      "apps/nextjs/src/app/not-found.tsx"
+    ],
+    "steps": [
+      "Read health check endpoint",
+      "Read queue status endpoint",
+      "Read error and 404 pages",
+      "Create test cases for: health endpoint response, queue status",
+      "Create test cases for: error page display, 404 handling",
+      "Add test cases to tests.json",
+      "Update module status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify test cases cover infrastructure health",
+      "expected": "At least 4 test cases covering infrastructure"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-21",
+    "category": "discovery",
+    "description": "Create User Journey test cases - New User Onboarding",
+    "depends_on": ["discovery-20"],
+    "module": "user_journeys",
+    "priority": "critical",
+    "journey": "new_user_onboarding",
+    "files_to_analyze": [],
+    "steps": [
+      "Review all previously analyzed modules",
+      "Map the complete new user journey: landing → signup → dashboard → first carousel",
+      "Create end-to-end test cases that span multiple modules",
+      "Add test cases to tests.json",
+      "Update journey status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify E2E test covers complete onboarding flow",
+      "expected": "At least 2 comprehensive E2E test cases"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-22",
+    "category": "discovery",
+    "description": "Create User Journey test cases - Topic to Export",
+    "depends_on": ["discovery-21"],
+    "module": "user_journeys",
+    "priority": "critical",
+    "journey": "topic_to_export",
+    "files_to_analyze": [],
+    "steps": [
+      "Map the complete topic-to-export journey",
+      "Create E2E test covering: create → generate → edit → export → download",
+      "Include both happy path and error scenarios",
+      "Add test cases to tests.json",
+      "Update journey status to analyzed"
+    ],
+    "validation": {
+      "_note": "Verify E2E test covers complete creation flow",
+      "expected": "At least 2 comprehensive E2E test cases"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-23",
+    "category": "discovery",
+    "description": "Create Security test cases",
+    "depends_on": ["discovery-22"],
+    "module": "security",
+    "priority": "high",
+    "files_to_analyze": [],
+    "steps": [
+      "Review all API routes for auth requirements",
+      "Identify data isolation requirements",
+      "Create test cases for: auth bypass attempts, accessing other users' data",
+      "Create test cases for: API key exposure, sensitive data in responses",
+      "Add test cases to tests.json"
+    ],
+    "validation": {
+      "_note": "Verify security test cases cover auth and data isolation",
+      "expected": "At least 5 security-focused test cases"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-24",
+    "category": "discovery",
+    "description": "Create Error Handling test cases",
+    "depends_on": ["discovery-23"],
+    "module": "error_handling",
+    "priority": "high",
+    "files_to_analyze": [],
+    "steps": [
+      "Review error handling across all modules",
+      "Create test cases for: network errors, API errors, validation errors",
+      "Create test cases for: graceful degradation, error messages",
+      "Add test cases to tests.json"
+    ],
+    "validation": {
+      "_note": "Verify error handling test cases cover failure scenarios",
+      "expected": "At least 4 error handling test cases"
+    },
+    "passes": false
+  },
+  {
+    "id": "discovery-25",
+    "category": "discovery",
+    "description": "Final review and test coverage summary",
+    "depends_on": ["discovery-24"],
+    "module": "summary",
+    "priority": "high",
+    "files_to_analyze": [],
+    "steps": [
+      "Review all created test cases",
+      "Update metadata.coverage_summary in tests.json",
+      "Identify any gaps in coverage",
+      "Create additional test cases for any gaps",
+      "Generate final coverage report in progress.md"
+    ],
+    "validation": {
+      "_note": "Verify comprehensive test coverage",
+      "expected": "All modules analyzed, at least 100 total test cases"
+    },
+    "passes": false
+  }
+]
