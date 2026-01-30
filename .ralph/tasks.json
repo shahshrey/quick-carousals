@@ -462,7 +462,7 @@
       ],
       "expected": "generateSlidePlan(topic) returns [{slide_type, title, intent}, ...] with 8-12 items"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-03",

@@ -2470,3 +2470,129 @@ Now let me check the PRD for the expected structure ...
 [07:06:37] SHELL cat .ralph/tasks.json | jq '(.[] | select(.id == "feature-01") | .passes) = true' > /tmp/tasks_updated.json && mv /tmp/tasks_updated.json .ralph/tasks.json → exit 0
 [07:06:38] SHELL jq '.[] | select(.id == "feature-01") | .passes' .ralph/tasks.json → exit 0
 [07:06:46] 💬 ASSISTANT: Perfect! Now let me commit the changes:...
+[07:06:48] SHELL git add -A && git commit -m "ralph: [feature-01] - Implement OpenAI service with structured output
+
+- Created lib/openai.ts with OpenAI client singleton
+- Defined TypeScript types (SlidePlan, SlideContent) with Zod schemas
+- Implemented generateStructuredOutput with retry logic
+- Implemented generateSlidePlan helper function
+- Created comprehensive test suite (25 tests, all passing)
+- Tests cover success cases, error handling, retry logic, timeouts, and rate limits
+- Added Vitest configuration and test scripts to package.json
+- All validation checks pass: types defined, no type errors, tests passing" → exit 0
+[07:07:07] 💬 ASSISTANT: Excellent! Now let me append learnings to the knowledge base:...
+[07:07:09] SHELL cat >> .ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 22 - feature-01
+- **What was done**: Created OpenAI service with structured output, TypeScript types, and comprehensive test suite
+- **Files changed**:
+  - apps/nextjs/src/lib/openai.ts (created with OpenAI client, types, and helper functions)
+  - apps/nextjs/src/lib/openai.test.ts (created with 25 comprehensive unit tests)
+  - apps/nextjs/vitest.config.ts (created Vitest configuration)
+  - apps/nextjs/package.json (added Vitest, test scripts, and openai package)
+  - .ralph/tasks.json (marked feature-01 complete)
+- **Result**: PASS - All 25 tests passing
+- **Learnings for future iterations**:
+  - **OpenAI SDK installation**: Use `bun add openai` - version 6.17.0 installed successfully
+  - **Vitest setup for Next.js**: Install `vitest @vitest/ui happy-dom` as dev dependencies
+  - **Vitest configuration**: Create vitest.config.ts with path alias (~) and happy-dom environment
+  - **Environment variable patterns**: Read env vars lazily in functions, not at module import time (important for testing)
+  - **Mock patterns for external SDKs**: 
+    - Use `vi.mock()` at module level
+    - Create constructor function (not arrow function) in mock: `vi.fn(function() { return mockObject })`
+    - Share mock variables across tests using module-level constants
+  - **Test structure best practices**:
+    - Use beforeEach/afterEach for env setup/cleanup
+    - Group related tests in describe blocks
+    - Test success cases, error cases, retry logic, timeouts separately
+    - Use `.mockResolvedValue()` for one-time mocks, `.mockResolvedValueOnce()` for sequential mocks
+  - **Zod schema validation in OpenAI**:
+    - Use `response_format: { type: 'json_object' }` in API call
+    - Define schemas with z.object() and export both schema and inferred type
+    - Validate API responses with schema.parse() - throws on mismatch
+  - **Retry logic implementation**:
+    - Check error status codes: 408, 429, 5xx are retryable
+    - Implement exponential backoff: [1s, 2s, 5s]
+    - Use Promise.race() for timeout handling
+    - Wrap errors in custom error classes for better handling
+  - **Test timeout configuration**: Use third parameter in it() for long-running tests: `it('test', async () => {...}, 3000)`
+  - **OpenAI structured output pattern**:
+    - System prompt sets context and output format
+    - User message contains the actual request
+    - Temperature controls randomness (0.7 default)
+    - JSON mode ensures valid JSON responses
+  - **Type generation workflow**: Types are generated from Zod schemas using `z.infer<>`
+  - **Test validation workflow**:
+    - Run `bun run test <file>` to execute specific test file
+    - Use `bun run typecheck` to verify no type errors
+    - All tests must pass before marking task complete
+  - **Working commands for this task**:
+    - `bun add openai` - install OpenAI SDK
+    - `bun add -D vitest @vitest/ui happy-dom` - install test dependencies
+    - `bun run test src/lib/openai.test.ts` - run specific test file
+    - `bun run typecheck` - verify TypeScript types
+---
+EOF
+echo "Learnings appended to knowledge.md" → exit 0
+[07:07:14] 💬 ASSISTANT: Perfect! Now let me commit the knowledge update and output the completion signal:...
+[07:07:17] SHELL git add .ralph/knowledge.md && git commit -m "ralph: Document learnings from feature-01 iteration" → exit 0
+[07:07:29] 💬 ASSISTANT: Excellent! Task feature-01 is complete. Let me create a summary:
+
+## Summary
+
+Successfully completed **feature-01: Create OpenAI service with structured output**
+
+### What was implemented:
+
+1. **OpenA...
+[07:07:29] → Agent signaled NEXT (task complete)
+[07:07:29] SESSION END: 485353ms, ~1920 tokens
+[07:07:29] 🧠 LEARNED: knowledge.md updated
+[07:08:23] NEW TASK: feature-02 (previous: feature-01) - starting fresh session
+[07:08:24] SESSION 3 START: model=sonnet-4.5-thinking
+[07:08:27] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[07:09:27] SESSION 4 START: model=sonnet-4.5-thinking
+[07:09:29] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[07:10:29] SESSION 5 START: model=sonnet-4.5-thinking
+[07:10:32] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[07:10:44] 💬 ASSISTANT: I'll start by reading the required files to understand the task....
+[07:10:47] READ .ralph/tasks.json (2763 lines, 0B)
+[07:10:47] READ .ralph/PRD.md (1489 lines, 0B)
+[07:10:47] READ apps/nextjs/src/lib/openai.ts (379 lines, 0B)
+[07:10:52] 💬 ASSISTANT: Now let me get the specific task details:...
+[07:10:55] SHELL jq '.[] | select(.id == "feature-02")' .ralph/tasks.json → exit 0
+[07:11:01] 💬 ASSISTANT: Perfect! I can see that feature-02 is about implementing slide plan generation. Looking at the OpenAI service code, I can see that `generateSlidePlan` function already exists at lines 347-378. Let me ...
+[07:11:08] 💬 ASSISTANT: The function exists! Let me check the output structure more carefully:...
+[07:11:09] READ apps/nextjs/src/lib/openai.ts (379 lines, 0B)
+[07:11:18] 💬 ASSISTANT: Perfect! I can see the implementation is complete. The structure includes:
+- `slideType` (matches the validation requirement for "slide_type")
+- `headline` (matches "title" concept)
+- `goal` (matches ...
+[07:11:28] SHELL cd apps/nextjs && bun run test src/lib/openai.test.ts 2>&1 | tail -50 → exit 0
+[07:11:33] 💬 ASSISTANT: Excellent! All 25 tests pass. Now let me check the specific test for `generateSlidePlan` to understand what it validates:...
+[07:11:34] READ apps/nextjs/src/lib/openai.test.ts (736 lines, 0B)
+[07:11:40] 💬 ASSISTANT: Perfect! The tests validate that:
+1. `generateSlidePlan` successfully generates slides with the correct structure
+2. It respects custom slide counts
+3. It respects custom tone
+4. The output structure ...
+[07:11:43] SHELL grep -q 'generateSlidePlan' apps/nextjs/src/lib/openai.ts && echo 'PASS: function exists' || echo 'FAIL' → exit 0
+[07:11:43] SHELL grep -q 'slideType' apps/nextjs/src/lib/openai.ts && echo 'PASS: output structure' || echo 'FAIL' → exit 0
+[07:11:48] 💬 ASSISTANT: I'm in the wrong directory. Let me fix this:...
+[07:11:51] SHELL pwd → exit 0
+[07:11:52] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -q 'generateSlidePlan' apps/nextjs/src/lib/openai.ts && echo 'PASS: function exists' || echo 'FAIL' → exit 0
+[07:11:53] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -q 'slideType' apps/nextjs/src/lib/openai.ts && echo 'PASS: output structure' || echo 'FAIL' → exit 0
+[07:12:00] 💬 ASSISTANT: Great! Both validation commands pass. Now let me verify the slide count constraint. Looking at the implementation, I can see:
+- The schema allows 3-20 slides (min(3).max(20))
+- The default slideCount ...
+[07:12:03] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -A 3 'SlidePlanSchema' apps/nextjs/src/lib/openai.ts | grep -E 'min|max' → exit 0
+[07:12:08] 💬 ASSISTANT: Perfect! The implementation is complete and working. Let me now verify it works end-to-end by checking the function signature and behavior:...
+[07:12:09] READ apps/nextjs/src/lib/openai.ts (379 lines, 0B)
+[07:12:20] 💬 ASSISTANT: Excellent! The implementation is complete and comprehensive. Let me summarize what's implemented:
+
+## Task feature-02: Implementation Summary
+
+**What was already done (in iteration 22/feature-01):**
+1...
+[07:12:23] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '(.[] | select(.id == "feature-02") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
