@@ -702,7 +702,7 @@
       ],
       "expected": "react-konva and konva installed, EditorCanvas component with 1080x1350 viewport and responsive scaling"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-13",
