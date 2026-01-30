@@ -1,0 +1,62 @@
+{
+  "id": "cta_centered",
+  "name": "CTA: Centered Call to Action",
+  "category": "cta",
+  "slideType": "cta",
+  "layersBlueprint": {
+    "layers": [
+      {
+        "type": "background",
+        "properties": {}
+      },
+      {
+        "id": "headline",
+        "type": "text_box",
+        "align": "center",
+        "position": {
+          "x": 120,
+          "y": 400,
+          "width": 840,
+          "height": 200
+        },
+        "constraints": {
+          "max_font": 64,
+          "min_font": 40,
+          "max_lines": 2
+        }
+      },
+      {
+        "id": "subtext",
+        "type": "text_box",
+        "align": "center",
+        "position": {
+          "x": 120,
+          "y": 650,
+          "width": 840,
+          "height": 150
+        },
+        "constraints": {
+          "max_font": 28,
+          "min_font": 20,
+          "max_lines": 2
+        }
+      },
+      {
+        "id": "footer",
+        "type": "text_box",
+        "align": "center",
+        "position": {
+          "x": 120,
+          "y": 1150,
+          "width": 840,
+          "height": 100
+        },
+        "constraints": {
+          "max_font": 20,
+          "min_font": 16,
+          "max_lines": 2
+        }
+      }
+    ]
+  }
+}

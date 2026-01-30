@@ -1,0 +1,6 @@
+=== API CONTRACT VALIDATION ===
+
+--- Test 1: Health Endpoint ---
+
+--- Test 1: Health Endpoint ---
+✅ PASS: GET /api/health → 200 with valid JSON

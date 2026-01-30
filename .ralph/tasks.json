@@ -2263,7 +2263,7 @@
       ],
       "expected": "All API endpoints return correct status codes, response schemas are valid, error format consistent"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-11",

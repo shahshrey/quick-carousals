@@ -1,0 +1,1 @@
+{"status":"ok","message":"QuickCarousals API is running","timestamp":"2026-01-30T11:27:39.324Z"}

@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+x-clerk-auth-reason: dev-browser-missing
+x-clerk-auth-status: signed-out
+x-middleware-rewrite: /api/style-kits
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch
+content-type: application/json
+Date: Fri, 30 Jan 2026 11:28:53 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
