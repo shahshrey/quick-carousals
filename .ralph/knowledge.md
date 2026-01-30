@@ -953,3 +953,36 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - Database queries to verify structure and count
   - **Next task**: feature-11 will validate the remaining 4 layouts (Part 2): recap_grid, cta_centered, generic_single_focus, and value_text_left_visual_right
 ---
+
+---
+## Iteration 24 - feature-11
+- **What was done**: Created /api/layouts public endpoint to expose all 9 template layout blueprints
+- **Files changed**: 
+  - apps/nextjs/src/app/api/layouts/route.ts (created)
+  - .ralph/tasks.json (marked feature-11 complete)
+  - .ralph/logs/layouts.json (validation artifact)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already 90% complete from iteration 10 (setup-08)**: All 9 layouts were already seeded with complete blueprints, just needed to create the API endpoint
+  - **Part 2 consists of 4 specific layouts**:
+    1. **Text Left, Visual Right** - value_text_left_visual_right (4 layers: background + headline + body + image placeholder)
+    2. **Recap Grid** - recap_grid (3 layers: background + headline + grid body)
+    3. **CTA Centered** - cta_centered (4 layers: background + headline + subtext + footer)
+    4. **Generic Single Focus** - generic_single_focus (3 layers: background + headline + body)
+  - **Public API pattern**: Created endpoint following same pattern as /api/style-kits (from iteration 20) - no auth required, simple database query
+  - **Kysely client pattern**: Created inline Kysely client with PostgresDialect in route file (matches style-kits implementation)
+  - **Layer structure verified**: All layouts have proper layersBlueprint JSON with:
+    - `layers` array containing layer objects
+    - Each layer has `type`, optional `id`, `position` (x, y, width, height)
+    - Text boxes have `constraints` (max_font, min_font, max_lines)
+    - Some layers have additional properties (align, bulletStyle)
+  - **Complete set validated**: GET /api/layouts returns all 9 layouts with blueprints
+  - **Validation workflow**: 
+    - `curl -s http://localhost:3000/api/layouts | tee .ralph/logs/layouts.json` - capture response
+    - `jq 'length' .ralph/logs/layouts.json` - verify count (9)
+    - `jq '.[0].layersBlueprint' .ralph/logs/layouts.json` - verify structure
+  - **Database validation commands**:
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id, name FROM \"TemplateLayout\" ORDER BY id;"` - list all layouts
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id, jsonb_array_length((\"layersBlueprint\"::jsonb)->'layers') AS layer_count FROM \"TemplateLayout\" WHERE id IN (...);"` - count layers
+  - **Next task**: feature-12 will set up the Konva.js canvas editor to render these layouts
+---

@@ -960,3 +960,24 @@
 
 ### 2026-01-30 08:48:58
 **Session 24 started** (model: sonnet-4.5-thinking)
+
+## Iteration 24 - feature-11 Complete
+
+**Task**: Create slide layout blueprints (Part 2)
+
+**What was completed:**
+- Created `/api/layouts` public endpoint
+- Endpoint returns all 9 template layouts with complete blueprints
+- Validated Part 2 layouts (value_text_left_visual_right, recap_grid, cta_centered, generic_single_focus)
+
+**Key implementation:**
+- Public API following /api/style-kits pattern
+- Kysely client with PostgresDialect
+- All 9 layouts verified with proper layersBlueprint JSON structure
+
+**Validation passed:**
+- GET /api/layouts returns 9 layouts ✅
+- Each layout has layersBlueprint field ✅
+- All Part 2 layouts present with proper layer structures ✅
+
+**Next task**: feature-12 (Konva canvas setup)
