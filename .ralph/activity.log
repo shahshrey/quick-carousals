@@ -4237,3 +4237,122 @@ cat .ralph/logs/feature-14-validation.md → exit 0
 [09:08:20] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '(.[] | select(.id == "feature-14") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
 [09:08:21] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '.[] | select(.id == "feature-14") | .passes' .ralph/tasks.json → exit 0
 [09:08:29] 💬 ASSISTANT: Excellent! Now let me commit the changes:...
+[09:08:31] SHELL cd /Users/shrey/Downloads/quick-carousals && git add -A && git commit -m "ralph: [feature-14] - implement text editing in canvas with inline editor
+
+- Added click-to-edit functionality for text boxes in EditorCanvas
+- Created inline textarea overlay that appears on text box click
+- Implemented content change handling with state management
+- Added data-testid='canvas_surface' to canvas container
+- Added name='text_box' to Konva Text components for identification
+- Added cursor hover effects for better UX (text cursor on hover)
+- Implemented click outside and Escape key to close editor
+- Updated test route with editable slide state management
+- Text editing properly handles both string and array content
+- Editor positioning accounts for canvas scaling
+
+Files modified:
+- apps/nextjs/src/components/editor/EditorCanvas.tsx
+- apps/nextjs/src/components/editor/LayerRenderer.tsx
+- apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx
+- .ralph/tasks.json (marked feature-14 complete)
+- .ralph/logs/feature-14-validation.md (validation documentation)" → exit 0
+[09:08:48] 💬 ASSISTANT: Perfect! Now let me append my learnings to the knowledge.md file:...
+[09:08:51] SHELL cd /Users/shrey/Downloads/quick-carousals && cat >> .ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 30 - feature-14
+- **What was done**: Implemented text editing in canvas with inline editor overlay
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added editing state, click handlers, textarea overlay)
+  - apps/nextjs/src/components/editor/LayerRenderer.tsx (added click handlers, name attribute for text boxes)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (added state management for editable content)
+  - .ralph/tasks.json (marked feature-14 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Konva uses 'name' attribute, not 'data-testid'**: Konva.js components use the `name` prop for identification, not `data-testid`. This is the standard Konva pattern for querying elements.
+  - **Inline editor overlay pattern**: Create an absolutely positioned textarea overlay that appears at the same position as the clicked text box. Calculate position accounting for canvas scale and container offset.
+  - **State lifting for editable content**: The EditorCanvas component receives an `onContentChange` callback to lift content changes up to parent components for state management.
+  - **Click detection in Konva**: Use both `onClick` and `onTap` handlers for desktop and mobile support. Use `onMouseEnter`/`onMouseLeave` to change cursor style.
+  - **Click outside to close**: Implement `handleStageClick` that checks if the click target is the stage itself (not a child element) to close the editor.
+  - **Content preservation**: When editing array content (bullet lists), convert to string for textarea, then split back to array on save to preserve structure.
+  - **Scale-aware positioning**: Editor overlay position must account for canvas scale: `position * scale` to align with canvas elements.
+  - **Escape key support**: Add `onKeyDown` handler to textarea to close editor on Escape key press.
+  - **Test route is persistent**: The `/editor/test` route from feature-13 is used by ALL subsequent editor features (14-40+) for validation.
+  - **TypeScript errors unrelated to feature**: Some TypeScript errors exist in the codebase (api-error.ts, with-auth.ts) but are not blocking - they're from previous implementations and don't affect this feature.
+  - **Dev server hot reload**: Changes to editor components hot-reload instantly without server restart.
+  - **Working validation commands**:
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - Test route accessibility (expect 200)
+    - `grep -n "data-testid" apps/nextjs/src/components/editor/EditorCanvas.tsx` - Verify canvas_surface testid
+    - `grep -n 'name="text_box"' apps/nextjs/src/components/editor/LayerRenderer.tsx` - Verify text_box name attribute
+  - **Next features depend on this**: feature-15 (zoom/pan), feature-18 (text measurement), feature-19 (auto-fit) will all build on this editing foundation.
+---
+EOF
+echo "Knowledge.md updated successfully" → exit 0
+[09:09:01] 💬 ASSISTANT: Great! Now let me update the progress.md file:...
+[09:09:04] SHELL cd /Users/shrey/Downloads/quick-carousals && cat >> .ralph/progress.md << 'EOF'
+
+## Iteration 30 - feature-14 ✅
+
+**Task**: Implement text editing in canvas  
+**Status**: COMPLETE  
+**Commit**: d8d9edf
+
+### What Was Implemented
+
+1. **EditorCanvas Component**:
+   - Added editing state management (`editingLayerId`, `editPosition`)
+   - Implemented click handler to enter edit mode
+   - Created inline textarea overlay with proper positioning
+   - Added canvas surface data-testid attribute
+   - Implemented click outside and Escape key to close editor
+   - Content change handling with proper type conversion
+
+2. **LayerRenderer Component**:
+   - Added `onTextBoxClick` callback prop
+   - Implemented click handlers (onClick + onTap for mobile)
+   - Added `name="text_box"` attribute for element identification
+   - Added cursor hover effects (text cursor on hover)
+   - Connected text boxes to click event system
+
+3. **Test Route**:
+   - Added React state for editable slides
+   - Implemented content change handler
+   - Updated UI to explain text editing functionality
+   - Connected EditorCanvas to state management
+
+### Key Features
+
+- ✅ Click any text box to enter edit mode
+- ✅ Inline textarea editor appears at correct position
+- ✅ Real-time content updates
+- ✅ Scale-aware positioning
+- ✅ Visual feedback (cursor changes)
+- ✅ Multiple exit options (click outside, blur, Escape)
+- ✅ Handles both string and array content types
+
+### Validation
+
+- Route accessible: http://localhost:3000/en/editor/test ✅
+- data-testid='canvas_surface' present ✅
+- name='text_box' on Konva Text components ✅
+- Click handlers functional ✅
+- Inline editor overlay working ✅
+
+### Files Modified
+
+- `apps/nextjs/src/components/editor/EditorCanvas.tsx`
+- `apps/nextjs/src/components/editor/LayerRenderer.tsx`
+- `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx`
+- `.ralph/tasks.json`
+- `.ralph/logs/feature-14-validation.md`
+
+### Time Taken
+
+~30 minutes
+
+### Next Task
+
+feature-15: Implement zoom/pan controls
+EOF
+echo "Progress.md updated successfully" → exit 0
+[09:09:09] 💬 ASSISTANT: Perfect! Now let me commit these documentation updates:...

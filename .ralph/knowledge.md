@@ -1054,3 +1054,31 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'background' apps/nextjs/src/components/editor && grep -rq 'text_box' apps/nextjs/src/components/editor` - verify layer types
     - `test -f apps/nextjs/src/app/[lang]/\(dashboard\)/editor/test/page.tsx` - verify test route
     - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route loads (expect 200)
+
+---
+## Iteration 30 - feature-14
+- **What was done**: Implemented text editing in canvas with inline editor overlay
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added editing state, click handlers, textarea overlay)
+  - apps/nextjs/src/components/editor/LayerRenderer.tsx (added click handlers, name attribute for text boxes)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (added state management for editable content)
+  - .ralph/tasks.json (marked feature-14 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Konva uses 'name' attribute, not 'data-testid'**: Konva.js components use the `name` prop for identification, not `data-testid`. This is the standard Konva pattern for querying elements.
+  - **Inline editor overlay pattern**: Create an absolutely positioned textarea overlay that appears at the same position as the clicked text box. Calculate position accounting for canvas scale and container offset.
+  - **State lifting for editable content**: The EditorCanvas component receives an `onContentChange` callback to lift content changes up to parent components for state management.
+  - **Click detection in Konva**: Use both `onClick` and `onTap` handlers for desktop and mobile support. Use `onMouseEnter`/`onMouseLeave` to change cursor style.
+  - **Click outside to close**: Implement `handleStageClick` that checks if the click target is the stage itself (not a child element) to close the editor.
+  - **Content preservation**: When editing array content (bullet lists), convert to string for textarea, then split back to array on save to preserve structure.
+  - **Scale-aware positioning**: Editor overlay position must account for canvas scale: `position * scale` to align with canvas elements.
+  - **Escape key support**: Add `onKeyDown` handler to textarea to close editor on Escape key press.
+  - **Test route is persistent**: The `/editor/test` route from feature-13 is used by ALL subsequent editor features (14-40+) for validation.
+  - **TypeScript errors unrelated to feature**: Some TypeScript errors exist in the codebase (api-error.ts, with-auth.ts) but are not blocking - they're from previous implementations and don't affect this feature.
+  - **Dev server hot reload**: Changes to editor components hot-reload instantly without server restart.
+  - **Working validation commands**:
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - Test route accessibility (expect 200)
+    - `grep -n "data-testid" apps/nextjs/src/components/editor/EditorCanvas.tsx` - Verify canvas_surface testid
+    - `grep -n 'name="text_box"' apps/nextjs/src/components/editor/LayerRenderer.tsx` - Verify text_box name attribute
+  - **Next features depend on this**: feature-15 (zoom/pan), feature-18 (text measurement), feature-19 (auto-fit) will all build on this editing foundation.
+---

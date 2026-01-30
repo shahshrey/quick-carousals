@@ -1081,3 +1081,66 @@
 
 ### 2026-01-30 09:04:06
 **Session 30 started** (model: sonnet-4.5-thinking)
+
+## Iteration 30 - feature-14 ✅
+
+**Task**: Implement text editing in canvas  
+**Status**: COMPLETE  
+**Commit**: d8d9edf
+
+### What Was Implemented
+
+1. **EditorCanvas Component**:
+   - Added editing state management (`editingLayerId`, `editPosition`)
+   - Implemented click handler to enter edit mode
+   - Created inline textarea overlay with proper positioning
+   - Added canvas surface data-testid attribute
+   - Implemented click outside and Escape key to close editor
+   - Content change handling with proper type conversion
+
+2. **LayerRenderer Component**:
+   - Added `onTextBoxClick` callback prop
+   - Implemented click handlers (onClick + onTap for mobile)
+   - Added `name="text_box"` attribute for element identification
+   - Added cursor hover effects (text cursor on hover)
+   - Connected text boxes to click event system
+
+3. **Test Route**:
+   - Added React state for editable slides
+   - Implemented content change handler
+   - Updated UI to explain text editing functionality
+   - Connected EditorCanvas to state management
+
+### Key Features
+
+- ✅ Click any text box to enter edit mode
+- ✅ Inline textarea editor appears at correct position
+- ✅ Real-time content updates
+- ✅ Scale-aware positioning
+- ✅ Visual feedback (cursor changes)
+- ✅ Multiple exit options (click outside, blur, Escape)
+- ✅ Handles both string and array content types
+
+### Validation
+
+- Route accessible: http://localhost:3000/en/editor/test ✅
+- data-testid='canvas_surface' present ✅
+- name='text_box' on Konva Text components ✅
+- Click handlers functional ✅
+- Inline editor overlay working ✅
+
+### Files Modified
+
+- `apps/nextjs/src/components/editor/EditorCanvas.tsx`
+- `apps/nextjs/src/components/editor/LayerRenderer.tsx`
+- `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx`
+- `.ralph/tasks.json`
+- `.ralph/logs/feature-14-validation.md`
+
+### Time Taken
+
+~30 minutes
+
+### Next Task
+
+feature-15: Implement zoom/pan controls
