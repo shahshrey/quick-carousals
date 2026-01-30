@@ -23,6 +23,7 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
   const [stageSize, setStageSize] = useState({ width: CANVAS_WIDTH, height: CANVAS_HEIGHT });
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [editPosition, setEditPosition] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const [isFixingWithAI, setIsFixingWithAI] = useState(false);
   
   // Zoom and pan controls
   const [zoom, setZoom] = useState(100); // 50-200%
@@ -133,20 +134,106 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
   const editingContent = editingLayerId && slide ? slide.content[editingLayerId] : '';
   const editingText = Array.isArray(editingContent) ? editingContent.join('\n') : editingContent;
 
+  // Check if current text overflows
+  const checkIfOverflows = (layerId: string): boolean => {
+    if (!slide) return false;
+    
+    // Find the layer in the blueprint
+    const layer = slide.blueprint.layers.find(l => l.type === 'text_box' && l.id === layerId);
+    if (!layer || layer.type !== 'text_box') return false;
+
+    // Import text measurement utilities
+    const { measureText } = require('~/lib/text-measure');
+    if (typeof window === 'undefined') return false;
+
+    const content = slide.content[layerId];
+    const isHeadline = layerId.includes('headline');
+    const fontFamily = isHeadline 
+      ? slide.styleKit.typography.headline_font 
+      : slide.styleKit.typography.body_font;
+    const fontWeight = isHeadline 
+      ? slide.styleKit.typography.headline_weight 
+      : slide.styleKit.typography.body_weight;
+    const lineHeight = slide.styleKit.spacingRules.line_height;
+
+    try {
+      const measurement = measureText(content, {
+        fontSize: layer.constraints.min_font,
+        fontFamily,
+        fontWeight,
+        lineHeight,
+        maxWidth: layer.position.width,
+      });
+
+      return measurement.height > layer.position.height;
+    } catch {
+      return false;
+    }
+  };
+
+  const currentTextOverflows = editingLayerId ? checkIfOverflows(editingLayerId) : false;
+
+  // Fix with AI handler
+  const handleFixWithAI = async () => {
+    if (!editingLayerId || !slide) return;
+
+    setIsFixingWithAI(true);
+
+    try {
+      const response = await fetch('/api/rewrite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: editingText,
+          action: 'shorter',
+          maxWords: 12, // For headlines, shorter text
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Fix with AI failed:', error);
+        alert(`Failed to fix text: ${error.error?.message || 'Unknown error'}`);
+        return;
+      }
+
+      const data = await response.json();
+      handleContentChange(data.rewritten_text);
+
+    } catch (error) {
+      console.error('Fix with AI error:', error);
+      alert('Failed to fix text. Please try again.');
+    } finally {
+      setIsFixingWithAI(false);
+    }
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className={className}
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#f5f5f5',
-        position: 'relative',
-      }}
-      data-testid="canvas_surface"
-    >
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
+      <div
+        ref={containerRef}
+        className={className}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: '#f5f5f5',
+          position: 'relative',
+        }}
+        data-testid="canvas_surface"
+      >
       {/* Zoom and Pan Controls */}
       <div
         style={{
@@ -244,10 +331,10 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
             left: `calc(50% - ${stageSize.width / 2}px + ${editPosition.x}px + ${pan.x}px)`,
             top: `calc(50% - ${stageSize.height / 2}px + ${editPosition.y}px + ${pan.y}px + 60px)`,
             width: `${editPosition.width}px`,
-            height: `${editPosition.height}px`,
             zIndex: 1000,
           }}
         >
+          {/* Text area */}
           <textarea
             autoFocus
             value={editingText as string}
@@ -264,7 +351,7 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
             }}
             style={{
               width: '100%',
-              height: '100%',
+              height: `${editPosition.height}px`,
               padding: '8px',
               fontSize: '16px',
               fontFamily: 'inherit',
@@ -275,8 +362,60 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
               outline: 'none',
             }}
           />
+          
+          {/* Fix with AI button - only show if text overflows */}
+          {currentTextOverflows && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFixWithAI();
+              }}
+              onMouseDown={(e) => {
+                // Prevent blur event from closing editor
+                e.preventDefault();
+              }}
+              disabled={isFixingWithAI}
+              data-testid="fix_with_ai_button"
+              style={{
+                marginTop: '8px',
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: 600,
+                backgroundColor: isFixingWithAI ? '#9ca3af' : '#ef4444',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: isFixingWithAI ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              {isFixingWithAI ? (
+                <>
+                  <span style={{ 
+                    display: 'inline-block', 
+                    width: '14px', 
+                    height: '14px', 
+                    border: '2px solid #fff',
+                    borderTopColor: 'transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                  }} />
+                  Fixing...
+                </>
+              ) : (
+                <>
+                  ✨ Fix with AI
+                </>
+              )}
+            </button>
+          )}
         </div>
       )}
     </div>
+    </>
   );
 }

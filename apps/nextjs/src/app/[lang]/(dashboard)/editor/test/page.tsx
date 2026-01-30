@@ -180,6 +180,26 @@ const sampleSlides: SlideData[] = [
     },
     styleKit: minimalCleanStyleKit,
   },
+  // Slide 6: Overflow test - Text that's too long and needs AI fixing
+  {
+    layoutId: 'hook_big_headline',
+    blueprint: {
+      layers: [
+        { type: 'background', properties: {} },
+        {
+          id: 'headline',
+          type: 'text_box',
+          align: 'center',
+          position: { x: 60, y: 400, width: 960, height: 200 },
+          constraints: { max_font: 48, min_font: 24, max_lines: 3 },
+        },
+      ],
+    },
+    content: {
+      headline: 'This is an extremely long headline that contains way too much text and will definitely overflow the text box boundaries causing the red border overflow indicator to appear which then triggers the Fix with AI button to show up',
+    },
+    styleKit: minimalCleanStyleKit,
+  },
 ];
 
 export default function EditorTestPage() {

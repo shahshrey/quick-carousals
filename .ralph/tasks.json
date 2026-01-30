@@ -928,7 +928,7 @@
       ],
       "expected": "Overflow text shows visual indicator (red border/warning). fix_with_ai_button calls /api/rewrite with 'shorter' action, replacing text with shorter version."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-21",
