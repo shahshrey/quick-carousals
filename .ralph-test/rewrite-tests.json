@@ -1,0 +1,731 @@
+[
+  {
+    "id": "TC-REWRITE-001",
+    "name": "Rewrite Text - Shorter Action (Happy Path)",
+    "module": "rewrite",
+    "user_journey": "topic_to_export",
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'shorter' action successfully reduces text length while preserving meaning",
+    "business_context": "Users need to condense overflowing text to fit within slide constraints. Shorter action is the most frequently used rewrite action, critical for fixing text overflow.",
+    "preconditions": [
+      "User is authenticated (valid Clerk session)",
+      "OpenAI API key is configured in environment",
+      "Text to rewrite is 1-5000 characters"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Send POST request to /api/rewrite with { text: '150 character text', action: 'shorter', maxWords: 12 }",
+        "expected": "Request passes authentication (withAuthAndErrors - line 123)"
+      },
+      {
+        "step": 2,
+        "action": "Body validation with rewriteRequestSchema (line 124)",
+        "expected": "Zod validates text (1-5000 chars), action enum, maxWords (1-100), passes validation"
+      },
+      {
+        "step": 3,
+        "action": "ACTION_PROMPTS.shorter generates system + user prompts (lines 48-58)",
+        "expected": "System prompt includes 'concise editor' instructions, user prompt includes text and maxWords constraint"
+      },
+      {
+        "step": 4,
+        "action": "generateStructuredOutput calls OpenAI API (lines 138-143)",
+        "expected": "OpenAI processes request with temperature 0.7, returns structured JSON matching rewriteResponseSchema"
+      },
+      {
+        "step": 5,
+        "action": "API responds with rewritten_text",
+        "expected": "Response includes: { rewritten_text: 'shortened version', original_text, action: 'shorter' } (lines 145-149)"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status is 200",
+      "rewritten_text field present and non-empty",
+      "Rewritten text is shorter than original (at least 20% reduction)",
+      "If maxWords specified, output is <= maxWords",
+      "Core meaning preserved (key terms present)",
+      "Tone and voice maintained (no style change)",
+      "original_text echoed in response",
+      "action field matches 'shorter'",
+      "Response time < 10 seconds (typical OpenAI latency)"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts",
+      "apps/nextjs/src/lib/openai.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "ai",
+      "text-editing",
+      "overflow-fix",
+      "core-feature"
+    ],
+    "notes": "Shorter action uses maxWords parameter (optional). Without maxWords, aims for 30% reduction. System prompt: lines 49-56. Used in EditorCanvas 'Fix with AI' button for overflow (maxWords=12)."
+  },
+  {
+    "id": "TC-REWRITE-002",
+    "name": "Rewrite Text - Punchier Action",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'punchier' action makes text more impactful using strong verbs and power words",
+    "business_context": "LinkedIn carousel headlines must grab attention. Punchier action transforms bland text into engaging, scroll-stopping content.",
+    "preconditions": [
+      "User is authenticated",
+      "Text is suitable for rewriting (not already highly punchy)"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'You might want to consider trying these tips.', action: 'punchier' }",
+        "expected": "Request accepted and validated"
+      },
+      {
+        "step": 2,
+        "action": "ACTION_PROMPTS.punchier applies (lines 60-70)",
+        "expected": "System prompt instructs: use strong active verbs, remove qualifiers, add power words, keep concise"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI generates punchier version",
+        "expected": "Output uses active voice, removes 'might', 'want to', 'consider', adds strong verbs (e.g., 'Implement', 'Master')"
+      },
+      {
+        "step": 4,
+        "action": "Verify response quality",
+        "expected": "Rewritten text is more direct, energetic, and compelling. Length similar to original (conciseness maintained)"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "Weak qualifiers removed ('maybe', 'might', 'could', 'probably')",
+      "Active verbs replace passive constructions",
+      "Power words added (e.g., 'transform', 'accelerate', 'dominate')",
+      "Maintains original meaning",
+      "Text is more engaging and direct",
+      "Temperature 0.7 used (line 142 - default for punchier)"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "copywriting",
+      "engagement",
+      "tone-adjustment"
+    ],
+    "notes": "Punchier uses default temperature (0.7). System prompt: lines 61-68. Commonly used for headlines and hook slides."
+  },
+  {
+    "id": "TC-REWRITE-003",
+    "name": "Rewrite Text - Add Examples Action",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'examples' action adds 1-2 concrete, relevant examples to abstract concepts",
+    "business_context": "Abstract concepts are hard to grasp. Examples make content tangible and relatable, improving comprehension and engagement.",
+    "preconditions": [
+      "User is authenticated",
+      "Text contains abstract concept suitable for examples"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'Good content builds trust.', action: 'examples' }",
+        "expected": "Request validated"
+      },
+      {
+        "step": 2,
+        "action": "ACTION_PROMPTS.examples applies (lines 72-81)",
+        "expected": "System prompt: add 1-2 specific relevant examples, keep brief, don't change core message, realistic and relatable"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI generates version with examples",
+        "expected": "Output includes concrete example (e.g., 'Like how [brand] shares behind-the-scenes content weekly.')"
+      },
+      {
+        "step": 4,
+        "action": "Verify examples are appropriate",
+        "expected": "Examples are realistic, relatable, illustrative, and don't overshadow main message"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "1-2 concrete examples added",
+      "Examples are specific (not vague)",
+      "Examples are relevant to context",
+      "Core message unchanged",
+      "Text length increased moderately (not doubled)",
+      "Examples feel natural (not forced)",
+      "Professional tone maintained"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "content-enrichment",
+      "examples",
+      "clarity"
+    ],
+    "notes": "Examples action best for value slides. System prompt: lines 73-79. Examples should be brief (1 sentence each)."
+  },
+  {
+    "id": "TC-REWRITE-004",
+    "name": "Rewrite Text - Reduce Jargon Action",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'reduce_jargon' action simplifies technical terms into everyday language",
+    "business_context": "Jargon alienates general audiences. Simplification makes content accessible without losing professionalism.",
+    "preconditions": [
+      "User is authenticated",
+      "Text contains technical jargon or industry-specific terms"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'Leverage synergies to optimize KPIs.', action: 'reduce_jargon' }",
+        "expected": "Request validated"
+      },
+      {
+        "step": 2,
+        "action": "ACTION_PROMPTS.reduce_jargon applies (lines 83-93)",
+        "expected": "System prompt: replace jargon with everyday language, explain simply, keep meaning, maintain professional tone, accessible to general audience"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI simplifies jargon",
+        "expected": "Output replaces 'leverage synergies' → 'work together', 'optimize KPIs' → 'improve key results'"
+      },
+      {
+        "step": 4,
+        "action": "Verify simplification quality",
+        "expected": "Jargon removed, concepts explained clearly, professional tone maintained"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "Technical terms replaced with plain language",
+      "Concepts explained clearly",
+      "Meaning preserved",
+      "Professional tone maintained (not dumbed down)",
+      "Accessible to general audience (8th grade reading level)",
+      "No buzzwords or corporate speak",
+      "Clarity increased without losing sophistication"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "simplification",
+      "accessibility",
+      "plain-language"
+    ],
+    "notes": "Jargon reduction maintains professional tone while improving accessibility. System prompt: lines 84-91. Useful for B2C content."
+  },
+  {
+    "id": "TC-REWRITE-005",
+    "name": "Rewrite Text - More Specific Action",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'more_specific' action replaces vague statements with concrete details and metrics",
+    "business_context": "Vague claims lack credibility. Specific details and metrics make content trustworthy and actionable.",
+    "preconditions": [
+      "User is authenticated",
+      "Text contains vague or generic statements"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'Many people saw great results quickly.', action: 'more_specific' }",
+        "expected": "Request validated"
+      },
+      {
+        "step": 2,
+        "action": "ACTION_PROMPTS.more_specific applies (lines 95-104)",
+        "expected": "System prompt: replace vague terms with specific ones, add quantifiable metrics, keep same length, maintain credibility"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI adds specificity",
+        "expected": "Output: '127 users achieved 40% improvement in 3 weeks.' (specific numbers, timeframe)"
+      },
+      {
+        "step": 4,
+        "action": "Verify specificity is realistic",
+        "expected": "Numbers are credible (not over-the-top), metrics are relevant, length similar to original"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "Vague terms replaced ('many' → '127', 'quickly' → 'in 3 weeks')",
+      "Quantifiable metrics added where appropriate",
+      "Length remains similar (not significantly longer)",
+      "Numbers are realistic and credible",
+      "Specificity adds value (not just noise)",
+      "Core message unchanged",
+      "Professional tone maintained"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "specificity",
+      "credibility",
+      "metrics"
+    ],
+    "notes": "More_specific focuses on replacing vague language with concrete details. System prompt: lines 96-102. Credibility is key - don't make up unrealistic claims."
+  },
+  {
+    "id": "TC-REWRITE-006",
+    "name": "Rewrite Text - Contrarian Hook Action",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "high",
+    "description": "Validates that 'contrarian_hook' action transforms text into attention-grabbing, controversy-creating hooks",
+    "business_context": "Hook slides must stop scrollers. Contrarian hooks challenge conventional wisdom, creating curiosity and engagement.",
+    "preconditions": [
+      "User is authenticated",
+      "Text contains a concept that can be challenged or reframed"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'Networking is important for career growth.', action: 'contrarian_hook' }",
+        "expected": "Request validated"
+      },
+      {
+        "step": 2,
+        "action": "ACTION_PROMPTS.contrarian_hook applies (lines 106-116)",
+        "expected": "System prompt: challenge conventional wisdom, create curiosity/controversy, max 2 sentences, make people want more, not clickbait"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI generates contrarian hook",
+        "expected": "Output: 'Traditional networking is killing your career. Here's why going silent worked better.' (challenges norm, creates intrigue)"
+      },
+      {
+        "step": 4,
+        "action": "Verify hook quality",
+        "expected": "Temperature 0.8 used (line 142 - higher for creativity), hook is short (max 2 sentences), creates curiosity, delivers on promise"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "Hook challenges conventional wisdom",
+      "Creates curiosity and controversy",
+      "Max 2 sentences (short and punchy)",
+      "Not clickbait (delivers on promise)",
+      "Makes people want to read more",
+      "Temperature 0.8 used (more creative - line 142)",
+      "Hook is attention-grabbing",
+      "Maintains some relation to original concept"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "hooks",
+      "engagement",
+      "contrarian",
+      "creativity"
+    ],
+    "notes": "Contrarian hook uses higher temperature (0.8) for creativity. System prompt: lines 107-114. Action is 6th option (contrarian_hook). Most creative rewrite action."
+  },
+  {
+    "id": "TC-REWRITE-007",
+    "name": "Rewrite Text - Input Validation (Text Too Long)",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "error_path",
+    "priority": "high",
+    "description": "Validates that API rejects text exceeding 5000 character limit with clear error message",
+    "business_context": "Long text takes longer to process and costs more. Limit prevents abuse and ensures reasonable processing times.",
+    "preconditions": [
+      "User is authenticated"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: '5001 character string...', action: 'shorter' }",
+        "expected": "validateBody rejects (line 124)"
+      },
+      {
+        "step": 2,
+        "action": "Zod validation fails on text.max(5000) constraint (line 24)",
+        "expected": "Returns 400 Bad Request"
+      },
+      {
+        "step": 3,
+        "action": "Check error response format",
+        "expected": "ApiErrors.validation format: { error: { code: 'VALIDATION_ERROR', message: 'text must be at most 5000 characters' } }"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 400",
+      "Error code is 'VALIDATION_ERROR'",
+      "Error message clearly states character limit",
+      "No OpenAI API call made (fails before AI processing)",
+      "Request rejected immediately (< 100ms)",
+      "Error response follows ApiError format"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts",
+      "apps/nextjs/src/lib/validations/api.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "validation",
+      "error-handling",
+      "limits"
+    ],
+    "notes": "Text max is 5000 chars (line 24). Min is 1 char (empty text not allowed). Validation happens before OpenAI call to save costs."
+  },
+  {
+    "id": "TC-REWRITE-008",
+    "name": "Rewrite Text - Invalid Action Type",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "error_path",
+    "priority": "medium",
+    "description": "Validates that API rejects invalid action types not in enum",
+    "business_context": "Action enum ensures only supported rewrite types are processed. Invalid actions would fail at OpenAI prompt generation.",
+    "preconditions": [
+      "User is authenticated"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'test', action: 'invalid_action' }",
+        "expected": "Zod enum validation fails (line 25)"
+      },
+      {
+        "step": 2,
+        "action": "validateBody rejects request",
+        "expected": "Returns 400 with validation error"
+      },
+      {
+        "step": 3,
+        "action": "Check error message",
+        "expected": "Error includes list of valid actions: ['shorter', 'punchier', 'examples', 'reduce_jargon', 'more_specific', 'contrarian_hook']"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 400",
+      "Error code 'VALIDATION_ERROR'",
+      "Error message lists valid action types",
+      "No OpenAI API call made",
+      "6 valid actions supported (line 25-26)",
+      "Request rejected immediately"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "validation",
+      "enum",
+      "error-handling"
+    ],
+    "notes": "Action enum: shorter, punchier, examples, reduce_jargon, more_specific, contrarian_hook (lines 25-26). Validation uses Zod enum."
+  },
+  {
+    "id": "TC-REWRITE-009",
+    "name": "Rewrite Text - Unauthenticated Request",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "error_path",
+    "priority": "critical",
+    "description": "Validates that unauthenticated requests are rejected with 401 error",
+    "business_context": "Rewrite endpoint uses expensive OpenAI API calls. Must be protected to prevent abuse and ensure proper billing.",
+    "preconditions": [
+      "User is not authenticated (no valid Clerk session)"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite without Authorization header",
+        "expected": "withAuthAndErrors middleware intercepts (line 123)"
+      },
+      {
+        "step": 2,
+        "action": "Clerk auth check fails",
+        "expected": "Middleware returns 401 Unauthorized"
+      },
+      {
+        "step": 3,
+        "action": "Verify no OpenAI call made",
+        "expected": "Request rejected before reaching route handler logic, no AI processing"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 401",
+      "Error message: 'Unauthorized' or 'Authentication required'",
+      "No OpenAI API call made",
+      "No text processing occurs",
+      "Response time < 100ms (auth check only)",
+      "Error follows ApiError format"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts",
+      "apps/nextjs/src/lib/with-auth.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "authentication",
+      "security",
+      "access-control"
+    ],
+    "notes": "withAuthAndErrors protects endpoint (line 123). All rewrite requests require valid Clerk session. Auth is checked before validation or AI processing."
+  },
+  {
+    "id": "TC-REWRITE-010",
+    "name": "Rewrite Text - OpenAI Timeout Handling",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "error_path",
+    "priority": "high",
+    "description": "Validates that timeouts from OpenAI API are handled gracefully with retry instructions",
+    "business_context": "OpenAI API can be slow during peak times. Timeout handling ensures users get actionable error messages.",
+    "preconditions": [
+      "User is authenticated",
+      "OpenAI API is experiencing delays (simulate with long-running request)"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with valid data",
+        "expected": "Request passes validation, calls OpenAI"
+      },
+      {
+        "step": 2,
+        "action": "OpenAI request exceeds 30-second timeout (default)",
+        "expected": "generateStructuredOutput throws timeout error"
+      },
+      {
+        "step": 3,
+        "action": "Error handler catches timeout (lines 151-161)",
+        "expected": "Detects error.message includes 'timeout' (line 155)"
+      },
+      {
+        "step": 4,
+        "action": "API throws ApiErrors.internal with user-friendly message",
+        "expected": "Returns 500 with message 'AI service timeout. Please try again.' (line 156)"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 500 (internal error)",
+      "Error message: 'AI service timeout. Please try again.'",
+      "Error code: 'INTERNAL_ERROR'",
+      "Message is user-friendly (no technical jargon)",
+      "Timeout detection via error.message includes 'timeout' (line 155)",
+      "Timeout default is 30 seconds (from openai.ts config)",
+      "User is prompted to retry"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts",
+      "apps/nextjs/src/lib/openai.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "error-handling",
+      "timeout",
+      "openai",
+      "resilience"
+    ],
+    "notes": "Timeout detection: error.message.includes('timeout') (line 155). Default timeout is 30s (openai.ts). OpenAI retries built into generateStructuredOutput."
+  },
+  {
+    "id": "TC-REWRITE-011",
+    "name": "Rewrite Text - OpenAI Rate Limit Handling",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "error_path",
+    "priority": "high",
+    "description": "Validates that OpenAI rate limit errors return 429 with retryAfter header",
+    "business_context": "OpenAI enforces rate limits. Proper 429 responses allow clients to implement backoff and retry logic.",
+    "preconditions": [
+      "User is authenticated",
+      "OpenAI API key has reached rate limit"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite when OpenAI rate limit exceeded",
+        "expected": "OpenAI returns 429 rate limit error"
+      },
+      {
+        "step": 2,
+        "action": "Error handler detects rate limit (lines 151-161)",
+        "expected": "error.message.toLowerCase().includes('rate limit') is true (line 158)"
+      },
+      {
+        "step": 3,
+        "action": "API throws ApiErrors.rateLimited(60)",
+        "expected": "Returns 429 with retryAfter: 60 seconds (line 159)"
+      },
+      {
+        "step": 4,
+        "action": "Verify response headers",
+        "expected": "Retry-After header present with value 60"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 429 (Too Many Requests)",
+      "Error code: 'RATE_LIMITED'",
+      "retryAfter field present with seconds value (60)",
+      "Retry-After header included",
+      "Error message clear about rate limiting",
+      "Detection via error.message includes 'rate limit' (case-insensitive - line 158)",
+      "No retry attempts made (fails fast on rate limit)"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts",
+      "apps/nextjs/src/lib/api-error.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "rate-limiting",
+      "error-handling",
+      "openai",
+      "429"
+    ],
+    "notes": "Rate limit detection: error.message.toLowerCase().includes('rate limit') (line 158). ApiErrors.rateLimited(60) returns 429 with retryAfter. OpenAI lib doesn't auto-retry on 429."
+  },
+  {
+    "id": "TC-REWRITE-012",
+    "name": "Rewrite Text - Context Parameter Usage",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "medium",
+    "description": "Validates that optional context parameter provides additional guidance to AI for more accurate rewrites",
+    "business_context": "Context helps AI understand domain-specific terminology and target audience, improving rewrite quality.",
+    "preconditions": [
+      "User is authenticated",
+      "Text requires domain-specific understanding"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "POST /api/rewrite with { text: 'Implement solution', action: 'more_specific', context: 'Software development for startups' }",
+        "expected": "Request validated, context field accepted (optional - line 28)"
+      },
+      {
+        "step": 2,
+        "action": "Context appended to user message (lines 132-134)",
+        "expected": "userMessage becomes: 'Make this text more specific...\\n\\nContext: Software development for startups'"
+      },
+      {
+        "step": 3,
+        "action": "OpenAI uses context in generation",
+        "expected": "Output reflects startup context: 'Deploy MVP using Next.js and Vercel for rapid iteration' (tech-specific, startup-relevant)"
+      },
+      {
+        "step": 4,
+        "action": "Verify context improved quality",
+        "expected": "Rewrite is more domain-appropriate than without context"
+      }
+    ],
+    "acceptance_criteria": [
+      "Response status 200",
+      "Context max length 500 chars (line 28)",
+      "Context is optional (works without it)",
+      "Context appended to user message with 'Context:' prefix (line 133)",
+      "AI output reflects context (domain-specific terms)",
+      "Quality improved vs no-context baseline",
+      "Context validation allows empty string"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "context",
+      "ai-guidance",
+      "quality"
+    ],
+    "notes": "Context is optional parameter (max 500 chars - line 28). Appended to prompt: lines 132-134. Useful for domain-specific content (B2B, technical, industry-specific)."
+  },
+  {
+    "id": "TC-REWRITE-013",
+    "name": "Rewrite Text - Edge Runtime Compatibility",
+    "module": "rewrite",
+    "user_journey": null,
+    "category": "api",
+    "type": "happy_path",
+    "priority": "medium",
+    "description": "Validates that rewrite endpoint runs correctly on Edge runtime for low latency",
+    "business_context": "Edge runtime reduces latency for global users. Rewrite must work on Edge for fast text editing experience.",
+    "preconditions": [
+      "Endpoint deployed to Edge runtime (export const runtime = 'edge' - line 173)"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Deploy rewrite endpoint to Edge",
+        "expected": "runtime = 'edge' export detected (line 173)"
+      },
+      {
+        "step": 2,
+        "action": "Send POST /api/rewrite from various global locations",
+        "expected": "Requests route to nearest Edge location"
+      },
+      {
+        "step": 3,
+        "action": "Verify OpenAI client works on Edge",
+        "expected": "OpenAI library compatible with Edge runtime (no Node.js-specific APIs)"
+      },
+      {
+        "step": 4,
+        "action": "Measure response time",
+        "expected": "Latency reduced vs Node.js runtime (faster cold starts)"
+      }
+    ],
+    "acceptance_criteria": [
+      "Endpoint deploys successfully with runtime='edge'",
+      "All dependencies Edge-compatible (OpenAI, Zod, etc.)",
+      "withAuthAndErrors works on Edge",
+      "No Node.js-specific API usage (fs, path, etc.)",
+      "Cold start time < 100ms",
+      "Response time improved vs Node.js",
+      "Clerk auth works on Edge",
+      "No runtime errors on Edge"
+    ],
+    "related_files": [
+      "apps/nextjs/src/app/api/rewrite/route.ts"
+    ],
+    "tags": [
+      "rewrite",
+      "edge-runtime",
+      "performance",
+      "deployment"
+    ],
+    "notes": "Edge runtime export: line 173. All dependencies must be Edge-compatible. OpenAI lib works on Edge. Faster cold starts and lower latency globally."
+  }
+]

@@ -351,6 +351,7 @@ C_DIM="\033[2m"
 C_ITALIC="\033[3m"
 
 # Foreground colors
+C_BLACK="\033[30m"
 C_RED="\033[31m"
 C_GREEN="\033[32m"
 C_YELLOW="\033[33m"
