@@ -1663,3 +1663,38 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 12:01:03
 **Session 66 started** (model: sonnet-4.5-thinking)
+
+## Iteration 66 - feature-30 ✅
+
+**Task**: Create /api/exports endpoint
+
+**Implementation**:
+- Created POST /api/exports to queue export jobs
+  - Validates projectId and export type (PDF/PNG/THUMBNAIL)
+  - Verifies project ownership via Profile and Project lookup
+  - Creates Export record in database with PENDING status
+  - Queues job to BullMQ render queue using addRenderJob()
+  - Returns 201 with export ID and metadata
+
+- Created GET /api/exports/:id for status polling
+  - Fetches export record with ownership verification via JOIN
+  - Returns current status (PENDING/PROCESSING/COMPLETED/FAILED)
+  - Generates signed download URLs when COMPLETED:
+    - Single URL for PDF and THUMBNAIL exports
+    - Array of URLs for PNG exports (one per slide)
+  - Includes error messages for FAILED exports
+
+**Validation**:
+✓ Both routes exist and compile
+✓ POST returns 401 without authentication
+✓ GET returns 401 without authentication
+✓ Follows established API patterns (withAuthAndErrors, validateBody)
+
+**Key Patterns**:
+- Ownership verification via INNER JOIN on Project.userId
+- PNG exports store paths as JSON array in fileUrl
+- Signed URLs generated with 24-hour expiry using getSignedUrl()
+- Error handling wraps signed URL generation to avoid request failures
+
+**Next**: feature-31 will add PNG export handling, feature-32 will create export modal UI
+
