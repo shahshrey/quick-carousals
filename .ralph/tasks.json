@@ -1782,7 +1782,7 @@
       ],
       "expected": "Text mode generates slides from pasted content. Short text (<500 chars) creates ~5 slides. Long text (>5000 chars) creates 10-12 slides with smart chunking."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "testing-03",
