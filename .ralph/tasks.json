@@ -1145,7 +1145,7 @@
       ],
       "expected": "PDFKit or pdf-lib installed. generatePDF(slides[]) creates multi-page PDF with embedded fonts."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-29",
