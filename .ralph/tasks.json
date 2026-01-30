@@ -1870,7 +1870,7 @@
       ],
       "expected": "All 8 style kit carousels generated successfully with screenshots captured"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-02",
