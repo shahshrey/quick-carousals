@@ -1,27 +1,27 @@
 {
   "metadata": {
     "version": "1.0",
-    "created_at": null,
-    "last_updated": null,
+    "created_at": "2026-01-30T16:53:00Z",
+    "last_updated": "2026-01-30T17:10:00Z",
     "description": "Manual test cases for QuickCarousals - created by Ralph Test Discovery agent",
     "coverage_summary": {
-      "total_tests": 0,
+      "total_tests": 21,
       "by_priority": {
-        "critical": 0,
-        "high": 0,
-        "medium": 0,
+        "critical": 12,
+        "high": 8,
+        "medium": 1,
         "low": 0
       },
       "by_category": {
-        "api": 0,
-        "frontend": 0,
-        "database": 0,
-        "integration": 0,
+        "api": 9,
+        "frontend": 4,
+        "database": 1,
+        "integration": 7,
         "e2e": 0,
         "security": 0,
         "performance": 0
       },
-      "modules_analyzed": 0,
+      "modules_analyzed": 2,
       "modules_total": 20,
       "journeys_analyzed": 0,
       "journeys_total": 6
@@ -30,13 +30,13 @@
   "modules": {
     "auth": {
       "name": "Authentication & Authorization",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 10
     },
     "generation_topic": {
       "name": "Topic-Based Generation",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 11
     },
     "generation_text": {
       "name": "Text-Based Generation",
@@ -179,6 +179,1282 @@
       "test_count": 0
     }
   },
-  "test_cases": [],
+  "test_cases": [
+    {
+      "id": "TC-GENTOPIC-001",
+      "name": "Successfully generate carousel from valid topic with default parameters",
+      "module": "generation_topic",
+      "user_journey": "topic_to_export",
+      "category": "api",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates the complete AI generation pipeline can create carousel slides from a topic description",
+      "business_context": "Topic-based generation is the core feature of QuickCarousals. Users must be able to provide a topic and receive professionally structured slides ready for editing.",
+      "preconditions": [
+        "User is authenticated with valid session",
+        "OpenAI API key is configured",
+        "User has a Profile record in database",
+        "Database has TemplateLayouts seeded"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request to /api/generate/topic with body: {\"topic\": \"5 productivity tips for remote workers\"}",
+          "expected": "API accepts request and begins generation process"
+        },
+        {
+          "step": 2,
+          "action": "Wait for response (AI generation takes 10-30 seconds)",
+          "expected": "Step 1: generateSlidePlan creates structured plan with hook, promise, value, recap, CTA slides"
+        },
+        {
+          "step": 3,
+          "action": "Verify step 2 of AI pipeline executes",
+          "expected": "Step 2: generateSlideCopy creates detailed copy for each slide with headlines and body bullets"
+        },
+        {
+          "step": 4,
+          "action": "Verify step 3 of AI pipeline executes",
+          "expected": "Step 3: selectLayoutsForSlides maps each slide to appropriate layoutId from TemplateLayout table"
+        },
+        {
+          "step": 5,
+          "action": "Check response status code",
+          "expected": "Response status is 200 OK"
+        },
+        {
+          "step": 6,
+          "action": "Parse response body JSON",
+          "expected": "Response contains: {slides: [...], metadata: {topic, tone, slideCount, generatedAt}}"
+        },
+        {
+          "step": 7,
+          "action": "Verify slides array structure",
+          "expected": "slides array contains 10 slides (default), each with: orderIndex, slideType, layoutId, headline, body, emphasis"
+        }
+      ],
+      "acceptance_criteria": [
+        "Response status code is 200",
+        "Response time is under 45 seconds (AI generation is slow)",
+        "slides array contains exactly 10 slides (default slideCount)",
+        "Each slide has orderIndex from 0 to 9",
+        "First slide has slideType 'hook', last slide has slideType 'cta'",
+        "All layoutId values exist in TemplateLayout table (hook_big_headline, promise_two_column, value_bullets, recap_grid, cta_centered, etc.)",
+        "All headlines are 8-12 words or less",
+        "All body arrays contain 3-5 items or less",
+        "metadata.topic matches input topic",
+        "metadata.tone is 'professional' (default)",
+        "metadata.generatedAt is valid ISO timestamp"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts"
+      ],
+      "tags": ["generation", "topic", "ai", "core-feature", "critical"],
+      "notes": "This is the primary happy path for carousel generation. The AI pipeline has 3 steps and takes significant time. Default tone is 'professional', default slideCount is 10."
+    },
+    {
+      "id": "TC-GENTOPIC-002",
+      "name": "Generate carousel with custom slideCount parameter",
+      "module": "generation_topic",
+      "user_journey": "topic_to_export",
+      "category": "api",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that slideCount parameter controls the number of generated slides within allowed range (8-12)",
+      "business_context": "Users should be able to control carousel length. Some topics need more slides (12), others work better with fewer (8).",
+      "preconditions": [
+        "User is authenticated",
+        "OpenAI API is available"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request with {\"topic\": \"Git workflow basics\", \"slideCount\": 8}",
+          "expected": "API accepts slideCount parameter"
+        },
+        {
+          "step": 2,
+          "action": "Wait for generation to complete",
+          "expected": "AI generates exactly 8 slides"
+        },
+        {
+          "step": 3,
+          "action": "Verify response slides array length",
+          "expected": "slides.length === 8"
+        },
+        {
+          "step": 4,
+          "action": "Send POST request with {\"topic\": \"Advanced SEO strategies\", \"slideCount\": 12}",
+          "expected": "API accepts slideCount: 12"
+        },
+        {
+          "step": 5,
+          "action": "Wait for generation to complete",
+          "expected": "AI generates exactly 12 slides"
+        },
+        {
+          "step": 6,
+          "action": "Verify response slides array length",
+          "expected": "slides.length === 12"
+        },
+        {
+          "step": 7,
+          "action": "Verify metadata reflects requested slideCount",
+          "expected": "metadata.slideCount matches request parameter"
+        }
+      ],
+      "acceptance_criteria": [
+        "slideCount: 8 produces 8 slides",
+        "slideCount: 12 produces 12 slides",
+        "slideCount: 10 (default) produces 10 slides",
+        "metadata.slideCount accurately reflects generated count",
+        "All slides have sequential orderIndex (0 to n-1)",
+        "Slide types are properly distributed (hook, promise, value, recap, cta)",
+        "Response time scales with slideCount (more slides = longer time)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts"
+      ],
+      "tags": ["generation", "topic", "parameters", "slideCount"],
+      "notes": "Schema validation: slideCount must be int between 8-12 inclusive. Default is 10 if not specified."
+    },
+    {
+      "id": "TC-GENTOPIC-003",
+      "name": "Generate carousel with different tone options",
+      "module": "generation_topic",
+      "user_journey": "topic_to_export",
+      "category": "api",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that tone parameter affects the style and voice of generated content",
+      "business_context": "Different audiences and topics require different tones. Professional tone for B2B, bold for viral content, calm for educational, contrarian for thought leadership.",
+      "preconditions": [
+        "User is authenticated",
+        "OpenAI API is available"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Generate with tone: 'bold' - POST {\"topic\": \"Why everyone is wrong about productivity\", \"tone\": \"bold\"}",
+          "expected": "AI uses bold, attention-grabbing language in headlines and copy"
+        },
+        {
+          "step": 2,
+          "action": "Verify bold tone characteristics",
+          "expected": "Headlines are punchy, use strong verbs, may include exclamation points or provocative statements"
+        },
+        {
+          "step": 3,
+          "action": "Generate with tone: 'calm' - POST {\"topic\": \"Mindfulness techniques for busy professionals\", \"tone\": \"calm\"}",
+          "expected": "AI uses soothing, reassuring language"
+        },
+        {
+          "step": 4,
+          "action": "Verify calm tone characteristics",
+          "expected": "Headlines are gentle, body copy is supportive and non-urgent"
+        },
+        {
+          "step": 5,
+          "action": "Generate with tone: 'contrarian' - POST {\"topic\": \"The truth about morning routines\", \"tone\": \"contrarian\"}",
+          "expected": "AI challenges common beliefs, presents alternative viewpoints"
+        },
+        {
+          "step": 6,
+          "action": "Verify contrarian tone characteristics",
+          "expected": "Content questions assumptions, presents contrarian perspectives"
+        },
+        {
+          "step": 7,
+          "action": "Generate with tone: 'professional' - POST {\"topic\": \"Quarterly planning strategies\", \"tone\": \"professional\"}",
+          "expected": "AI uses business-appropriate, formal language"
+        },
+        {
+          "step": 8,
+          "action": "Verify professional tone characteristics",
+          "expected": "Language is polished, formal, suitable for corporate environments"
+        },
+        {
+          "step": 9,
+          "action": "Verify metadata reflects requested tone",
+          "expected": "metadata.tone matches the requested tone value"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 4 tone options are accepted: 'bold', 'calm', 'contrarian', 'professional'",
+        "Each tone produces noticeably different language style",
+        "Default tone is 'professional' when not specified",
+        "metadata.tone accurately reflects the tone used",
+        "Tone is consistently applied across all slides in the carousel",
+        "AI system prompt correctly incorporates tone instruction"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts"
+      ],
+      "tags": ["generation", "topic", "parameters", "tone", "ai"],
+      "notes": "Tone enum defined in schema: ['bold', 'calm', 'contrarian', 'professional']. The AI's system prompt in generateSlidePlan includes the tone parameter."
+    },
+    {
+      "id": "TC-GENTOPIC-004",
+      "name": "Generate carousel with brand kit applied",
+      "module": "generation_topic",
+      "user_journey": "topic_to_export",
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that user's brand kit (colors, fonts, logo) can be applied to generated slides",
+      "business_context": "Professional users need branded carousels matching their company identity. Brand kit application ensures consistent visual identity across all content.",
+      "preconditions": [
+        "User is authenticated",
+        "User has a BrandKit record in database with colors, fonts, logoUrl",
+        "BrandKit is marked as default or is the most recent"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request with {\"topic\": \"Our company values\", \"applyBrandKit\": true}",
+          "expected": "API fetches user's Profile record using clerkUserId"
+        },
+        {
+          "step": 2,
+          "action": "Verify brand kit lookup",
+          "expected": "API queries BrandKit table for user's default brand kit (isDefault: true) or most recent kit"
+        },
+        {
+          "step": 3,
+          "action": "Wait for carousel generation",
+          "expected": "Slides are generated normally through AI pipeline"
+        },
+        {
+          "step": 4,
+          "action": "Parse response and check slide objects",
+          "expected": "Each slide object contains brandKit property: {colors, fonts, logoUrl, handle}"
+        },
+        {
+          "step": 5,
+          "action": "Verify brand kit data is attached",
+          "expected": "brandKit.colors contains user's color palette, brandKit.fonts contains typography settings"
+        },
+        {
+          "step": 6,
+          "action": "Verify logoUrl is included if user has uploaded logo",
+          "expected": "brandKit.logoUrl is populated or null if no logo exists"
+        },
+        {
+          "step": 7,
+          "action": "Test without brand kit: {\"topic\": \"Test\", \"applyBrandKit\": false}",
+          "expected": "Slides do NOT contain brandKit property"
+        }
+      ],
+      "acceptance_criteria": [
+        "When applyBrandKit: true, all slides include brandKit object",
+        "brandKit contains: colors (object), fonts (object), logoUrl (string or null), handle (string or null)",
+        "Brand kit data matches the BrandKit record in database",
+        "If user has no brand kit, brandKit property is null or absent",
+        "applyBrandKit defaults to false when not specified",
+        "Brand kit lookup queries by Profile.id, ordered by isDefault DESC, createdAt DESC",
+        "Editor can use this brandKit data to override StyleKit defaults"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": ["generation", "topic", "brand-kit", "integration"],
+      "notes": "Lines 80-100 in route.ts handle brand kit fetching. This doesn't affect AI generation, just attaches brand data to slides for editor to use."
+    },
+    {
+      "id": "TC-GENTOPIC-005",
+      "name": "API returns 401 when called without authentication",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "security",
+      "priority": "critical",
+      "description": "Validates that unauthenticated requests are rejected to protect the OpenAI API key and prevent abuse",
+      "business_context": "Generation uses expensive OpenAI API credits. Only authenticated users with valid accounts should be able to generate content.",
+      "preconditions": [
+        "User is NOT authenticated",
+        "No valid session token in request"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request to /api/generate/topic without auth headers, body: {\"topic\": \"test\"}",
+          "expected": "Request reaches the API endpoint"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Response status is 401 Unauthorized"
+        },
+        {
+          "step": 3,
+          "action": "Parse response body",
+          "expected": "Response JSON: {\"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"Authentication required\"}}"
+        },
+        {
+          "step": 4,
+          "action": "Verify no AI generation occurred",
+          "expected": "OpenAI API was never called, no charges incurred"
+        },
+        {
+          "step": 5,
+          "action": "Verify response headers",
+          "expected": "No Set-Cookie or session tokens are present in response"
+        }
+      ],
+      "acceptance_criteria": [
+        "HTTP status code is exactly 401",
+        "Response is JSON with standardized ApiError format",
+        "Error code is 'UNAUTHORIZED'",
+        "Error message is clear: 'Authentication required'",
+        "Response time is under 500ms (auth check is fast)",
+        "No OpenAI API calls are made",
+        "No database queries execute (auth fails before business logic)",
+        "Response contains no sensitive information"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/with-auth.ts"
+      ],
+      "tags": ["generation", "topic", "security", "auth"],
+      "notes": "withAuthAndErrors wrapper (line 72) handles auth before route logic executes. Verified via curl test."
+    },
+    {
+      "id": "TC-GENTOPIC-006",
+      "name": "API returns 400 validation error for invalid topic input",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that the API rejects invalid topic inputs with clear validation errors",
+      "business_context": "Invalid inputs waste API credits and produce poor results. Validation must catch issues before calling OpenAI.",
+      "preconditions": [
+        "User is authenticated"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request with empty topic: {\"topic\": \"\"}",
+          "expected": "Zod validation fails on topic.min(1)"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Response status is 400 Bad Request"
+        },
+        {
+          "step": 3,
+          "action": "Parse error response",
+          "expected": "Response contains: {\"error\": {\"code\": \"VALIDATION_ERROR\", \"message\": \"Invalid request body\", \"details\": {\"issues\": [{\"path\": \"topic\", \"message\": \"...\"}]}}}"
+        },
+        {
+          "step": 4,
+          "action": "Send POST request with topic exceeding 500 characters",
+          "expected": "Zod validation fails on topic.max(500)"
+        },
+        {
+          "step": 5,
+          "action": "Verify validation error response",
+          "expected": "Response status 400 with validation error details"
+        },
+        {
+          "step": 6,
+          "action": "Send POST request with missing topic field: {}",
+          "expected": "Zod validation fails on required field"
+        },
+        {
+          "step": 7,
+          "action": "Verify validation error response",
+          "expected": "Response status 400, error message indicates 'topic' field is required"
+        },
+        {
+          "step": 8,
+          "action": "Send POST request with invalid slideCount: {\"topic\": \"test\", \"slideCount\": 5}",
+          "expected": "Zod validation fails on slideCount.min(8)"
+        },
+        {
+          "step": 9,
+          "action": "Verify validation error",
+          "expected": "Response status 400, error details show slideCount must be >= 8"
+        },
+        {
+          "step": 10,
+          "action": "Send POST request with slideCount too high: {\"topic\": \"test\", \"slideCount\": 20}",
+          "expected": "Zod validation fails on slideCount.max(12)"
+        },
+        {
+          "step": 11,
+          "action": "Verify validation error",
+          "expected": "Response status 400, error details show slideCount must be <= 12"
+        },
+        {
+          "step": 12,
+          "action": "Send POST request with invalid tone: {\"topic\": \"test\", \"tone\": \"funny\"}",
+          "expected": "Zod validation fails on tone enum"
+        },
+        {
+          "step": 13,
+          "action": "Verify validation error",
+          "expected": "Response status 400, error indicates tone must be one of: bold, calm, contrarian, professional"
+        }
+      ],
+      "acceptance_criteria": [
+        "Empty topic string returns 400 validation error",
+        "Topic longer than 500 characters returns 400",
+        "Missing topic field returns 400",
+        "slideCount below 8 returns 400",
+        "slideCount above 12 returns 400",
+        "Invalid tone value returns 400",
+        "All validation errors use standardized ApiError format",
+        "Error details include field path and validation message",
+        "Response time is under 200ms (validation is fast, no AI calls)",
+        "No OpenAI API calls are made for invalid inputs"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/validations/api.ts"
+      ],
+      "tags": ["generation", "topic", "validation", "error-handling"],
+      "notes": "Schema validation at line 34-39: topic min(1) max(500), slideCount int min(8) max(12), tone enum, applyBrandKit boolean. validateBody helper throws ApiErrors.validation."
+    },
+    {
+      "id": "TC-GENTOPIC-007",
+      "name": "API handles OpenAI timeout errors gracefully",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that API properly handles and reports OpenAI timeout errors with user-friendly messages",
+      "business_context": "OpenAI API can be slow or unresponsive. Users need clear feedback when generation times out so they can retry.",
+      "preconditions": [
+        "User is authenticated",
+        "OpenAI API is slow or timing out (simulate with long topic or network issues)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request with valid topic that might cause timeout (very complex or long topic)",
+          "expected": "API begins generation process"
+        },
+        {
+          "step": 2,
+          "action": "Wait for timeout to occur (default timeout: 30 seconds per openai.ts)",
+          "expected": "OpenAI request times out after 30 seconds"
+        },
+        {
+          "step": 3,
+          "action": "Check API response status code",
+          "expected": "Response status is 500 Internal Server Error"
+        },
+        {
+          "step": 4,
+          "action": "Parse error response body",
+          "expected": "Response contains: {\"error\": {\"code\": \"INTERNAL_ERROR\", \"message\": \"AI generation timed out. Please try again.\"}}"
+        },
+        {
+          "step": 5,
+          "action": "Verify error handling logic",
+          "expected": "Error handler at line 185-186 detects 'timeout' in error message"
+        },
+        {
+          "step": 6,
+          "action": "Verify console logs",
+          "expected": "Server logs: 'OpenAI generation error: [timeout details]'"
+        }
+      ],
+      "acceptance_criteria": [
+        "Timeout errors return 500 status code",
+        "Error message is user-friendly: 'AI generation timed out. Please try again.'",
+        "Error code is 'INTERNAL_ERROR'",
+        "Original error is logged to console for debugging",
+        "Response contains no technical details (API keys, stack traces)",
+        "Timeout detection works by checking error.message for 'timeout' substring",
+        "User is encouraged to retry (message says 'Please try again')"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts"
+      ],
+      "tags": ["generation", "topic", "error-handling", "openai", "timeout"],
+      "notes": "Timeout handling at lines 185-186 in route.ts. Default timeout is 30s per openai.ts line 18. OpenAI timeouts are detected by checking error.message.includes('timeout')."
+    },
+    {
+      "id": "TC-GENTOPIC-008",
+      "name": "API handles OpenAI rate limit errors with proper response",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that API properly handles OpenAI rate limit errors and returns 429 status with retry-after guidance",
+      "business_context": "OpenAI has rate limits on API usage. When limits are hit, users need clear guidance on when they can retry.",
+      "preconditions": [
+        "User is authenticated",
+        "OpenAI API rate limit has been exceeded (simulate by making many rapid requests)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Trigger OpenAI rate limit (make requests until rate limited)",
+          "expected": "OpenAI returns 429 status or rate limit error"
+        },
+        {
+          "step": 2,
+          "action": "Check API response status code",
+          "expected": "Response status is 429 Too Many Requests"
+        },
+        {
+          "step": 3,
+          "action": "Parse error response body",
+          "expected": "Response contains: {\"error\": {\"code\": \"RATE_LIMITED\", \"message\": \"Too many requests. Please try again in 60 seconds.\", \"details\": {\"retryAfter\": 60}}}"
+        },
+        {
+          "step": 4,
+          "action": "Verify error detection logic",
+          "expected": "Error handler at lines 189-190 detects 'rate limit' in error message"
+        },
+        {
+          "step": 5,
+          "action": "Verify rate limit error creation",
+          "expected": "ApiErrors.rateLimited(60) is thrown, setting retryAfter to 60 seconds"
+        }
+      ],
+      "acceptance_criteria": [
+        "Rate limit errors return 429 status code",
+        "Error code is 'RATE_LIMITED'",
+        "Error message tells user how long to wait: 'Try again in 60 seconds'",
+        "Error details include retryAfter: 60 (seconds)",
+        "Rate limit detection works by checking error.message for 'rate limit' substring",
+        "Original OpenAI error is logged to console",
+        "Response provides actionable guidance (wait and retry)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/api-error.ts"
+      ],
+      "tags": ["generation", "topic", "error-handling", "rate-limit", "openai"],
+      "notes": "Rate limit handling at lines 189-190. ApiErrors.rateLimited(60) sets retryAfter to 60 seconds (line 74-80 in api-error.ts)."
+    },
+    {
+      "id": "TC-GENTOPIC-009",
+      "name": "API validates and handles empty AI response edge case",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that API detects when AI returns an empty or invalid slide plan and returns appropriate error",
+      "business_context": "Rarely, AI may return empty or malformed responses. System must detect this and fail gracefully rather than returning broken data to users.",
+      "preconditions": [
+        "User is authenticated",
+        "Topic might be too vague or cause AI to return empty plan (edge case)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST request with topic that might cause empty response (e.g., single character: {\"topic\": \"a\"})",
+          "expected": "API processes request and calls generateSlidePlan"
+        },
+        {
+          "step": 2,
+          "action": "Simulate AI returning empty slides array",
+          "expected": "plan.slides is empty or null"
+        },
+        {
+          "step": 3,
+          "action": "Verify validation at line 109-111",
+          "expected": "Condition (!plan.slides || plan.slides.length === 0) is true"
+        },
+        {
+          "step": 4,
+          "action": "Check API response status code",
+          "expected": "Response status is 500 Internal Server Error"
+        },
+        {
+          "step": 5,
+          "action": "Parse error response",
+          "expected": "Response contains: {\"error\": {\"code\": \"INTERNAL_ERROR\", \"message\": \"AI generated empty slide plan\"}}"
+        }
+      ],
+      "acceptance_criteria": [
+        "Empty AI response is detected before processing",
+        "Error is thrown: ApiErrors.internal('AI generated empty slide plan')",
+        "Response status is 500",
+        "Error message clearly indicates AI failure, not user error",
+        "No slides are returned to client",
+        "Console logs the error for debugging",
+        "User is not charged/debited if tracking is implemented"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts"
+      ],
+      "tags": ["generation", "topic", "edge-case", "validation", "ai"],
+      "notes": "Validation at lines 109-111. This is an edge case that should rarely occur but must be handled to prevent broken carousels."
+    },
+    {
+      "id": "TC-GENTOPIC-010",
+      "name": "API handles slide copy/plan length mismatch gracefully",
+      "module": "generation_topic",
+      "category": "api",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that API handles cases where AI's generateSlideCopy returns different number of slides than the plan",
+      "business_context": "AI steps might occasionally produce mismatched results. System should handle this gracefully and use fallback data to ensure carousel is still usable.",
+      "preconditions": [
+        "User is authenticated",
+        "AI pipeline steps return mismatched slide counts (rare edge case)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send valid POST request: {\"topic\": \"Test topic\"}",
+          "expected": "generateSlidePlan returns plan with N slides"
+        },
+        {
+          "step": 2,
+          "action": "Simulate generateSlideCopy returning M slides (M != N)",
+          "expected": "copySlides.length !== plan.slides.length"
+        },
+        {
+          "step": 3,
+          "action": "Verify warning is logged at lines 117-120",
+          "expected": "Console warning: 'Copy length mismatch: expected N, got M'"
+        },
+        {
+          "step": 4,
+          "action": "Verify fallback logic at lines 128-132",
+          "expected": "For missing copy, slide uses planSlide data: {headline: planSlide.headline, body: planSlide.body, emphasis_text: planSlide.emphasis}"
+        },
+        {
+          "step": 5,
+          "action": "Check response status code",
+          "expected": "Response status is still 200 OK (graceful degradation)"
+        },
+        {
+          "step": 6,
+          "action": "Verify slides array completeness",
+          "expected": "All slides have data (some from copy, some from plan as fallback)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Mismatch is logged but doesn't throw error",
+        "Response is still successful (200 status)",
+        "Missing copy slides use plan data as fallback",
+        "All slides have valid headline and body arrays",
+        "Final slides array length matches plan.slides.length",
+        "orderIndex remains sequential (0 to N-1)",
+        "Carousel is fully functional despite mismatch"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts"
+      ],
+      "tags": ["generation", "topic", "edge-case", "resilience"],
+      "notes": "Mismatch handling at lines 117-120 (warning) and lines 128-132 (fallback). This graceful degradation ensures users always get a usable carousel."
+    },
+    {
+      "id": "TC-GENTOPIC-011",
+      "name": "Layout selection correctly maps slide types to TemplateLayouts",
+      "module": "generation_topic",
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that selectLayoutsForSlides function correctly maps slide types to appropriate layout IDs from TemplateLayout table",
+      "business_context": "Different slide types (hook, promise, value, recap, CTA) need different visual layouts. Correct layout selection ensures slides look professional and match their purpose.",
+      "preconditions": [
+        "Database has TemplateLayouts seeded with: hook_big_headline, promise_two_column, value_bullets, value_numbered_steps, recap_grid, cta_centered, generic_single_focus"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Generate carousel with default parameters",
+          "expected": "AI generates slides with various slideTypes: hook, promise, value, recap, cta"
+        },
+        {
+          "step": 2,
+          "action": "Verify hook slide gets appropriate layout",
+          "expected": "slideType 'hook' maps to layoutId 'hook_big_headline' (if text < 100 chars) or 'generic_single_focus' (if longer)"
+        },
+        {
+          "step": 3,
+          "action": "Verify promise slide gets appropriate layout",
+          "expected": "slideType 'promise' maps to layoutId 'promise_two_column'"
+        },
+        {
+          "step": 4,
+          "action": "Verify value slides get appropriate layouts",
+          "expected": "slideType 'value' maps to 'value_bullets' (if short) or 'value_numbered_steps' (if longer)"
+        },
+        {
+          "step": 5,
+          "action": "Verify recap slide gets appropriate layout",
+          "expected": "slideType 'recap' maps to layoutId 'recap_grid'"
+        },
+        {
+          "step": 6,
+          "action": "Verify CTA slide gets appropriate layout",
+          "expected": "slideType 'cta' maps to layoutId 'cta_centered'"
+        },
+        {
+          "step": 7,
+          "action": "Verify all layoutIds exist in database",
+          "expected": "Query TemplateLayout table confirms all returned layoutIds exist"
+        },
+        {
+          "step": 8,
+          "action": "Verify fallback for unknown slide types",
+          "expected": "Unknown slideType maps to 'generic_single_focus'"
+        }
+      ],
+      "acceptance_criteria": [
+        "All layoutIds in response exist in TemplateLayout table",
+        "Layout mappings follow rules defined in LAYOUT_MAPPINGS (openai.ts lines 488-520)",
+        "Text length affects layout selection (short content → simpler layouts)",
+        "Hook slides use hook_big_headline or generic_single_focus",
+        "Promise slides use promise_two_column",
+        "Value slides use value_bullets or value_numbered_steps",
+        "Recap slides use recap_grid",
+        "CTA slides use cta_centered",
+        "Unknown slide types default to generic_single_focus",
+        "Layout selection is deterministic (same input → same output)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "packages/db/prisma/seed.ts"
+      ],
+      "tags": ["generation", "topic", "layout", "integration"],
+      "notes": "Layout selection logic at lines 488-576 in openai.ts. Text length calculated at lines 529-533. LAYOUT_MAPPINGS at lines 488-520."
+    },
+    {
+      "id": "TC-AUTH-001",
+      "name": "User can successfully register with valid credentials",
+      "module": "auth",
+      "user_journey": "new_user_onboarding",
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that new users can create accounts using the Clerk registration flow",
+      "business_context": "New users must be able to sign up to use the platform. Registration is the gateway to all platform features.",
+      "preconditions": [
+        "User is not logged in",
+        "User has a valid email address",
+        "User's email is not already registered"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/register",
+          "expected": "Registration page loads with 'Create your account' heading and Clerk SignUp component"
+        },
+        {
+          "step": 2,
+          "action": "Enter valid email address in the Clerk email field",
+          "expected": "Email is accepted without validation errors"
+        },
+        {
+          "step": 3,
+          "action": "Enter a strong password in the Clerk password field",
+          "expected": "Password meets Clerk's strength requirements and is accepted"
+        },
+        {
+          "step": 4,
+          "action": "Complete any additional required fields (name, etc.)",
+          "expected": "All required information is captured"
+        },
+        {
+          "step": 5,
+          "action": "Click the Sign Up button in Clerk component",
+          "expected": "Account is created and user is redirected to /en/dashboard"
+        },
+        {
+          "step": 6,
+          "action": "Verify dashboard displays with empty state",
+          "expected": "User lands on dashboard, Profile record created in database with FREE tier"
+        }
+      ],
+      "acceptance_criteria": [
+        "Registration completes within 5 seconds",
+        "User is redirected to /en/dashboard after successful signup",
+        "Profile record is created in database with clerkUserId",
+        "Profile.subscriptionTier defaults to FREE",
+        "User's session is active (authenticated)",
+        "No error messages are displayed"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(auth)/register/page.tsx",
+        "apps/nextjs/src/components/user-clerk-auth-form.tsx",
+        "apps/nextjs/src/utils/clerk.ts"
+      ],
+      "tags": ["auth", "registration", "clerk", "core-feature"],
+      "notes": "Uses Clerk's built-in SignUp component. Clerk handles email verification if configured."
+    },
+    {
+      "id": "TC-AUTH-002",
+      "name": "User can successfully login with valid credentials",
+      "module": "auth",
+      "user_journey": "returning_user",
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that existing users can log in using the Clerk authentication flow",
+      "business_context": "Returning users must be able to access their accounts and projects. Login is required to access any dashboard features.",
+      "preconditions": [
+        "User has a registered account with valid credentials",
+        "User is not currently logged in"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/login-clerk",
+          "expected": "Login page loads with 'Welcome back to QuickCarousals' heading and Clerk SignIn component"
+        },
+        {
+          "step": 2,
+          "action": "Enter registered email address in email field",
+          "expected": "Email is accepted"
+        },
+        {
+          "step": 3,
+          "action": "Enter correct password in password field",
+          "expected": "Password field accepts input (characters are masked)"
+        },
+        {
+          "step": 4,
+          "action": "Click the Sign In button in Clerk component",
+          "expected": "Authentication succeeds and user is redirected to /en/dashboard"
+        },
+        {
+          "step": 5,
+          "action": "Verify dashboard loads with user's existing projects",
+          "expected": "Dashboard displays user's projects, user's name/avatar appears in navigation"
+        }
+      ],
+      "acceptance_criteria": [
+        "Login completes within 3 seconds",
+        "User is redirected to /en/dashboard after successful login",
+        "User's session is active and authenticated",
+        "User's projects are visible on dashboard",
+        "Back button in top-left navigates to landing page",
+        "No error messages are displayed"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(auth)/login-clerk/[[...rest]]/page.tsx",
+        "apps/nextjs/src/components/user-clerk-auth-form.tsx",
+        "apps/nextjs/src/utils/clerk.ts"
+      ],
+      "tags": ["auth", "login", "clerk", "core-feature"],
+      "notes": "Clerk handles password validation and security. Component uses fallbackRedirectUrl prop."
+    },
+    {
+      "id": "TC-AUTH-003",
+      "name": "User cannot login with invalid credentials",
+      "module": "auth",
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that users with incorrect credentials cannot gain access to the system",
+      "business_context": "Security requires that invalid login attempts are rejected to prevent unauthorized access",
+      "preconditions": [
+        "User is on the login page",
+        "User is not logged in"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/login-clerk",
+          "expected": "Login page loads successfully"
+        },
+        {
+          "step": 2,
+          "action": "Enter a registered email address",
+          "expected": "Email field accepts the input"
+        },
+        {
+          "step": 3,
+          "action": "Enter an incorrect password",
+          "expected": "Password field accepts the input (masked)"
+        },
+        {
+          "step": 4,
+          "action": "Click the Sign In button",
+          "expected": "Clerk displays error message: 'Incorrect email or password'"
+        },
+        {
+          "step": 5,
+          "action": "Verify user remains on login page",
+          "expected": "User is NOT redirected to dashboard, session is NOT created"
+        }
+      ],
+      "acceptance_criteria": [
+        "Clear error message is displayed by Clerk",
+        "User remains on the login page",
+        "No session token is created",
+        "User cannot access protected routes",
+        "Error message does not reveal whether email exists (security best practice)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(auth)/login-clerk/[[...rest]]/page.tsx",
+        "apps/nextjs/src/components/user-clerk-auth-form.tsx"
+      ],
+      "tags": ["auth", "login", "error-handling", "security"],
+      "notes": "Clerk handles the error messaging and security. Error messages should be generic to avoid user enumeration attacks."
+    },
+    {
+      "id": "TC-AUTH-004",
+      "name": "Unauthenticated user is redirected to login when accessing protected route",
+      "module": "auth",
+      "category": "integration",
+      "type": "security",
+      "priority": "critical",
+      "description": "Validates that the middleware correctly protects dashboard routes and redirects unauthenticated users to login",
+      "business_context": "Protected routes must be inaccessible without authentication. Users should be seamlessly redirected to login with a return URL.",
+      "preconditions": [
+        "User is not logged in",
+        "User has no active session"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Attempt to navigate directly to /en/dashboard",
+          "expected": "Middleware intercepts the request"
+        },
+        {
+          "step": 2,
+          "action": "Check the URL after redirect",
+          "expected": "User is redirected to /en/login-clerk?from=%2Fen%2Fdashboard"
+        },
+        {
+          "step": 3,
+          "action": "Verify login page loads",
+          "expected": "Login page displays with Clerk SignIn component"
+        },
+        {
+          "step": 4,
+          "action": "After successful login, verify redirect",
+          "expected": "User is redirected back to originally requested URL (/en/dashboard)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Redirect happens immediately (< 500ms)",
+        "Original destination URL is preserved in 'from' query parameter",
+        "After login, user is returned to originally requested page",
+        "No flash of protected content before redirect",
+        "Protected route content is never exposed to unauthenticated users"
+      ],
+      "related_files": [
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/middleware.ts"
+      ],
+      "tags": ["auth", "middleware", "security", "protected-routes"],
+      "notes": "Middleware checks authentication before serving protected pages. Line 119-127 in clerk.ts handles this logic."
+    },
+    {
+      "id": "TC-AUTH-005",
+      "name": "Authenticated user accessing login page is redirected to dashboard",
+      "module": "auth",
+      "category": "frontend",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that logged-in users cannot access auth pages and are redirected to dashboard",
+      "business_context": "Users who are already authenticated should not see login/register pages. This provides a better UX and prevents confusion.",
+      "preconditions": [
+        "User is already logged in with active session"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/login-clerk while logged in",
+          "expected": "Middleware detects user is authenticated"
+        },
+        {
+          "step": 2,
+          "action": "Check URL after middleware processing",
+          "expected": "User is immediately redirected to /en/dashboard"
+        },
+        {
+          "step": 3,
+          "action": "Attempt to navigate to /en/register while logged in",
+          "expected": "User is also redirected to /en/dashboard"
+        },
+        {
+          "step": 4,
+          "action": "Verify no flash of login form",
+          "expected": "Login/register forms are never rendered to authenticated users"
+        }
+      ],
+      "acceptance_criteria": [
+        "Redirect happens before any auth form renders",
+        "User lands on dashboard without delays",
+        "Works for both /login-clerk and /register routes",
+        "User's session remains active during redirect",
+        "No console errors or warnings"
+      ],
+      "related_files": [
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/components/user-clerk-auth-form.tsx"
+      ],
+      "tags": ["auth", "redirect", "edge-case", "ux"],
+      "notes": "Handled in two places: middleware (line 105-109) and client component (line 24-27 in UserClerkAuthForm)"
+    },
+    {
+      "id": "TC-AUTH-006",
+      "name": "API returns 401 Unauthorized when called without authentication",
+      "module": "auth",
+      "category": "api",
+      "type": "security",
+      "priority": "critical",
+      "description": "Validates that protected API endpoints correctly reject requests without valid authentication",
+      "business_context": "API security is critical. All protected endpoints must validate authentication and return proper HTTP status codes for unauthorized access.",
+      "preconditions": [
+        "User is not logged in",
+        "No valid session token in request"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send GET request to /api/projects without Authorization header",
+          "expected": "API endpoint receives request"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Response status is 401 Unauthorized"
+        },
+        {
+          "step": 3,
+          "action": "Check response body",
+          "expected": "Response body contains: {\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Authentication required\"}}"
+        },
+        {
+          "step": 4,
+          "action": "Verify no data is leaked in response",
+          "expected": "Response contains no user data, project data, or sensitive information"
+        }
+      ],
+      "acceptance_criteria": [
+        "HTTP status code is exactly 401",
+        "Response is JSON with standardized error format",
+        "Error code is 'UNAUTHORIZED'",
+        "Error message is clear and user-friendly",
+        "Response time is under 500ms",
+        "No sensitive data is included in error response"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/with-auth.ts",
+        "apps/nextjs/src/app/api/projects/route.ts"
+      ],
+      "tags": ["auth", "api", "security", "error-handling"],
+      "notes": "withAuth middleware (line 28-29 in with-auth.ts) returns 401 when userId is null. Test with curl: curl -s http://localhost:3000/api/projects"
+    },
+    {
+      "id": "TC-AUTH-007",
+      "name": "Public routes are accessible without authentication",
+      "module": "auth",
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that marketing and public pages do not require authentication and load correctly",
+      "business_context": "Public pages like landing, pricing, and docs must be accessible to all visitors to drive signups and provide information.",
+      "preconditions": [
+        "User is not logged in"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en (landing page)",
+          "expected": "Landing page loads without redirect to login"
+        },
+        {
+          "step": 2,
+          "action": "Navigate to /en/pricing",
+          "expected": "Pricing page loads without authentication"
+        },
+        {
+          "step": 3,
+          "action": "Navigate to /en/terms",
+          "expected": "Terms page loads without authentication"
+        },
+        {
+          "step": 4,
+          "action": "Navigate to /en/privacy",
+          "expected": "Privacy page loads without authentication"
+        },
+        {
+          "step": 5,
+          "action": "Verify all public content is accessible",
+          "expected": "All pages display their content fully, CTAs are visible, no login prompts appear"
+        }
+      ],
+      "acceptance_criteria": [
+        "All public routes load within 2 seconds",
+        "No redirects to login page occur",
+        "Page content is fully visible and functional",
+        "CTA buttons (Sign Up, Get Started) navigate to /register",
+        "No console errors related to authentication",
+        "Pages work correctly in private/incognito mode"
+      ],
+      "related_files": [
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx"
+      ],
+      "tags": ["auth", "public-routes", "marketing"],
+      "notes": "isPublicRoute matcher (line 12-20 in clerk.ts) defines routes that bypass authentication. Webhook and health routes are also excluded."
+    },
+    {
+      "id": "TC-AUTH-008",
+      "name": "User profile is created in database after first Clerk signup",
+      "module": "auth",
+      "category": "database",
+      "type": "integration",
+      "priority": "critical",
+      "description": "Validates that user registration creates a Profile record linked to the Clerk user ID",
+      "business_context": "The Profile model stores subscription tier and links users to their projects/brand kits. This record must be created for the app to function.",
+      "preconditions": [
+        "User completes Clerk registration successfully",
+        "Clerk webhook is configured and functioning"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Complete registration flow via /en/register",
+          "expected": "Clerk creates user account and triggers webhook"
+        },
+        {
+          "step": 2,
+          "action": "Query Profile table for record with matching clerkUserId",
+          "expected": "Profile record exists with clerkUserId matching Clerk user ID"
+        },
+        {
+          "step": 3,
+          "action": "Verify Profile fields are populated correctly",
+          "expected": "Profile.email matches user email, Profile.subscriptionTier is FREE, Profile.createdAt is set"
+        },
+        {
+          "step": 4,
+          "action": "Attempt to access /api/projects",
+          "expected": "API successfully finds Profile record and returns empty projects array"
+        }
+      ],
+      "acceptance_criteria": [
+        "Profile record is created within 5 seconds of Clerk signup",
+        "Profile.clerkUserId exactly matches Clerk's user.id",
+        "Profile.email matches the email used for signup",
+        "Profile.subscriptionTier defaults to FREE",
+        "Profile.id is a valid UUID generated by gen_random_uuid()",
+        "Indexes on clerkUserId and email are functional"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/webhooks/clerk/route.ts"
+      ],
+      "tags": ["auth", "database", "clerk", "webhooks", "integration"],
+      "notes": "Profile model lines 46-61 in schema.prisma. Webhook handler should create Profile on user.created event. Check for Clerk webhook configuration."
+    },
+    {
+      "id": "TC-AUTH-009",
+      "name": "Logout functionality clears session and redirects to public page",
+      "module": "auth",
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that users can successfully log out and their session is completely cleared",
+      "business_context": "Users need to be able to securely end their session, especially on shared devices. Logout must clear all authentication state.",
+      "preconditions": [
+        "User is logged in with active session"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Click logout button in user menu/navigation",
+          "expected": "Clerk's signOut() function is called"
+        },
+        {
+          "step": 2,
+          "action": "Verify user is redirected after logout",
+          "expected": "User is redirected to landing page /en or login page /en/login-clerk"
+        },
+        {
+          "step": 3,
+          "action": "Attempt to access /en/dashboard after logout",
+          "expected": "User is redirected to login page (session is cleared)"
+        },
+        {
+          "step": 4,
+          "action": "Attempt to call /api/projects after logout",
+          "expected": "API returns 401 Unauthorized (no valid session)"
+        },
+        {
+          "step": 5,
+          "action": "Verify browser/device authentication state",
+          "expected": "Clerk session cookies are cleared, no session tokens remain in localStorage"
+        }
+      ],
+      "acceptance_criteria": [
+        "Logout completes within 2 seconds",
+        "User is redirected to a public page",
+        "All session data is cleared (cookies, tokens)",
+        "Subsequent requests to protected routes redirect to login",
+        "Subsequent API calls return 401",
+        "Back button does not restore authenticated state",
+        "User must re-authenticate to access protected content"
+      ],
+      "related_files": [
+        "apps/nextjs/src/components/user-menu.tsx",
+        "apps/nextjs/src/utils/clerk.ts"
+      ],
+      "tags": ["auth", "logout", "security", "session-management"],
+      "notes": "Clerk's useClerk() hook provides signOut() method. Need to verify where logout button is implemented in UI."
+    },
+    {
+      "id": "TC-AUTH-010",
+      "name": "Middleware correctly handles locale-based redirects for authenticated users",
+      "module": "auth",
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that authenticated users accessing routes without locale are redirected to localized version",
+      "business_context": "The app supports internationalization. All routes should include a locale prefix (e.g., /en/). Middleware must add locale while preserving authentication.",
+      "preconditions": [
+        "User is logged in"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /dashboard (without locale prefix)",
+          "expected": "Middleware detects missing locale"
+        },
+        {
+          "step": 2,
+          "action": "Check redirect URL",
+          "expected": "User is redirected to /en/dashboard (or detected locale)"
+        },
+        {
+          "step": 3,
+          "action": "Verify authentication is preserved during redirect",
+          "expected": "User remains authenticated, session is not lost"
+        },
+        {
+          "step": 4,
+          "action": "Test with different Accept-Language header",
+          "expected": "Middleware uses browser locale preference when available"
+        }
+      ],
+      "acceptance_criteria": [
+        "Routes without locale are redirected to include locale",
+        "Default locale is 'en' if no preference detected",
+        "Accept-Language header is respected",
+        "Session and authentication state are preserved",
+        "Redirect happens transparently (< 300ms)",
+        "No content flash or double-render occurs"
+      ],
+      "related_files": [
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/config/i18n-config.ts"
+      ],
+      "tags": ["auth", "i18n", "middleware", "edge-case"],
+      "notes": "Lines 64-78 in clerk.ts handle locale detection and redirect. Uses @formatjs/intl-localematcher and Negotiator."
+    }
+  ],
   "known_issues": []
 }

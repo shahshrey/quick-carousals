@@ -95,8 +95,8 @@ Create test cases using this exact JSON structure:
   "name": "Clear description of what's being tested",
   "module": "module_key from tasks.json",
   "user_journey": "journey_key or null",
-  "category": "api | frontend | database | integration | e2e",
-  "type": "happy_path | error_path | edge_case | security | performance",
+  "category": "api | frontend | database | integration | e2e | security | performance",
+  "type": "happy_path | error_path | edge_case",
   "priority": "critical | high | medium | low",
   "description": "What this test validates from business perspective",
   "business_context": "Why this matters to users/business",
@@ -141,8 +141,11 @@ Create test cases using this exact JSON structure:
 
 Edit `.ralph-test/tests.json`:
 1. Add your test cases to the `test_cases` array
-2. Update the module's `status` to `"analyzed"`
-3. Increment `test_count` for the module
+2. Update the appropriate status to `"analyzed"`:
+   - For regular modules: `modules.<module_key>.status`
+   - For user journeys: `user_journeys.<journey_key>.status`
+   - For cross-cutting concerns (security, error_handling): `cross_cutting.<key>.status`
+3. Increment the corresponding `test_count`
 4. Update `metadata.coverage_summary`
 
 ---

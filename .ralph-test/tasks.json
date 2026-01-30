@@ -26,7 +26,7 @@
       "_note": "Verify test cases cover auth happy paths and error paths",
       "expected": "At least 5 test cases covering login, register, logout, protected routes, and auth errors"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-02",
@@ -52,7 +52,7 @@
       "_note": "Verify test cases cover the full AI generation pipeline",
       "expected": "At least 6 test cases covering valid generation, input validation, auth, rate limits, AI errors"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-03",

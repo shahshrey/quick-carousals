@@ -599,22 +599,40 @@ parse_stream() {
 
           # Handle read tool result
           if echo "$line" | jq -e '.tool_call.readToolCall.result.success' > /dev/null 2>&1; then
-            local lines=$(echo "$line" | jq -r '.tool_call.readToolCall.result.success.totalLines // 0' 2>/dev/null)
-            local size=$(echo "$line" | jq -r '.tool_call.readToolCall.result.success.contentSize // 0' 2>/dev/null)
+            local read_lines
+            read_lines=$(echo "$line" | jq -r '.tool_call.readToolCall.result.success.totalLines // 0' 2>/dev/null)
+            local size
+            size=$(echo "$line" | jq -r '.tool_call.readToolCall.result.success.contentSize // 0' 2>/dev/null)
             bytes_read=$((bytes_read + size))
             
-            printf "${C_CYAN}${BOX_V}${C_RESET}  ${C_GREEN}${ICON_SUCCESS}${C_RESET} ${C_DIM}%d lines${C_RESET} ${C_BRIGHT_BLACK}(%s)${C_RESET}" "$lines" "$(format_size $size)" >&2
+            printf "${C_CYAN}${BOX_V}${C_RESET}  ${C_GREEN}${ICON_SUCCESS}${C_RESET} ${C_DIM}%d lines${C_RESET} ${C_BRIGHT_BLACK}(%s)${C_RESET}" "$read_lines" "$(format_size $size)" >&2
             [[ -n "$duration_sec" ]] && [[ "$duration_sec" -gt 0 ]] && printf " ${C_BRIGHT_BLACK}%ds${C_RESET}" "$duration_sec" >&2
             printf "\n" >&2
+            
+            # Show file content preview in verbose mode (first 10 lines)
+            if [[ "$VERBOSE" == "true" ]]; then
+              local content
+              content=$(echo "$line" | jq -r '.tool_call.readToolCall.result.success.content // ""' 2>/dev/null)
+              if [[ -n "$content" ]]; then
+                printf "${C_CYAN}${BOX_V}${C_RESET}  ${C_DIM}preview:${C_RESET}\n" >&2
+                echo "$content" | head -10 | while IFS= read -r file_line; do
+                  printf "${C_CYAN}${BOX_V}${C_RESET}    ${C_DIM}%s${C_RESET}\n" "$file_line" >&2
+                done
+                [[ $read_lines -gt 10 ]] && printf "${C_CYAN}${BOX_V}${C_RESET}    ${C_DIM}... (%d more lines)${C_RESET}\n" "$((read_lines - 10))" >&2
+              fi
+            fi
+            
             printf "${C_CYAN}${BOX_BL}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${C_RESET}\n" >&2
 
           # Handle write tool result
           elif echo "$line" | jq -e '.tool_call.writeToolCall.result.success' > /dev/null 2>&1; then
-            local lines=$(echo "$line" | jq -r '.tool_call.writeToolCall.result.success.linesCreated // 0' 2>/dev/null)
-            local size=$(echo "$line" | jq -r '.tool_call.writeToolCall.result.success.fileSize // 0' 2>/dev/null)
+            local write_lines
+            write_lines=$(echo "$line" | jq -r '.tool_call.writeToolCall.result.success.linesCreated // 0' 2>/dev/null)
+            local size
+            size=$(echo "$line" | jq -r '.tool_call.writeToolCall.result.success.fileSize // 0' 2>/dev/null)
             bytes_written=$((bytes_written + size))
             
-            printf "${C_GREEN}${BOX_V}${C_RESET}  ${C_GREEN}${ICON_SUCCESS}${C_RESET} ${C_DIM}Created %d lines${C_RESET} ${C_BRIGHT_BLACK}(%s)${C_RESET}" "$lines" "$(format_size $size)" >&2
+            printf "${C_GREEN}${BOX_V}${C_RESET}  ${C_GREEN}${ICON_SUCCESS}${C_RESET} ${C_DIM}Created %d lines${C_RESET} ${C_BRIGHT_BLACK}(%s)${C_RESET}" "$write_lines" "$(format_size $size)" >&2
             printf "\n" >&2
             printf "${C_GREEN}${BOX_BL}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${C_RESET}\n" >&2
 
@@ -625,9 +643,12 @@ parse_stream() {
 
           # Handle shell tool result
           elif echo "$line" | jq -e '.tool_call.shellToolCall.result' > /dev/null 2>&1; then
-            local exit_code=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.exitCode // 0' 2>/dev/null)
-            local stdout=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.stdout // ""' 2>/dev/null)
-            local stderr=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.stderr // ""' 2>/dev/null)
+            local exit_code
+            exit_code=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.exitCode // 0' 2>/dev/null)
+            local stdout
+            stdout=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.stdout // ""' 2>/dev/null)
+            local stderr
+            stderr=$(echo "$line" | jq -r '.tool_call.shellToolCall.result.stderr // ""' 2>/dev/null)
 
             shell_chars=$((shell_chars + ${#stdout} + ${#stderr}))
 
@@ -637,6 +658,23 @@ parse_stream() {
               printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}  ${C_RED}${ICON_ERROR} Exit %d${C_RESET}" "$exit_code" >&2
             fi
             printf "\n" >&2
+            
+            # Show output in verbose mode
+            if [[ "$VERBOSE" == "true" ]]; then
+              if [[ -n "$stdout" ]]; then
+                printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}  ${C_DIM}stdout:${C_RESET}\n" >&2
+                while IFS= read -r out_line; do
+                  printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}    %s\n" "$out_line" >&2
+                done <<< "$stdout"
+              fi
+              if [[ -n "$stderr" ]]; then
+                printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}  ${C_YELLOW}stderr:${C_RESET}\n" >&2
+                while IFS= read -r err_line; do
+                  printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}    %s\n" "$err_line" >&2
+                done <<< "$stderr"
+              fi
+            fi
+            
             printf "${C_BRIGHT_MAGENTA}${BOX_BL}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${C_RESET}\n" >&2
 
           # Handle search results
@@ -788,11 +826,13 @@ run_iteration() {
 
   # Read signals from parser
   while IFS= read -r line; do
-    echo "$(date +%s)" > "$watchdog_file" 2>/dev/null || true
+    date +%s > "$watchdog_file" 2>/dev/null || true
     
     case "$line" in
       COMPLETE|GUTTER|ROTATE|DEFER|NEXT)
         signal="$line"
+        # Kill agent and all children (cursor-agent + parse_stream pipeline)
+        pkill -P $agent_pid 2>/dev/null || true
         kill $agent_pid 2>/dev/null || true
         break
         ;;
@@ -810,7 +850,9 @@ run_iteration() {
     esac
   done < "$fifo"
 
-  # Cleanup
+  # Cleanup - ensure all child processes are terminated
+  pkill -P $agent_pid 2>/dev/null || true
+  kill $agent_pid 2>/dev/null || true
   kill $watchdog_pid 2>/dev/null || true
   wait $agent_pid 2>/dev/null || true
   wait $watchdog_pid 2>/dev/null || true
@@ -859,8 +901,9 @@ run_loop() {
       return 0
     fi
 
-    # Check for task change
-    local next_task_info=$(get_next_task)
+    # Check for task change (display only, don't increment iteration here)
+    local next_task_info
+    next_task_info=$(get_next_task)
     local next_task_id=""
     if [[ -n "$next_task_info" ]]; then
       next_task_id=$(echo "$next_task_info" | cut -d'|' -f1)
@@ -868,17 +911,19 @@ run_loop() {
     
     if [[ -n "$current_task_id" ]] && [[ -n "$next_task_id" ]] && [[ "$current_task_id" != "$next_task_id" ]]; then
       printf "\n${C_CYAN}📋 New module: ${C_BRIGHT_WHITE}%s${C_RESET}\n" "$next_task_id"
-      iteration=$((iteration + 1))
+      # Note: Don't increment iteration here - only increment after agent run completes
     fi
     
     current_task_id="$next_task_id"
 
     # Run iteration
-    local signal=$(run_iteration "$iteration")
+    local signal
+    signal=$(run_iteration "$iteration")
 
     # Check completion after iteration
     if is_complete; then
-      local test_cases=$(count_test_cases)
+      local test_cases
+      test_cases=$(count_test_cases)
       echo ""
       printf "${C_BG_GREEN}${C_BLACK}${C_BOLD}                                                                       ${C_RESET}\n"
       printf "${C_BG_GREEN}${C_BLACK}${C_BOLD}  ${ICON_TEST} TEST DISCOVERY COMPLETE!                                        ${C_RESET}\n"
@@ -888,7 +933,7 @@ run_loop() {
       return 0
     fi
 
-    # Handle signal
+    # Handle signal - always increment iteration after each agent run
     case "$signal" in
       COMPLETE)
         if is_complete; then
@@ -896,18 +941,15 @@ run_loop() {
           return 0
         else
           printf "${C_YELLOW}${ICON_WARN}Agent signaled complete but tasks remain. Continuing...${C_RESET}\n"
-          iteration=$((iteration + 1))
         fi
         ;;
       NEXT)
         log_progress "**Session $iteration ended** - → NEXT"
         printf "\n${C_CYAN}→ Continuing discovery...${C_RESET}\n"
-        iteration=$((iteration + 1))
         ;;
       ROTATE)
         log_progress "**Session $iteration ended** - 🔄 Context rotation"
         printf "\n${C_CYAN}🔄 Rotating to fresh context...${C_RESET}\n"
-        iteration=$((iteration + 1))
         ;;
       GUTTER)
         log_progress "**Session $iteration ended** - 🚨 GUTTER"
@@ -920,22 +962,27 @@ run_loop() {
         [[ $delay -gt 120 ]] && delay=120
         printf "\n${C_YELLOW}⏸️ Rate limit. Waiting %ds...${C_RESET}\n" "$delay"
         sleep $delay
+        # Don't increment on DEFER - retry same iteration
+        sleep 2
+        continue
         ;;
       TIMEOUT)
         log_progress "**Session $iteration ended** - ⏰ TIMEOUT"
         printf "\n${C_YELLOW}⏰ Restarting with fresh context...${C_RESET}\n"
-        iteration=$((iteration + 1))
         sleep 5
         ;;
       *)
-        local remaining=$(count_remaining)
+        local remaining
+        remaining=$(count_remaining)
         if [[ $remaining -gt 0 ]]; then
           log_progress "**Session $iteration ended** - $remaining modules remaining"
           printf "\n${C_YELLOW}${ICON_WARN}%d modules remaining. Continuing...${C_RESET}\n" "$remaining"
-          iteration=$((iteration + 1))
         fi
         ;;
     esac
+    
+    # Increment iteration counter once per agent run (except DEFER which continues)
+    iteration=$((iteration + 1))
 
     sleep 2
   done

@@ -7,16 +7,16 @@ This Ralph loop is for **test case discovery only**. The agent analyzes source c
 **Philosophy:** "Understand the business logic, define what correct behavior looks like"
 
 **This loop does NOT:**
-- Execute tests
+- Execute tests automatically
 - Mark tests as pass/fail
-- Run the application
-- Interact with browsers or APIs
+- Run automated test suites
 
 **This loop DOES:**
 - Read source code files
 - Understand business logic and user flows
 - Create detailed test case definitions
 - Document acceptance criteria (ideal state)
+- **Optionally** interact with live pages/APIs to better understand actual behavior (recommended for UI/API modules)
 
 ---
 
