@@ -365,7 +365,7 @@
       ],
       "expected": "/api/upload accepts POST with file, returns {url: signed_url}. Signed URL valid for 24hrs."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "infra-03",
