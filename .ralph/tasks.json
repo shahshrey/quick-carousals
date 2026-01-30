@@ -611,7 +611,7 @@
       ],
       "expected": "8 total style kits seeded: +Corporate Pro, Gradient Modern, Dark Mode Punch, Soft Pastel"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-09",
