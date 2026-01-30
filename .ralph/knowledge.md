@@ -1919,3 +1919,37 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s -X GET http://localhost:3000/api/projects/test-id -o /dev/null -w '%{http_code}'` - Returns 401 (auth required)
     - `curl -s -X GET http://localhost:3000/api/style-kits/minimal_clean -o /dev/null -w '%{http_code}'` - Returns 200
   - **Next task dependency**: This completes the core MVP flow - users can now generate carousels and edit them end-to-end
+
+---
+## Iteration 16 - integration-01
+- **What was done**: Set up Stripe products and price IDs for QuickCarousals pricing tiers
+- **Files changed**: 
+  - packages/stripe/src/env.mjs (updated to QuickCarousals pricing structure)
+  - packages/stripe/src/plans.ts (switched to SubscriptionTier enum)
+  - packages/stripe/src/webhooks.ts (updated to work with Profile table and SubscriptionTier)
+  - .env.example (added comprehensive Stripe setup documentation)
+  - .ralph/STRIPE_SETUP.md (created detailed setup guide)
+  - .ralph/tasks.json (marked integration-01 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Stripe SDK already installed**: The `@saasfly/stripe` workspace package includes `stripe@14.15.0`
+  - **Two enum types exist**: QuickCarousals uses `SubscriptionTier` (FREE, CREATOR, PRO) not `SubscriptionPlan` (FREE, PRO, BUSINESS)
+  - **Profile table not Customer**: QuickCarousals uses `Profile` table with `clerkUserId` field, not `Customer` table
+  - **Webhook updates**: Updated webhooks.ts to:
+    - Query Profile by clerkUserId instead of Customer by authUserId
+    - Update subscriptionTier field instead of plan field
+    - Handle subscription.deleted event to revert to FREE tier
+    - Remove Stripe customer ID fields (managed by Clerk)
+  - **Environment variable naming**: Use `NEXT_PUBLIC_STRIPE_CREATOR_PRICE_ID` and `NEXT_PUBLIC_STRIPE_PRO_PRICE_ID`
+  - **Product setup documentation**: Created comprehensive guide at .ralph/STRIPE_SETUP.md with:
+    - Step-by-step Stripe Dashboard instructions
+    - Test mode setup with Stripe CLI
+    - Pricing tier feature matrix
+    - Production deployment checklist
+  - **Pricing structure**: 
+    - Free: $0 (no Stripe product needed)
+    - Creator: $15/mo (30 carousels, 15 slides, all style kits, 1 brand kit)
+    - Pro: $39/mo (unlimited carousels, 20 slides, custom fonts, priority exports)
+  - **TypeScript validation**: Always run `bun run typecheck` after enum/type changes to catch type mismatches
+  - **Large JSON files**: Use `sed` instead of `jq` for updating large tasks.json file (144KB)
+---
