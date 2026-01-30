@@ -1850,3 +1850,37 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Client component caveat**: Client components don't render testids in SSR HTML, but they do render after hydration in browser
   - **Next task dependency**: feature-39 will create the /create flow, feature-40 will connect real project editor
 ---
+
+---
+## Iteration 12 - feature-39
+- **What was done**: Built creation flow page with topic/text modes, style kit selection grid, and all required testids
+- **Files changed**: 
+  - apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx (added style kit selection, all testids)
+  - .ralph/tasks.json (marked feature-39 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Creation flow already 80% complete**: Previous work had basic structure, just needed style kit selector and testids
+  - **Style kit selection pattern**: Fetched kits from /api/style-kits on mount, displayed as grid with color previews
+  - **Grid layout for style kits**: Used `grid-cols-2 md:grid-cols-4 gap-3` for responsive 2/4 column layout
+  - **Visual style kit preview**: Each kit shows color background and accent stripe, plus name and PRO badge for premium kits
+  - **Active selection state**: Blue border and background on selected kit for clear visual feedback
+  - **All 7 required testids added**:
+    - `data-testid="mode_topic"` - Topic mode button
+    - `data-testid="mode_text"` - Text mode button
+    - `data-testid="topic_input"` - Topic input field
+    - `data-testid="text_input"` - Text textarea
+    - `data-testid="tone_selector"` - Tone dropdown select
+    - `data-testid="slide_count"` - Slide count dropdown select
+    - `data-testid="generate_button"` - Generate button
+  - **Type safety**: Added StyleKit interface with colors, typography, isPremium fields
+  - **useEffect pattern**: Fetched style kits on component mount with async function inside useEffect
+  - **Default style kit**: Set default to 'minimal_clean' on mount
+  - **Integration with generation**: Added selectedStyleKit to API request body for both topic and text modes
+  - **Validation workflow**:
+    - `curl -s http://localhost:3000/api/style-kits | jq 'length'` - Returns 8 kits
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/create` - Returns 200
+    - `grep -c "data-testid=\"X\"" file` - Verify each testid present
+  - **Working directory gotcha**: When running commands from subdirectories (apps/nextjs), need to cd back to repo root for .ralph files
+  - **Python for JSON updates**: Used Python instead of jq for safer JSON manipulation with proper error handling
+  - **Next task dependency**: feature-40 will connect this creation flow to the editor with real project creation and navigation
+---
