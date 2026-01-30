@@ -1100,7 +1100,7 @@
       ],
       "expected": "brand_kit_toggle in creation flow. When enabled, generated slides use user's brand colors, fonts, logo, and handle."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-27",
@@ -1123,7 +1123,7 @@
       ],
       "expected": "@napi-rs/canvas installed. renderSlideToCanvas(slide, styleKit) returns PNG buffer."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-28",
