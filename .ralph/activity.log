@@ -6964,3 +6964,151 @@ echo "Progress updated" → exit 0
 [12:04:09] 💬 ASSISTANT: Now let me verify the task was marked complete:...
 [12:04:13] SHELL jq '.[] | select(.id == "feature-30") | .passes' .ralph/tasks.json → exit 0
 [12:04:23] 💬 ASSISTANT: Excellent! Now let me commit the changes:...
+[12:04:26] SHELL git add -A && git commit -m "ralph: [feature-30] - Create /api/exports endpoints for export job management
+
+- Created POST /api/exports to queue export jobs
+  - Validates projectId and export type (PDF/PNG/THUMBNAIL)
+  - Verifies project ownership via Profile lookup
+  - Creates Export record in database with PENDING status
+  - Queues job to BullMQ render queue
+  - Returns export ID for status polling
+
+- Created GET /api/exports/:id for status polling
+  - Fetches export record with ownership verification
+  - Returns status (PENDING/PROCESSING/COMPLETED/FAILED)
+  - Generates signed download URLs when complete
+    - Single URL for PDF and THUMBNAIL
+    - Array of URLs for PNG exports (one per slide)
+  - Includes error messages for failed exports
+
+- Both endpoints require authentication via withAuthAndErrors
+- Uses Kysely for type-safe database queries
+- Integrates with BullMQ render queue (feature-29)
+- Follows API error handling patterns (setup-13)
+
+Validation:
+✓ POST /api/exports returns 401 without auth
+✓ GET /api/exports/:id returns 401 without auth
+✓ Routes exist and compile correctly" → exit 0
+[12:04:37] 💬 ASSISTANT: Perfect! Now let me append learnings to the knowledge.md file:...
+[12:04:41] SHELL tail -20 .ralph/knowledge.md → exit 0
+[12:05:01] SHELL cat >> .ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 66 - feature-30
+- **What was done**: Created /api/exports endpoints for export job management
+- **Files changed**: 
+  - apps/nextjs/src/app/api/exports/route.ts (created POST endpoint)
+  - apps/nextjs/src/app/api/exports/[id]/route.ts (created GET endpoint)
+  - .ralph/tasks.json (marked feature-30 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Export API pattern**: Two endpoints - POST to create jobs, GET to poll status
+  - **POST /api/exports implementation**:
+    - Validates request body with Zod: `{ projectId: string, type: enum["PDF", "PNG", "THUMBNAIL"] }`
+    - Looks up Profile by clerkUserId to get internal user ID
+    - Verifies project exists and belongs to user (ownership check via JOIN)
+    - Fetches all slide IDs ordered by orderIndex
+    - Creates Export record in database with PENDING status
+    - Queues job to BullMQ render queue with `addRenderJob()`
+    - Returns 201 with export ID, status, and metadata
+  - **GET /api/exports/:id implementation**:
+    - Extracts export ID from URL path (last segment)
+    - Verifies ownership via INNER JOIN on Project.userId
+    - Returns status (PENDING/PROCESSING/COMPLETED/FAILED)
+    - When COMPLETED, generates signed download URLs:
+      - For PNG exports: Parse fileUrl as JSON array, generate signed URL for each path
+      - For PDF/THUMBNAIL: Generate single signed URL from fileUrl string
+    - When FAILED, includes errorMessage in response
+    - Uses 24-hour expiry for signed URLs (default from getSignedUrl)
+  - **Ownership verification pattern**: Always use INNER JOIN on Project table to ensure user can only access their own exports
+  - **Signed URL generation**: Call `getSignedUrl(STORAGE_BUCKETS.EXPORTS, path)` for each file path
+  - **PNG export special handling**: fileUrl stored as JSON array of paths `["userId/file1.png", "userId/file2.png"]`, must parse and map to signed URLs
+  - **Error handling**: Wrap signed URL generation in try/catch - if it fails, don't fail the request, just omit URL and let client retry
+  - **Auth guard validation**: Both endpoints correctly return 401 without authentication
+  - **Working commands for this task**:
+    - `curl -s -X POST http://localhost:3000/api/exports` - Returns 401 (auth required)
+    - `curl -s http://localhost:3000/api/exports/test-id` - Returns 401 (auth required)
+    - `test -f apps/nextjs/src/app/api/exports/route.ts` - Verify route exists
+  - **Next task dependency**: feature-31 will add PNG export handling, feature-32 will create export modal UI to call these endpoints
+---
+EOF → exit 0
+[12:05:07] 💬 ASSISTANT: Perfect! Now let me commit the knowledge update and push:...
+[12:05:12] SHELL git add .ralph/knowledge.md && git commit -m "ralph: Update knowledge.md with feature-30 learnings" && git push → exit 0
+[12:05:22] 💬 ASSISTANT: Excellent! Task feature-30 is now complete. Let me update the progress.md file as well:...
+[12:05:27] SHELL cat >> .ralph/progress.md << 'EOF'
+
+## Iteration 66 - feature-30 ✅
+
+**Task**: Create /api/exports endpoint
+
+**Implementation**:
+- Created POST /api/exports to queue export jobs
+  - Validates projectId and export type (PDF/PNG/THUMBNAIL)
+  - Verifies project ownership via Profile and Project lookup
+  - Creates Export record in database with PENDING status
+  - Queues job to BullMQ render queue using addRenderJob()
+  - Returns 201 with export ID and metadata
+
+- Created GET /api/exports/:id for status polling
+  - Fetches export record with ownership verification via JOIN
+  - Returns current status (PENDING/PROCESSING/COMPLETED/FAILED)
+  - Generates signed download URLs when COMPLETED:
+    - Single URL for PDF and THUMBNAIL exports
+    - Array of URLs for PNG exports (one per slide)
+  - Includes error messages for FAILED exports
+
+**Validation**:
+✓ Both routes exist and compile
+✓ POST returns 401 without authentication
+✓ GET returns 401 without authentication
+✓ Follows established API patterns (withAuthAndErrors, validateBody)
+
+**Key Patterns**:
+- Ownership verification via INNER JOIN on Project.userId
+- PNG exports store paths as JSON array in fileUrl
+- Signed URLs generated with 24-hour expiry using getSignedUrl()
+- Error handling wraps signed URL generation to avoid request failures
+
+**Next**: feature-31 will add PNG export handling, feature-32 will create export modal UI
+
+EOF
+git add .ralph/progress.md && git commit -m "ralph: Add progress entry for feature-30" && git push → exit 0
+[12:05:41] 💬 ASSISTANT: Perfect! Task feature-30 is complete. Let me provide a summary of what was accomplished:
+
+## Summary - Iteration 66: feature-30 Complete ✅
+
+I successfully implemented the /api/exports endpoints for ex...
+[12:05:41] → Agent signaled NEXT (task complete)
+[12:05:41] SESSION END: 274484ms, ~1820 tokens
+[12:05:41] 🧠 LEARNED: knowledge.md updated
+[12:06:05] NEW TASK: feature-31 (previous: feature-30) - starting fresh session
+[12:06:05] SESSION 68 START: model=sonnet-4.5-thinking
+[12:06:10] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[12:06:27] 💬 ASSISTANT: I'll start by reading the necessary files to understand the task....
+[12:06:28] READ /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json (2763 lines, 0B)
+[12:06:29] READ /Users/shrey/Downloads/quick-carousals/.ralph/PRD.md (1489 lines, 0B)
+[12:06:37] 💬 ASSISTANT: Now let me read the tasks.json file with a specific search for feature-31:...
+[12:06:42] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '.[] | select(.id == "feature-31")' .ralph/tasks.json → exit 0
+[12:06:49] 💬 ASSISTANT: Good! Now let me check the current implementation of the render worker to understand how PNG export is handled:...
+[12:06:50] READ /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/queues/render-worker.ts (366 lines, 0B)
+[12:06:56] 💬 ASSISTANT: Perfect! I can see that PNG export is already fully implemented in the worker. Let me check if the exports API endpoint handles PNG correctly:...
+[12:06:58] READ /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/exports/[id]/route.ts (123 lines, 0B)
+[12:07:04] 💬 ASSISTANT: Great! PNG export is fully implemented. Let me verify the render-slide function handles PNG properly and run the validation commands:...
+[12:07:07] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -rq 'png\|PNG' apps/nextjs/src/lib && echo 'PASS: PNG export logic' || echo 'FAIL' → exit 0
+[12:07:09] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -rq 'ExportType' packages/db/prisma/schema.prisma && echo 'PASS: ExportType enum' || echo 'FAIL' → exit 0
+[12:07:16] 💬 ASSISTANT: Perfect! Both validation commands pass. Let me verify the specific implementation details by checking the actual PNG export flow:...
+[12:07:19] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -A 5 "PNG" apps/nextjs/src/lib/queues/render-worker.ts | head -20 → exit 0
+[12:07:19] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -B 2 -A 10 "processPNGExport" apps/nextjs/src/lib/queues/render-worker.ts | head -30 → exit 0
+[12:07:25] 💬 ASSISTANT: Excellent! Let me verify that the PNG export generates numbered files (slide-1.png, slide-2.png, etc.) as expected:...
+[12:07:28] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -A 3 "slide-" apps/nextjs/src/lib/queues/render-worker.ts | grep filename → exit 0
+[12:07:35] 💬 ASSISTANT: Perfect! The PNG export is fully implemented with:
+1. ✅ PNG export type in job processor (`processPNGExport`)
+2. ✅ Individual PNG generation for each slide (`slide-1`, `slide-2`, etc.)
+3. ✅ Cover thum...
+[12:07:38] SHELL cd /Users/shrey/Downloads/quick-carousals && grep -A 5 "enum ExportType" packages/db/prisma/schema.prisma → exit 0
+[12:07:44] 💬 ASSISTANT: Perfect! Now let me mark the task as complete and update the necessary files:...
+[12:07:47] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '(.[] | select(.id == "feature-31") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
+[12:07:53] 💬 ASSISTANT: Now let me verify the change was applied:...
+[12:07:55] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '.[] | select(.id == "feature-31") | .passes' .ralph/tasks.json → exit 0
+[12:08:01] 💬 ASSISTANT: Great! Now let me commit the changes and update the knowledge base:...

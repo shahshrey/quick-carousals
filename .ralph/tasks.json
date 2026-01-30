@@ -1217,7 +1217,7 @@
       ],
       "expected": "type:'png' export generates slide-1.png, slide-2.png, etc. Optional cover thumbnail at 400x500px."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-32",
