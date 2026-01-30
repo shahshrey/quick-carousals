@@ -1983,7 +1983,7 @@
       ],
       "expected": "All carousels receive design quality scores >= 7/10 on average, or screenshots ready for manual review"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-06",
