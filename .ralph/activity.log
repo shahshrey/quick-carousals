@@ -1928,3 +1928,47 @@ ls -la supabase/migrations/ | tail -5 → exit 0
 [05:37:22] SHELL jq '(.[] | select(.id == "infra-01") | .passes) = true' /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json > /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json.tmp && mv /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json.tmp /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json → exit 0
 [05:37:30] SHELL jq '.[] | select(.id == "infra-01") | .passes' /Users/shrey/Downloads/quick-carousals/.ralph/tasks.json → exit 0
 [05:37:36] 💬 ASSISTANT: Perfect! Now let me commit the changes:...
+[05:37:39] SHELL cd /Users/shrey/Downloads/quick-carousals && git add -A && git commit -m "ralph: [infra-01] - Configure file storage buckets
+
+- Created 'logos' bucket for brand assets (5MB, images only)
+- Created 'exports' bucket for generated PDFs/PNGs (50MB limit)
+- Added RLS policies for user-scoped access
+- Created Supabase client utilities (server & browser)
+- Created storage utility functions (upload, download, signed URLs, delete)
+- Added comprehensive storage documentation to README
+- Installed @supabase/supabase-js package" → exit 0
+[05:38:02] 💬 ASSISTANT: Excellent! Now let me update the knowledge.md with learnings from this iteration:...
+[05:38:04] EDIT /Users/shrey/Downloads/quick-carousals/.ralph/knowledge.md
+[05:38:14] 💬 ASSISTANT: Perfect! Let me also update the progress.md file:...
+[05:38:16] SHELL cat >> /Users/shrey/Downloads/quick-carousals/.ralph/progress.md << 'EOF'
+
+## Iteration 15 - infra-01 ✅
+
+**Task**: Configure file storage buckets
+
+**Completed**:
+- ✅ Created 'logos' storage bucket (5MB, images only)
+- ✅ Created 'exports' storage bucket (50MB, PDFs/PNGs)
+- ✅ Configured RLS policies for user-scoped access
+- ✅ Created Supabase client utilities (server & browser)
+- ✅ Created storage utility functions (upload, download, signed URLs, delete, list)
+- ✅ Added comprehensive storage documentation to lib/README.md
+- ✅ Installed @supabase/supabase-js package
+
+**Validation**: 
+- Buckets created and verified in database
+- RLS policies applied and verified
+- Storage utility files created with LOGOS and EXPORTS references
+- Documentation complete with examples
+
+**Files Created/Modified**:
+- `supabase/create_buckets.sql` - Storage bucket SQL migration
+- `apps/nextjs/src/lib/supabase.ts` - Supabase client utilities
+- `apps/nextjs/src/lib/storage.ts` - Storage utility functions
+- `apps/nextjs/src/lib/README.md` - Added storage documentation
+- `apps/nextjs/package.json` - Added @supabase/supabase-js dependency
+
+**Next Task**: infra-02 - Create signed URL utility
+EOF
+echo "Progress updated" → exit 0
+[05:38:21] 💬 ASSISTANT: Now let me commit these documentation updates:...

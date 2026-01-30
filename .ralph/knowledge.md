@@ -500,3 +500,39 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Documentation important**: Updated lib/README.md with comprehensive examples of withAuth usage
   - **API route structure**: Protected endpoints follow pattern: `export const GET = withAuth(async (req, { userId }) => { ... })`
 ---
+
+---
+## Iteration 15 - infra-01
+- **What was done**: Configured Supabase Storage buckets for logos and exports
+- **Files changed**: 
+  - supabase/create_buckets.sql (SQL migration for storage buckets and RLS policies)
+  - apps/nextjs/src/lib/supabase.ts (Supabase client utilities)
+  - apps/nextjs/src/lib/storage.ts (storage utility functions)
+  - apps/nextjs/src/lib/README.md (added storage documentation)
+  - apps/nextjs/package.json (added @supabase/supabase-js)
+  - .ralph/tasks.json (marked infra-01 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Supabase Storage is already configured**: Project uses local Supabase (not Cloudflare R2) at http://127.0.0.1:54321
+  - **Storage bucket creation**: Use SQL INSERT to create buckets, API endpoints are blocked by RLS
+  - **Bucket configuration**:
+    - `logos` bucket: 5MB limit, images only (png/jpeg/svg/webp)
+    - `exports` bucket: 50MB limit, PDFs and PNGs
+    - Both buckets are private (public=false)
+  - **RLS policies pattern**: Create policies for INSERT, SELECT, and DELETE with user-scoped access using `auth.uid()::text = (storage.foldername(name))[1]`
+  - **SQL execution via Docker**: Use `docker exec supabase_db_quick-carousals psql -U postgres -d postgres` to run SQL
+  - **Storage utilities created**:
+    - `uploadFile()` - Server-side upload with Buffer or Blob
+    - `uploadFileFromBrowser()` - Client-side upload with File object
+    - `getSignedUrl()` - Generate temporary download URLs (default 24hr expiry)
+    - `deleteFile()` - Delete files from storage
+    - `listUserFiles()` - List files in user's folder
+    - Helper functions: `getUserFilePath()`, `generateUniqueFilename()`
+  - **Supabase client patterns**:
+    - `createServerClient()` - Uses service role key for privileged operations
+    - `createBrowserClient()` - Uses anon key for client-side operations
+  - **Environment variables**: All Supabase env vars already configured in .env.local (URL, anon key, service role key)
+  - **Validation commands**: Use `grep -rq 'logos\|LOGOS'` to check for bucket references in code
+  - **Database verification**: Query `storage.buckets` and `pg_policies` tables to verify configuration
+  - **Package installation**: Use `bun add @supabase/supabase-js` from apps/nextjs directory
+---

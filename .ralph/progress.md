@@ -499,3 +499,31 @@
 
 ### 2026-01-30 05:31:50
 **Session 15 started** (model: sonnet-4.5-thinking)
+
+## Iteration 15 - infra-01 ✅
+
+**Task**: Configure file storage buckets
+
+**Completed**:
+- ✅ Created 'logos' storage bucket (5MB, images only)
+- ✅ Created 'exports' storage bucket (50MB, PDFs/PNGs)
+- ✅ Configured RLS policies for user-scoped access
+- ✅ Created Supabase client utilities (server & browser)
+- ✅ Created storage utility functions (upload, download, signed URLs, delete, list)
+- ✅ Added comprehensive storage documentation to lib/README.md
+- ✅ Installed @supabase/supabase-js package
+
+**Validation**: 
+- Buckets created and verified in database
+- RLS policies applied and verified
+- Storage utility files created with LOGOS and EXPORTS references
+- Documentation complete with examples
+
+**Files Created/Modified**:
+- `supabase/create_buckets.sql` - Storage bucket SQL migration
+- `apps/nextjs/src/lib/supabase.ts` - Supabase client utilities
+- `apps/nextjs/src/lib/storage.ts` - Storage utility functions
+- `apps/nextjs/src/lib/README.md` - Added storage documentation
+- `apps/nextjs/package.json` - Added @supabase/supabase-js dependency
+
+**Next Task**: infra-02 - Create signed URL utility
