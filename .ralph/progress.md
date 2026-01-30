@@ -1867,3 +1867,39 @@ Task complete - endpoint ready for use in carousel editor text rewriting flow.
 
 ### 2026-01-30 13:26:42
 **Session 3 started** (model: sonnet-4.5-thinking)
+
+## Iteration 76 - feature-35 ✅
+
+**Task**: Add rewrite UI to editor
+
+**Implementation**:
+- Added rewrite menu dropdown that shows when text box is selected
+- Implemented 4 rewrite action buttons (shorter, punchier, examples, jargon)
+- Each action calls /api/rewrite endpoint and updates text content
+- Added all required data-testids
+
+**Files Changed**:
+- apps/nextjs/src/components/editor/EditorCanvas.tsx
+
+**Validation**:
+- ✅ Rewrite menu button with testid `rewrite_menu`
+- ✅ Four action buttons with testids `rewrite_shorter`, `rewrite_punchier`, `rewrite_examples`, `rewrite_jargon`
+- ✅ Dropdown opens/closes with backdrop
+- ✅ API calls work correctly (returns 401 without auth, as expected)
+- ✅ Text updates when action completes
+- ✅ Loading states and error handling
+
+**Status**: COMPLETE
+
+
+### 2026-01-30 13:30:04
+**Knowledge base updated** - agent added new learnings
+
+### 2026-01-30 13:30:42
+**Session 3 ended** - 34 tasks remaining (no signal)
+
+### 2026-01-30 13:30:44
+**Session 4 ended** - 📋 New task: feature-36 (was: feature-35)
+
+### 2026-01-30 13:30:45
+**Session 5 started** (model: sonnet-4.5-thinking)

@@ -1722,3 +1722,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -q 'shorter\|punchier\|examples\|jargon' apps/nextjs/src/app/api/rewrite/route.ts` - verify actions defined
     - `curl -s -X POST http://localhost:3000/api/rewrite -d '{"text":"test","action":"shorter"}' -o /dev/null -w '%{http_code}'` - test endpoint (returns 401)
   - **Next task dependency**: This completes the text rewriting functionality - users can now use AI to improve their carousel text
+
+---
+## Iteration 76 - feature-35
+- **What was done**: Added rewrite UI to editor with dropdown menu for text improvements
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added rewrite menu and handlers)
+  - .ralph/tasks.json (marked feature-35 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Rewrite menu pattern**: Created dropdown menu that appears when text is selected, triggered by "Rewrite" button
+  - **Four rewrite actions implemented**: shorter, punchier, examples, reduce_jargon (matching /api/rewrite endpoint)
+  - **State management**: Added `showRewriteMenu` and `rewritingAction` state to track menu and loading states
+  - **API integration**: Each action button calls `/api/rewrite` with corresponding action parameter, then updates text via `handleContentChange`
+  - **UX patterns**:
+    - Backdrop div closes dropdown when clicking outside
+    - `onMouseDown` preventDefault prevents blur event from closing editor while clicking buttons
+    - Loading state shows spinner and disables buttons during AI rewrite
+    - Hover effects on dropdown items for better UX
+  - **Testid requirements**: All 5 testids present (rewrite_menu, rewrite_shorter, rewrite_punchier, rewrite_examples, rewrite_jargon)
+  - **Button placement**: Rewrite menu button positioned below textarea, above Fix with AI button (when overflow detected)
+  - **Error handling**: Try/catch with user-friendly alerts for API failures
+  - **Menu positioning**: Absolute positioning relative to editor overlay, uses fixed backdrop at z-index 999
+  - **Visual design**: Each menu item has emoji icons (✂️, 💥, 📝, 🔧) for quick visual scanning
+  - **Working validation commands**:
+    - `curl -s -X POST http://localhost:3000/api/rewrite -d '{"text":"test","action":"shorter"}' -o /dev/null -w '%{http_code}'` - Returns 401 (auth required)
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - Returns 200 (page loads)
+    - `grep -c "data-testid=\"rewrite_menu\"" apps/nextjs/src/components/editor/EditorCanvas.tsx` - Verify testid exists
+  - **Next task dependency**: This completes the rewrite UI feature - users can now select text and use AI to improve it in multiple ways
+---
