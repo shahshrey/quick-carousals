@@ -134,6 +134,47 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
   const editingContent = editingLayerId && slide ? slide.content[editingLayerId] : '';
   const editingText = Array.isArray(editingContent) ? editingContent.join('\n') : editingContent;
 
+  // Rewrite menu state
+  const [showRewriteMenu, setShowRewriteMenu] = useState(false);
+  const [rewritingAction, setRewritingAction] = useState<string | null>(null);
+
+  // Handle rewrite action
+  const handleRewriteAction = async (action: 'shorter' | 'punchier' | 'examples' | 'reduce_jargon') => {
+    if (!editingLayerId || !slide) return;
+
+    setRewritingAction(action);
+    setShowRewriteMenu(false);
+
+    try {
+      const response = await fetch('/api/rewrite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: editingText,
+          action,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Rewrite failed:', error);
+        alert(`Failed to rewrite: ${error.error?.message || 'Unknown error'}`);
+        return;
+      }
+
+      const data = await response.json();
+      handleContentChange(data.rewritten_text);
+
+    } catch (error) {
+      console.error('Rewrite error:', error);
+      alert('Failed to rewrite text. Please try again.');
+    } finally {
+      setRewritingAction(null);
+    }
+  };
+
   // Check if current text overflows
   const checkIfOverflows = (layerId: string): boolean => {
     if (!slide) return false;
@@ -363,6 +404,212 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
             }}
           />
           
+          {/* Rewrite Menu Button */}
+          <div style={{ marginTop: '8px', position: 'relative' }}>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowRewriteMenu(!showRewriteMenu);
+              }}
+              onMouseDown={(e) => {
+                // Prevent blur event from closing editor
+                e.preventDefault();
+              }}
+              disabled={!!rewritingAction}
+              data-testid="rewrite_menu"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                fontWeight: 600,
+                backgroundColor: rewritingAction ? '#9ca3af' : '#3b82f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: rewritingAction ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              {rewritingAction ? (
+                <>
+                  <span style={{ 
+                    display: 'inline-block', 
+                    width: '14px', 
+                    height: '14px', 
+                    border: '2px solid #fff',
+                    borderTopColor: 'transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                  }} />
+                  Rewriting...
+                </>
+              ) : (
+                <>
+                  ✨ Rewrite
+                </>
+              )}
+            </button>
+
+            {/* Rewrite Menu Dropdown */}
+            {showRewriteMenu && (
+              <>
+                {/* Backdrop to close menu */}
+                <div
+                  style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 999,
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowRewriteMenu(false);
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                  }}
+                />
+                
+                {/* Menu */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    marginTop: '4px',
+                    backgroundColor: '#fff',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    zIndex: 1000,
+                    minWidth: '200px',
+                    overflow: 'hidden',
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRewriteAction('shorter');
+                    }}
+                    data-testid="rewrite_shorter"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textAlign: 'left',
+                      backgroundColor: '#fff',
+                      color: '#333',
+                      border: 'none',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #eee',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                    }}
+                  >
+                    ✂️ Make Shorter
+                  </button>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRewriteAction('punchier');
+                    }}
+                    data-testid="rewrite_punchier"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textAlign: 'left',
+                      backgroundColor: '#fff',
+                      color: '#333',
+                      border: 'none',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #eee',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                    }}
+                  >
+                    💥 Make Punchier
+                  </button>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRewriteAction('examples');
+                    }}
+                    data-testid="rewrite_examples"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textAlign: 'left',
+                      backgroundColor: '#fff',
+                      color: '#333',
+                      border: 'none',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #eee',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                    }}
+                  >
+                    📝 Add Examples
+                  </button>
+                  
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRewriteAction('reduce_jargon');
+                    }}
+                    data-testid="rewrite_jargon"
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textAlign: 'left',
+                      backgroundColor: '#fff',
+                      color: '#333',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                    }}
+                  >
+                    🔧 Reduce Jargon
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Fix with AI button - only show if text overflows */}
           {currentTextOverflows && (
             <button

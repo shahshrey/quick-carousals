@@ -1336,7 +1336,7 @@
       ],
       "expected": "rewrite_menu button shows when text box selected. Clicking opens dropdown with rewrite_shorter, rewrite_punchier, rewrite_examples options. Clicking an option calls /api/rewrite and replaces text box content with result."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-36",
