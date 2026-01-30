@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector, ExportModal } from '~/components/editor';
 import type { SlideData, StyleKit, ExportOptions } from '~/components/editor/types';
@@ -24,26 +24,45 @@ export default function EditorPage() {
   const showWatermark = subscription.canUse('watermark');
 
   // Auto-save hook
-  const { status: saveStatus } = useAutoSave({
+  const { status: saveStatus, save } = useAutoSave({
     projectId,
     enabled: slides.length > 0,
     onSave: async (data) => {
-      // Save slides to backend
-      await fetch(`/api/projects/${projectId}`, {
-        method: 'PATCH',
+      // Save slides to backend via PUT /api/projects/:projectId/slides
+      const response = await fetch(`/api/projects/${projectId}/slides`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: projectTitle,
-          slides: slides.map(slide => ({
+          slides: slides.map((slide, index) => ({
             id: slide.id,
             layoutId: slide.layoutId,
+            slideType: slide.slideType,
+            orderIndex: index,
             content: slide.content,
             layers: slide.layers,
           })),
         }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error?.message || 'Failed to save slides');
+      }
     },
   });
+
+  // Trigger auto-save when slides change (skip initial render)
+  const isInitialMount = useRef(true);
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    if (slides.length > 0) {
+      save({ slides, projectTitle });
+    }
+  }, [slides, projectTitle, save]);
 
   // Load project and slides on mount
   useEffect(() => {

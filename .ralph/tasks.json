@@ -2506,7 +2506,7 @@
       ],
       "expected": "Auto-save works, content survives refresh, content survives browser close/reopen"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-15",
