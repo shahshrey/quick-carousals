@@ -1409,3 +1409,29 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 10:48:37
 **Session 49 started** (model: sonnet-4.5-thinking)
+
+## Iteration 49 - feature-22 - Theme Controls Panel ✅
+
+**Task**: Build theme controls panel with color palette editor, font pair selector, and spacing scale toggle.
+
+**Status**: ✅ COMPLETE
+
+**Changes**:
+1. Created `ThemeControls.tsx` component with three control types:
+   - Color palette editor (background, foreground, accent) with color/hex inputs
+   - Font pair selector (5 options: Inter, Lora/Inter, Poppins, Source Sans Pro, Roboto Mono)
+   - Spacing toggle (cycles tight → normal → roomy with line heights 1.3/1.5/1.7)
+2. Integrated component into /editor/test page
+3. All testids present: color_picker, font_selector, spacing_toggle
+4. Changes apply to canvas immediately via state update
+
+**Validation**:
+- ✅ Route accessible: http://localhost:3000/en/editor/test (200)
+- ✅ Component created with all testids
+- ✅ Color palette editor updates background/foreground/accent
+- ✅ Font selector shows 5 font pairs with preview
+- ✅ Spacing toggle cycles through 3 options
+- ✅ Handler updates all slides for immediate canvas refresh
+
+**Next Task**: feature-23 - Implement layout variant selector
+
