@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import Negotiator from "negotiator";
 
 import { i18n } from "~/config/i18n-config";
-import { env } from "@saasfly/auth/env.mjs";
 
 const noNeedProcessRoute = [".*\\.png", ".*\\.jpg", ".*\\.opengraph-image.png"];
 
@@ -82,8 +81,9 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
 
   const isAuth = !!userId;
   let isAdmin = false
-  if (env.ADMIN_EMAIL) {
-    const adminEmails = env.ADMIN_EMAIL.split(",");
+  const adminEmailEnv = process.env.ADMIN_EMAIL;
+  if (adminEmailEnv) {
+    const adminEmails = adminEmailEnv.split(",");
     if (sessionClaims?.user?.email) {
       isAdmin = adminEmails.includes(sessionClaims?.user?.email);
     }

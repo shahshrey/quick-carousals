@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { redirect } from "next/navigation";
-import { SignIn, useUser } from "@clerk/nextjs";
+import { SignIn, SignUp, useUser } from "@clerk/nextjs";
 
 import { cn } from "@saasfly/ui";
 
@@ -12,11 +12,13 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   lang: string;
   dict?: Dictionary;
   disabled?: boolean;
+  isSignUp?: boolean;
 }
 
 export function UserClerkAuthForm({
   className,
   lang,
+  isSignUp = false,
   ...props
 }: UserAuthFormProps) {
   const { user } = useUser()
@@ -26,7 +28,11 @@ export function UserClerkAuthForm({
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <SignIn withSignUp={false} fallbackRedirectUrl={`/${lang}/dashboard`} />
+      {isSignUp ? (
+        <SignUp fallbackRedirectUrl={`/${lang}/dashboard`} />
+      ) : (
+        <SignIn fallbackRedirectUrl={`/${lang}/dashboard`} />
+      )}
     </div>
   );
 }

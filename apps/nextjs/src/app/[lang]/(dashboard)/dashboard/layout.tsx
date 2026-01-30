@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@saasfly/auth";
 
@@ -29,7 +29,7 @@ export default async function DashboardLayout({
   const user = await getCurrentUser();
   const dict = await getDictionary(lang);
   if (!user) {
-    return notFound();
+    redirect(`/${lang}/login-clerk`);
   }
   const dashboardConfig = await getDashboardConfig({ params: { lang } });
   return (

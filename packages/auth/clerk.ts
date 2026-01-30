@@ -1,14 +1,32 @@
-import { auth } from '@clerk/nextjs/server'
-
-import { env } from "./env.mjs";
+import { auth, currentUser } from '@clerk/nextjs/server'
 
 export async function getSessionUser() {
-  const { sessionClaims } = await auth();
-  if (env.ADMIN_EMAIL) {
-    const adminEmails = env.ADMIN_EMAIL.split(",");
-    if (sessionClaims?.user?.email) {
-      sessionClaims.user.isAdmin = adminEmails.includes(sessionClaims?.user?.email);
-    }
+  const { userId } = await auth();
+  
+  if (!userId) {
+    return undefined;
   }
-  return sessionClaims?.user;
+
+  const user = await currentUser();
+  
+  if (!user) {
+    return undefined;
+  }
+
+  let isAdmin = false;
+  const adminEmailEnv = process.env.ADMIN_EMAIL;
+  const userEmail = user.emailAddresses[0]?.emailAddress;
+  
+  if (adminEmailEnv && userEmail) {
+    const adminEmails = adminEmailEnv.split(",");
+    isAdmin = adminEmails.includes(userEmail);
+  }
+
+  return {
+    id: user.id,
+    name: user.firstName ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}` : user.username ?? null,
+    email: userEmail ?? null,
+    image: user.imageUrl ?? null,
+    isAdmin,
+  };
 }

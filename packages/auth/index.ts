@@ -16,12 +16,6 @@ declare global {
   }
 }
 
-export const authOptions = {
-  pages: {
-    signIn: "/login-clerk",
-  },
-}
-
 export async function getCurrentUser() {
   return await getSessionUser();
 }

@@ -3,45 +3,27 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { SignIn } from "@clerk/nextjs";
 
-import { cn } from "@saasfly/ui";
 import { CardBody, CardContainer, CardItem } from "@saasfly/ui/3d-card";
-import { buttonVariants } from "@saasfly/ui/button";
-import * as Icons from "@saasfly/ui/icons";
 
 export default function LoginPage() {
-  // const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false);
-
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      {/*<Link*/}
-      {/*  href={`/${lang}`}*/}
-      {/*  className={cn(*/}
-      {/*    buttonVariants({ variant: "ghost" }),*/}
-      {/*    "absolute left-4 top-4 md:left-8 md:top-8",*/}
-      {/*  )}*/}
-      {/*>*/}
-      {/*  <>*/}
-      {/*    <Icons.ChevronLeft className="mr-2 h-4 w-4" />*/}
-      {/*    {dict.login.back}*/}
-      {/*  </>*/}
-      {/*</Link>*/}
       <CardContainer className="inter-var">
-        <CardBody className="group/card relative h-auto  w-auto rounded-xl border border-black/[0.1] bg-gray-50 p-6 dark:border-white/[0.2] dark:bg-black dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] sm:w-[30rem]  ">
+        <CardBody className="group/card relative h-auto w-auto rounded-xl border border-black/[0.1] bg-gray-50 p-6 dark:border-white/[0.2] dark:bg-black dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] sm:w-[30rem]">
           <CardItem
             translateZ="50"
             className="text-xl font-bold text-neutral-600 dark:text-white"
           >
-            Start a beautiful new life
+            Admin Dashboard
           </CardItem>
           <CardItem
             as="p"
             translateZ="60"
             className="mt-2 max-w-sm text-sm text-neutral-500 dark:text-neutral-300"
           >
-            Admin Dashboard
+            Sign in to access admin features
           </CardItem>
           <CardItem translateZ="100" className="mt-4 w-full">
             <Image
@@ -52,37 +34,17 @@ export default function LoginPage() {
               alt="thumbnail"
             />
           </CardItem>
-          <div className="mt-20 flex items-center justify-between">
-            <CardItem
-              translateZ={20}
-              as={Link}
+          <div className="mt-8 flex items-center justify-center">
+            <SignIn fallbackRedirectUrl="/admin/dashboard" />
+          </div>
+          <div className="mt-4 text-center">
+            <Link
               href="https://github.com/saasfly/saasfly"
-              target="__blank"
+              target="_blank"
               className="rounded-xl px-4 py-2 text-xs font-normal dark:text-white"
             >
-              You know this is not easy for us
-            </CardItem>
-            <button
-              type="button"
-              className={cn(buttonVariants({ variant: "outline" }))}
-              onClick={() => {
-                setIsGitHubLoading(true);
-                signIn("github", {
-                  redirect: true,
-                  callbackUrl: "http://localhost:3000/admin/dashboard",
-                }).catch((error) => {
-                  console.error("GitHub signIn error:", error);
-                });
-              }}
-              disabled={isGitHubLoading}
-            >
-              {isGitHubLoading ? (
-                <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Icons.GitHub className="mr-2 h-4 w-4" />
-              )}{" "}
-              Github
-            </button>
+              Powered by Saasfly
+            </Link>
           </div>
         </CardBody>
       </CardContainer>
