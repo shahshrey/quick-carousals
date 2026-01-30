@@ -997,4 +997,242 @@ describe('OpenAI Service', () => {
       expect(() => SlideCopySchema.parse(invalidCopy)).toThrow();
     });
   });
+
+  // ============================================================================
+  // Layout Selection Tests
+  // ============================================================================
+
+  describe('selectLayout', () => {
+    it('should select hook_big_headline for short hook slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('hook', 'Short punchy hook', ['Brief point']);
+
+      // Assert
+      expect(result).toBe('hook_big_headline');
+    });
+
+    it('should select generic_single_focus for long hook slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act - Text length > 100 characters
+      const result = selectLayout(
+        'hook',
+        'This is a very long headline that exceeds the maximum text length for the big headline layout',
+        ['Additional body text that makes this even longer']
+      );
+
+      // Assert
+      expect(result).toBe('generic_single_focus');
+    });
+
+    it('should select promise_two_column for promise slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('promise', "What you'll learn", [
+        'Point 1',
+        'Point 2',
+      ]);
+
+      // Assert
+      expect(result).toBe('promise_two_column');
+    });
+
+    it('should select value_bullets for short value slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('value', 'Key insights', [
+        'Insight 1',
+        'Insight 2',
+        'Insight 3',
+      ]);
+
+      // Assert
+      expect(result).toBe('value_bullets');
+    });
+
+    it('should select value_numbered_steps for long value slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act - Text length > 200 characters
+      const result = selectLayout(
+        'value',
+        'This is a longer headline for a value slide',
+        [
+          'This is the first detailed point with lots of explanation',
+          'This is the second detailed point with even more explanation',
+          'This is the third detailed point that adds more context',
+          'And a fourth point for good measure',
+        ]
+      );
+
+      // Assert
+      expect(result).toBe('value_numbered_steps');
+    });
+
+    it('should select value_bullets for list type', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('list', 'List headline', ['Item 1', 'Item 2']);
+
+      // Assert
+      expect(result).toBe('value_bullets');
+    });
+
+    it('should select value_numbered_steps for steps type', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('steps', 'Steps headline', ['Step 1', 'Step 2']);
+
+      // Assert
+      expect(result).toBe('value_numbered_steps');
+    });
+
+    it('should select value_centered_quote for quote type', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('quote', 'Quote headline', [
+        'The quoted text',
+      ]);
+
+      // Assert
+      expect(result).toBe('value_centered_quote');
+    });
+
+    it('should select value_text_left_visual_right for text_visual type', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('text_visual', 'Text with visual', [
+        'Body text',
+      ]);
+
+      // Assert
+      expect(result).toBe('value_text_left_visual_right');
+    });
+
+    it('should select recap_grid for recap slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('recap', 'Key takeaways', [
+        'Takeaway 1',
+        'Takeaway 2',
+      ]);
+
+      // Assert
+      expect(result).toBe('recap_grid');
+    });
+
+    it('should select cta_centered for cta slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('cta', 'Follow for more', ['Comment below']);
+
+      // Assert
+      expect(result).toBe('cta_centered');
+    });
+
+    it('should select generic_single_focus for generic slides', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('generic', 'Generic slide', ['Body text']);
+
+      // Assert
+      expect(result).toBe('generic_single_focus');
+    });
+
+    it('should fallback to generic_single_focus for unknown slide types', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('unknown_type', 'Headline', ['Body']);
+
+      // Assert
+      expect(result).toBe('generic_single_focus');
+    });
+
+    it('should handle slides with no body text', async () => {
+      // Arrange
+      const { selectLayout } = await import('./openai');
+
+      // Act
+      const result = selectLayout('hook', 'Short headline');
+
+      // Assert
+      expect(result).toBe('hook_big_headline');
+    });
+  });
+
+  describe('selectLayoutsForSlides', () => {
+    it('should select layouts for multiple slides', async () => {
+      // Arrange
+      const { selectLayoutsForSlides } = await import('./openai');
+      const slides = [
+        { slideType: 'hook', headline: 'Hook', body: ['Point'] },
+        { slideType: 'promise', headline: 'Promise', body: ['Point'] },
+        { slideType: 'value', headline: 'Value', body: ['Point'] },
+        { slideType: 'cta', headline: 'CTA', body: ['Point'] },
+      ];
+
+      // Act
+      const result = selectLayoutsForSlides(slides);
+
+      // Assert
+      expect(result).toHaveLength(4);
+      expect(result[0]).toBe('hook_big_headline');
+      expect(result[1]).toBe('promise_two_column');
+      expect(result[2]).toBe('value_bullets');
+      expect(result[3]).toBe('cta_centered');
+    });
+
+    it('should handle slides without slideType', async () => {
+      // Arrange
+      const { selectLayoutsForSlides } = await import('./openai');
+      const slides = [
+        { headline: 'Headline 1', body: ['Point'] },
+        { headline: 'Headline 2', body: ['Point'] },
+      ];
+
+      // Act
+      const result = selectLayoutsForSlides(slides);
+
+      // Assert
+      expect(result).toHaveLength(2);
+      expect(result[0]).toBe('generic_single_focus');
+      expect(result[1]).toBe('generic_single_focus');
+    });
+
+    it('should handle empty slides array', async () => {
+      // Arrange
+      const { selectLayoutsForSlides } = await import('./openai');
+
+      // Act
+      const result = selectLayoutsForSlides([]);
+
+      // Assert
+      expect(result).toHaveLength(0);
+    });
+  });
 });

@@ -506,7 +506,7 @@
       ],
       "expected": "selectLayout(slide_type, text_length) returns layout_id from TemplateLayout table"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-05",

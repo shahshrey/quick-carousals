@@ -457,3 +457,138 @@ Generate headline, body bullets, and emphasis phrases for each slide.`;
 
   return result.slides;
 }
+
+// ============================================================================
+// Layout Selection Logic (AI Step 3)
+// ============================================================================
+
+/**
+ * Layout mapping type
+ */
+interface LayoutMapping {
+  slideType: string;
+  layoutId: string;
+  maxTextLength?: number; // If specified, only use if text is under this length
+}
+
+/**
+ * Layout mappings: slide type -> layout ID
+ * 
+ * Based on TemplateLayout table data:
+ * - hook_big_headline: For short, punchy hooks
+ * - promise_two_column: For promise/what you'll learn slides
+ * - value_bullets: For list-style value content
+ * - value_numbered_steps: For step-by-step value content
+ * - value_text_left_visual_right: For value with visual support
+ * - value_centered_quote: For quote-style value content
+ * - recap_grid: For recap/summary slides
+ * - cta_centered: For call-to-action slides
+ * - generic_single_focus: Generic fallback
+ */
+const LAYOUT_MAPPINGS: LayoutMapping[] = [
+  // Hook slides
+  { slideType: 'hook', layoutId: 'hook_big_headline', maxTextLength: 100 },
+  { slideType: 'hook', layoutId: 'generic_single_focus' }, // Fallback for long hooks
+  
+  // Promise slides
+  { slideType: 'promise', layoutId: 'promise_two_column' },
+  
+  // Value slides - prefer bullets for short content, steps for procedural
+  { slideType: 'value', layoutId: 'value_bullets', maxTextLength: 200 },
+  { slideType: 'value', layoutId: 'value_numbered_steps' }, // Fallback for longer value content
+  
+  // List type (from database) - use bullets layout
+  { slideType: 'list', layoutId: 'value_bullets' },
+  
+  // Steps type (from database) - use numbered steps layout
+  { slideType: 'steps', layoutId: 'value_numbered_steps' },
+  
+  // Quote type (from database) - use centered quote layout
+  { slideType: 'quote', layoutId: 'value_centered_quote' },
+  
+  // Text/visual type (from database) - use text left visual right layout
+  { slideType: 'text_visual', layoutId: 'value_text_left_visual_right' },
+  
+  // Recap slides
+  { slideType: 'recap', layoutId: 'recap_grid' },
+  
+  // CTA slides
+  { slideType: 'cta', layoutId: 'cta_centered' },
+  
+  // Generic fallback
+  { slideType: 'generic', layoutId: 'generic_single_focus' },
+];
+
+/**
+ * Calculate total text length for a slide
+ * 
+ * @param headline - Slide headline
+ * @param body - Array of body text items
+ * @returns Total character count
+ */
+function calculateTextLength(headline: string, body?: string[]): number {
+  const headlineLength = headline?.length || 0;
+  const bodyLength = body?.reduce((sum, item) => sum + item.length, 0) || 0;
+  return headlineLength + bodyLength;
+}
+
+/**
+ * Select the best layout for a slide based on type and text length
+ * 
+ * This implements AI Step 3: Layout Selection
+ * - Maps slide_type to layout_id
+ * - Considers text length for layout variants
+ * - Returns layout_id from TemplateLayout table
+ * 
+ * @param slideType - Type of slide (hook, promise, value, etc.)
+ * @param headline - Slide headline
+ * @param body - Optional body text array
+ * @returns Layout ID from TemplateLayout table
+ */
+export function selectLayout(
+  slideType: string,
+  headline: string,
+  body?: string[]
+): string {
+  const textLength = calculateTextLength(headline, body);
+  
+  // Find matching layouts for this slide type
+  const matchingLayouts = LAYOUT_MAPPINGS.filter(
+    (mapping) => mapping.slideType === slideType
+  );
+  
+  if (matchingLayouts.length === 0) {
+    // No specific mapping - use generic fallback
+    return 'generic_single_focus';
+  }
+  
+  // Find best matching layout considering text length
+  for (const mapping of matchingLayouts) {
+    if (!mapping.maxTextLength || textLength <= mapping.maxTextLength) {
+      return mapping.layoutId;
+    }
+  }
+  
+  // If all layouts have maxTextLength constraints and text is too long,
+  // use the last matching layout (which should be the fallback)
+  const lastLayout = matchingLayouts[matchingLayouts.length - 1];
+  return lastLayout?.layoutId || 'generic_single_focus';
+}
+
+/**
+ * Select layouts for all slides in a slide plan
+ * 
+ * @param slides - Array of slide content or copy
+ * @returns Array of layout IDs matching the slides
+ */
+export function selectLayoutsForSlides(
+  slides: Array<{ slideType?: string; headline: string; body?: string[] }>
+): string[] {
+  return slides.map((slide) => 
+    selectLayout(
+      slide.slideType || 'generic',
+      slide.headline,
+      slide.body
+    )
+  );
+}
