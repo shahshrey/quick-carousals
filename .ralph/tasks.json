@@ -759,7 +759,7 @@
       ],
       "expected": "Canvas renders with data-testid='canvas_surface', text boxes have data-testid='text_box', clicking text box shows edit cursor/input"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-15",

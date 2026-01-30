@@ -7,16 +7,17 @@ interface LayerRendererProps {
   layers: Layer[];
   content: SlideContent;
   styleKit: StyleKit;
+  onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void;
 }
 
-export function LayerRenderer({ layers, content, styleKit }: LayerRendererProps) {
+export function LayerRenderer({ layers, content, styleKit, onTextBoxClick }: LayerRendererProps) {
   return (
     <>
       {layers.map((layer, index) => {
         if (layer.type === 'background') {
           return renderBackgroundLayer(layer, styleKit, index);
         } else if (layer.type === 'text_box') {
-          return renderTextBoxLayer(layer, content, styleKit, index);
+          return renderTextBoxLayer(layer, content, styleKit, index, onTextBoxClick);
         }
         return null;
       })}
@@ -45,7 +46,8 @@ function renderTextBoxLayer(
   layer: TextBoxLayer,
   content: SlideContent,
   styleKit: StyleKit,
-  index: number
+  index: number,
+  onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void
 ) {
   const layerContent = content[layer.id];
   
@@ -97,6 +99,28 @@ function renderTextBoxLayer(
       verticalAlign="top"
       lineHeight={lineHeight}
       wrap="word"
+      onClick={() => {
+        onTextBoxClick?.(layer.id, layer.position);
+      }}
+      onTap={() => {
+        // Mobile tap support
+        onTextBoxClick?.(layer.id, layer.position);
+      }}
+      // Make text boxes appear clickable
+      onMouseEnter={(e) => {
+        const stage = e.target.getStage();
+        if (stage) {
+          stage.container().style.cursor = 'text';
+        }
+      }}
+      onMouseLeave={(e) => {
+        const stage = e.target.getStage();
+        if (stage) {
+          stage.container().style.cursor = 'default';
+        }
+      }}
+      // Add data attribute for testing (stored as name in Konva)
+      name="text_box"
     />
   );
 }

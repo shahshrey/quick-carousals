@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { EditorCanvas } from '~/components/editor';
 import type { SlideData } from '~/components/editor';
 
@@ -182,32 +183,54 @@ const sampleSlides: SlideData[] = [
 ];
 
 export default function EditorTestPage() {
+  // Use state to manage editable slides
+  const [slides, setSlides] = useState<SlideData[]>(sampleSlides);
+
+  // Handle content change for a specific slide
+  const handleContentChange = (slideIndex: number, layerId: string, content: string | string[]) => {
+    setSlides(prev => prev.map((slide, idx) => {
+      if (idx === slideIndex) {
+        return {
+          ...slide,
+          content: {
+            ...slide.content,
+            [layerId]: content,
+          },
+        };
+      }
+      return slide;
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Editor Canvas Test - Layer Rendering
+            Editor Canvas Test - Text Editing
           </h1>
           <p className="mt-2 text-gray-600">
-            Testing Konva layer rendering with various layouts and content types
+            Click on any text to edit it. Press Escape or click outside to finish editing.
           </p>
           <div className="mt-4 rounded-lg bg-blue-50 p-4">
             <p className="text-sm text-blue-900">
-              <strong>Note:</strong> This test route validates layer rendering for features 14-40+.
-              Each slide demonstrates different layout types and layer configurations.
+              <strong>Feature 14:</strong> Text editing with inline editor overlay.
+              Click any text box to enter edit mode.
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {sampleSlides.map((slide, index) => (
+          {slides.map((slide, index) => (
             <div key={index} className="rounded-lg bg-white p-6 shadow-md">
               <h2 className="mb-4 text-lg font-semibold text-gray-800">
                 Slide {index + 1}: {slide.layoutId}
               </h2>
               <div className="aspect-[1080/1350] w-full">
-                <EditorCanvas slide={slide} />
+                <EditorCanvas 
+                  slide={slide} 
+                  onContentChange={(layerId, content) => handleContentChange(index, layerId, content)}
+                />
               </div>
               <div className="mt-4 space-y-2 text-sm text-gray-600">
                 <p>
@@ -216,6 +239,10 @@ export default function EditorTestPage() {
                 <p>
                   <strong>Layers:</strong> {slide.blueprint.layers.length} (
                   {slide.blueprint.layers.map(l => l.type).join(', ')})
+                </p>
+                <p>
+                  <strong>Editable Text Boxes:</strong>{' '}
+                  {slide.blueprint.layers.filter(l => l.type === 'text_box').length}
                 </p>
               </div>
             </div>
