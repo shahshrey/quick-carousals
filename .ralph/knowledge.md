@@ -901,3 +901,55 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Validation pattern**: When a task is marked as "Part 2" and depends on "Part 1", check if all work was already completed in earlier iterations
   - **Next task**: feature-09 will create the /api/style-kits endpoint to expose these kits to the frontend
 ---
+
+---
+## Iteration 20 - feature-09
+- **What was done**: Created /api/style-kits public endpoint returning all 8 style kits
+- **Files changed**: 
+  - apps/nextjs/src/app/api/style-kits/route.ts (created)
+  - .ralph/tasks.json (marked feature-09 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Public API pattern**: Some endpoints don't require authentication (like style kits catalog) - use `withErrorHandler` without `withAuth`
+  - **Database client pattern**: Created Kysely client directly in route file using PostgresDialect with Pool
+  - **Style kits ordering**: Ordered results with free kits first (`orderBy("isPremium", "asc")`) for better UX in selector
+  - **Response structure validated**: All 8 kits return with id, name, colors, typography, spacingRules, isPremium fields
+  - **Free vs Premium split**: 4 free kits (high_contrast_punch, marker_highlight, minimal_clean, sticky_note) and 4 premium kits (corporate_pro, dark_mode_punch, gradient_modern, soft_pastel)
+  - **Validation approach**: Used jq to verify count, field presence, and isPremium flags
+  - **Working commands for this task**:
+    - `curl -s http://localhost:3000/api/style-kits | jq .` - Test endpoint
+    - `curl -s http://localhost:3000/api/style-kits | jq 'length'` - Verify count
+    - `curl -s http://localhost:3000/api/style-kits | jq '.[0] | keys'` - Check fields
+  - **Next task dependency**: feature-10 and feature-11 will seed template layouts that work with these style kits
+---
+
+---
+## Iteration 22 - feature-10
+- **What was done**: Validated that Part 1 layout blueprints (5 layouts) are properly seeded in database
+- **Files changed**: 
+  - .ralph/tasks.json (marked feature-10 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already complete from iteration 10 (setup-08)**: All 9 template layouts were seeded in setup-08, including the 5 Part 1 layouts
+  - **Part 1 consists of 5 specific layouts**:
+    1. **Hook** - hook_big_headline (2 layers: background + centered headline)
+    2. **Big Statement/Promise** - promise_two_column (4 layers: background + headline + 2 body columns)
+    3. **3-Bullet/List** - value_bullets (3 layers: background + headline + bulleted body with bulletStyle: "disc")
+    4. **Step-by-Step** - value_numbered_steps (3 layers: background + headline + numbered body with bulletStyle: "numbered")
+    5. **Quote** - value_centered_quote (3 layers: background + centered quote + attribution)
+  - **Blueprint structure validated**: All layouts have complete layersBlueprint JSON with:
+    - `layers` array containing layer objects
+    - Each layer has `type`, `id` (except background), `position` (x, y, width, height)
+    - Text boxes have `constraints` (max_font, min_font, max_lines)
+    - Some layers have additional properties (align, bulletStyle, style)
+  - **Canvas dimensions**: All positions are based on 1080x1350 canvas (LinkedIn portrait)
+  - **Database verification commands**:
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id, name FROM \"TemplateLayout\" WHERE id IN (...);"` - list specific layouts
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT jsonb_array_length((\"layersBlueprint\"::jsonb)->'layers') FROM \"TemplateLayout\" WHERE id = '...';"` - count layers
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT \"layersBlueprint\"::text FROM \"TemplateLayout\" WHERE id = '...';"` - inspect blueprint JSON
+  - **Validation workflow**: When a task says "Part 1" of something, check if both Part 1 and Part 2 were already completed in earlier iterations
+  - **Working commands**: 
+    - `grep -riq 'hook\|statement' packages/db && echo 'PASS'` - verify seed file contains layouts
+    - Database queries to verify structure and count
+  - **Next task**: feature-11 will validate the remaining 4 layouts (Part 2): recap_grid, cta_centered, generic_single_focus, and value_text_left_visual_right
+---
