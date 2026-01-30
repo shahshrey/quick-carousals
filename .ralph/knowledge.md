@@ -1953,3 +1953,36 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **TypeScript validation**: Always run `bun run typecheck` after enum/type changes to catch type mismatches
   - **Large JSON files**: Use `sed` instead of `jq` for updating large tasks.json file (144KB)
 ---
+
+---
+## Iteration 18 - integration-02
+- **What was done**: Created POST /api/stripe/checkout endpoint for subscription checkout
+- **Files changed**: 
+  - apps/nextjs/src/app/api/stripe/checkout/route.ts (created)
+  - .ralph/tasks.json (marked integration-02 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Stripe checkout endpoint pattern**: Created authenticated endpoint that generates Stripe Checkout sessions
+  - **Request validation**: Used Zod schema to validate `priceId`, optional `successUrl`, and `cancelUrl`
+  - **Price ID validation**: Check priceId against configured CREATOR and PRO tier price IDs from env vars
+  - **Stripe session creation**: Use `stripe.checkout.sessions.create()` with:
+    - mode: "subscription"
+    - line_items with priceId and quantity
+    - success_url and cancel_url with defaults to /dashboard and /pricing
+    - client_reference_id: userId (links session to Clerk user)
+    - metadata: { userId } on both session and subscription for webhook processing
+  - **Response format**: Returns `{ url: session.url, sessionId: session.id }` with 201 status
+  - **Auth guard validation**: Endpoint correctly returns 401 without authentication
+  - **Error handling patterns**:
+    - Check error.type for StripeInvalidRequestError → ApiErrors.validation()
+    - Check error.type for StripeRateLimitError → ApiErrors.rateLimited(60)
+    - Generic errors → ApiErrors.internal()
+  - **Environment variables needed**:
+    - STRIPE_API_KEY (server-side secret key)
+    - NEXT_PUBLIC_STRIPE_CREATOR_PRICE_ID (Creator tier price)
+    - NEXT_PUBLIC_STRIPE_PRO_PRICE_ID (Pro tier price)
+  - **Stripe package already configured**: @saasfly/stripe package provides stripe client and env validation
+  - **Working validation commands**:
+    - `curl -s -X POST http://localhost:3000/api/stripe/checkout -d '{"priceId":"test"}' -o /dev/null -w '%{http_code}'` - Returns 401 (auth required)
+    - `test -f apps/nextjs/src/app/api/stripe/checkout/route.ts && echo 'PASS'` - Verify route exists
+  - **Next task dependency**: integration-03 will create webhook handler to process subscription events
