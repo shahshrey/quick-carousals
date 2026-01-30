@@ -1046,7 +1046,7 @@
       ],
       "expected": "Unauthenticated requests return 401. Authenticated requests: GET returns array, POST creates and returns {id}, PATCH updates, DELETE removes."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-25",
