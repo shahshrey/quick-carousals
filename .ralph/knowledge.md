@@ -1559,3 +1559,42 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -c "processPDFExport\|processPNGExport\|processThumbnailExport"` - count export handlers
   - **Next task dependency**: feature-30 will create /api/exports endpoint to trigger these jobs and check status
 ---
+
+---
+## Iteration 66 - feature-30
+- **What was done**: Created /api/exports endpoints for export job management
+- **Files changed**: 
+  - apps/nextjs/src/app/api/exports/route.ts (created POST endpoint)
+  - apps/nextjs/src/app/api/exports/[id]/route.ts (created GET endpoint)
+  - .ralph/tasks.json (marked feature-30 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Export API pattern**: Two endpoints - POST to create jobs, GET to poll status
+  - **POST /api/exports implementation**:
+    - Validates request body with Zod: `{ projectId: string, type: enum["PDF", "PNG", "THUMBNAIL"] }`
+    - Looks up Profile by clerkUserId to get internal user ID
+    - Verifies project exists and belongs to user (ownership check via JOIN)
+    - Fetches all slide IDs ordered by orderIndex
+    - Creates Export record in database with PENDING status
+    - Queues job to BullMQ render queue with `addRenderJob()`
+    - Returns 201 with export ID, status, and metadata
+  - **GET /api/exports/:id implementation**:
+    - Extracts export ID from URL path (last segment)
+    - Verifies ownership via INNER JOIN on Project.userId
+    - Returns status (PENDING/PROCESSING/COMPLETED/FAILED)
+    - When COMPLETED, generates signed download URLs:
+      - For PNG exports: Parse fileUrl as JSON array, generate signed URL for each path
+      - For PDF/THUMBNAIL: Generate single signed URL from fileUrl string
+    - When FAILED, includes errorMessage in response
+    - Uses 24-hour expiry for signed URLs (default from getSignedUrl)
+  - **Ownership verification pattern**: Always use INNER JOIN on Project table to ensure user can only access their own exports
+  - **Signed URL generation**: Call `getSignedUrl(STORAGE_BUCKETS.EXPORTS, path)` for each file path
+  - **PNG export special handling**: fileUrl stored as JSON array of paths `["userId/file1.png", "userId/file2.png"]`, must parse and map to signed URLs
+  - **Error handling**: Wrap signed URL generation in try/catch - if it fails, don't fail the request, just omit URL and let client retry
+  - **Auth guard validation**: Both endpoints correctly return 401 without authentication
+  - **Working commands for this task**:
+    - `curl -s -X POST http://localhost:3000/api/exports` - Returns 401 (auth required)
+    - `curl -s http://localhost:3000/api/exports/test-id` - Returns 401 (auth required)
+    - `test -f apps/nextjs/src/app/api/exports/route.ts` - Verify route exists
+  - **Next task dependency**: feature-31 will add PNG export handling, feature-32 will create export modal UI to call these endpoints
+---
