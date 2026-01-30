@@ -1196,3 +1196,40 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `bun run test src/lib/text-measure.test.ts` - run tests (all 11 pass)
     - `grep -q 'measureText' apps/nextjs/src/lib/text-measure.ts` - verify function exists
 ---
+
+---
+## Iteration 43 - feature-19
+- **What was done**: Implemented auto-fit text algorithm with overflow detection
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/LayerRenderer.tsx (refactored with TextBoxComponent)
+  - .ralph/tasks.json (marked feature-19 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **React hooks in Konva render functions**: Cannot use hooks (useState, useEffect) directly in render functions - must create proper component
+  - **Auto-fit algorithm implementation**: 
+    - Use calculateOptimalFontSize from text-measure utility
+    - Binary search finds largest font size that fits within bounds
+    - Respects layer.constraints.min_font and max_font from template layouts
+    - Uses styleKit.spacingRules.line_height for line spacing
+  - **Overflow detection pattern**: 
+    - Measure text at min_font to detect overflow
+    - Compare measurement.height with layer.position.height
+    - Show visual indicator (red border Rect) when overflow detected
+  - **Component refactoring for hooks**: 
+    - Extracted TextBoxComponent from render function to properly use React hooks
+    - Wrapped Text and overflow Rect in Konva Group for layering
+    - Key must be on parent component in map, not on Group inside component
+  - **Konva Group usage**: Use Group to logically group Text and overflow indicator Rect together
+  - **name attribute for testing**: Konva uses `name` prop instead of `data-testid` for element identification
+  - **Pre-existing TypeScript errors**: Many unrelated TS errors exist in codebase (api-error.ts, with-auth.ts, etc.) - these don't block this feature
+  - **Text measurement caveats**: 
+    - Requires browser environment (typeof window check)
+    - Singleton canvas context for performance
+    - Handle both string and string[] content types
+    - Account for bullet styles (numbered, disc) in text processing
+  - **Working validation commands**:
+    - `grep -q 'overflow_indicator' apps/nextjs/src/components/editor/LayerRenderer.tsx` - verify indicator exists
+    - `grep -q 'calculateOptimalFontSize' apps/nextjs/src/components/editor/LayerRenderer.tsx` - verify auto-fit
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route (200)
+  - **Next feature dependency**: feature-20 (Fix with AI button) will build on this overflow detection to offer AI-powered fixes
+---
