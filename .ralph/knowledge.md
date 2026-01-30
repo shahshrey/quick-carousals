@@ -1487,3 +1487,39 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -q '@napi-rs/canvas' package.json` - verify installation
   - **Next task dependency**: feature-28 will use this renderer to generate multi-page PDFs with PDFKit
 ---
+
+---
+## Iteration 62 - feature-28
+- **What was done**: Implemented PDF generation using PDFKit for multi-page carousel exports
+- **Files changed**: 
+  - apps/nextjs/src/lib/generate-pdf.ts (created)
+  - apps/nextjs/src/lib/generate-pdf.test.ts (created)
+  - apps/nextjs/src/lib/README.md (added PDF documentation)
+  - apps/nextjs/package.json (added pdfkit@0.17.2 and @types/pdfkit@0.17.4)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS - All 6 tests passing
+- **Learnings for future iterations**:
+  - **PDFKit installation**: Use `bun add pdfkit @types/pdfkit` - version 0.17.2 works perfectly
+  - **PDF generation pattern**: Create multi-page PDF by rendering slides to PNG first, then embedding images in PDF pages
+  - **Integration with renderer**: PDFs use `renderSlidesToCanvas()` from render-slide.ts to get PNG buffers for each slide
+  - **PDF dimensions**: LinkedIn optimal size is 1080x1350 points (15 x 18.75 inches at 72 DPI)
+  - **Full-bleed images**: Set margins to 0 for professional output with no borders
+  - **Three core functions created**:
+    - `generatePDF(slides)` - Returns PDF buffer
+    - `generatePDFToFile(slides, path)` - Saves PDF to disk (Node.js only)
+    - `generatePDFBase64(slides)` - Returns base64 string for API responses
+  - **Mock pattern for PDFKit**: Must use constructor function (`vi.fn(function() { ... })`) not arrow function for proper mocking
+  - **Event-driven PDF generation**: PDFKit uses event emitters - listen to 'data' and 'end' events to collect buffer chunks
+  - **Async completion pattern**: Create Promise that resolves when 'end' event fires and rejects on 'error' event
+  - **Image embedding**: Use `doc.image(buffer, x, y, options)` to embed PNG buffers as full-page images
+  - **Page creation**: Use `doc.addPage({ size, margins })` for each slide page
+  - **Test mocking strategy**: 
+    - Mock PDFKit constructor to return mock doc object
+    - Mock renderSlidesToCanvas to return Buffer arrays
+    - Simulate 'data' and 'end' events in tests
+  - **Working validation commands**:
+    - `grep -q 'pdfkit' package.json` - Verify PDFKit installed
+    - `grep -rq 'generatePDF' src` - Verify function exists
+    - `bun run test src/lib/generate-pdf.test.ts` - Run tests (6 passing)
+  - **Next task dependency**: feature-29 will create BullMQ worker to process export jobs using this PDF generator
+---
