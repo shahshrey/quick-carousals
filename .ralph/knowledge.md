@@ -1821,3 +1821,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -c "save_indicator" file` - verify testid present
   - **Next task dependency**: feature-38 (dashboard) will display list of projects, feature-40 will connect real project editor to auto-save
 ---
+
+---
+## Iteration 10 - feature-38
+- **What was done**: Built dashboard with project list, empty state, and New Carousel CTA
+- **Files changed**: 
+  - apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx (complete rewrite from K8s to projects)
+  - .ralph/tasks.json (marked feature-38 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Client component pattern**: Dashboard is 'use client' component that fetches data from /api/projects on mount
+  - **Empty state handling**: Used EmptyPlaceholder component with Icon, Title, Description, and CTA button
+  - **Project grid layout**: grid gap-4 md:grid-cols-2 lg:grid-cols-3 for responsive project cards
+  - **Card component from @saasfly/ui**: Used Card, CardContent, CardDescription, CardHeader, CardTitle components
+  - **Protected route**: Dashboard is under (dashboard) group, automatically protected by Clerk middleware
+  - **All testids present**: dashboard_projects (on grid container), new_project_button (on header button), empty_state (on EmptyPlaceholder)
+  - **Link wrapping cards**: Each project card is wrapped in Link to /editor/[projectId] for navigation
+  - **Status display**: Shows Draft/Published/Archived based on project.status enum
+  - **Date formatting**: Used toLocaleDateString with 'en-US' locale for consistent date display
+  - **Loading state**: Shows "Loading projects..." message while fetching from API
+  - **Conditional rendering**: projects.length > 0 ? grid : empty_state pattern
+  - **Shell escaping**: Use double quotes for paths with special characters like parentheses: "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/"
+  - **Validation commands that worked**:
+    - `test -f "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx"` - verify page exists
+    - `grep -rq 'testid1\|testid2\|testid3' "path/"` - verify multiple testids
+    - `curl -sL -o /dev/null -w '%{http_code}' http://localhost:3000/en/dashboard` - test route (200)
+    - `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/projects` - test API (401 without auth)
+  - **Client component caveat**: Client components don't render testids in SSR HTML, but they do render after hydration in browser
+  - **Next task dependency**: feature-39 will create the /create flow, feature-40 will connect real project editor
+---
