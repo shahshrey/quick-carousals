@@ -820,3 +820,33 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Slide structure**: Each slide has `{ orderIndex, slideType, layoutId, headline, body[], emphasis[] }`
   - **Validation commands from tasks.json are reference examples**: Adapt them to your implementation - the endpoint requires auth, so unauthenticated requests return 401 (this is correct behavior)
 ---
+
+---
+## Iteration 14 - feature-06
+- **What was done**: Created /api/generate/text endpoint with text chunking and slide pacing logic
+- **Files changed**: 
+  - apps/nextjs/src/app/api/generate/text/route.ts (created)
+  - apps/nextjs/src/app/api/generate/text/route.test.ts (created with 9 tests)
+  - .ralph/tasks.json (marked feature-06 complete)
+- **Result**: PASS - All 9 tests passing, endpoint validates input and handles edge cases
+- **Learnings for future iterations**:
+  - **Text-to-slides pattern**: Similar to topic generation but with adaptive pacing based on text length
+  - **Text length handling implemented**:
+    - < 500 chars: Expand across 5-8 slides (spread content)
+    - 500-2000 chars: Standard 8-12 slides (maintain structure)
+    - 2000-6000 chars: 12-15 slides (condense carefully)
+    - > 6000 chars: 15-20 slides (extract critical insights only)
+  - **calculateOptimalSlideCount function**: Auto-calculates slide count based on text length, but respects user's requested count if provided (within 3-20 bounds)
+  - **createTextPrompt function**: Generates context-aware prompts with specific pacing instructions for each text length range
+  - **API endpoint pattern consistent**: Uses same withAuthAndErrors wrapper, validateBody, and three-step AI pipeline (plan → copy → layouts)
+  - **Validation schema**: 
+    - text: 10-10,000 chars (strict bounds)
+    - slideCount: 3-20 optional (auto-calculated if not provided)
+    - tone: enum (bold/calm/contrarian/professional)
+  - **Error handling**: Same pattern as /generate/topic - re-throw ApiErrors, handle OpenAI errors with specific checks for timeout and rate limit
+  - **Test coverage**: 9 tests covering auth, validation, short/long text, error handling, and rate limits
+  - **Working commands**:
+    - `curl -s -X POST -d '{}' http://localhost:3000/api/generate/text` - Returns 401 (auth required)
+    - `bun run test src/app/api/generate/text/route.test.ts` - Run tests (all 9 pass)
+  - **Next task dependency**: This endpoint completes the AI generation pipeline (feature-01 to feature-06) - ready for style kit implementation
+---
