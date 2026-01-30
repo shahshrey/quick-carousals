@@ -36,6 +36,7 @@ OPEN_PR=false
 INIT_ONLY=false
 VERBOSE=false
 DEBUG=false
+SHOW_TIMESTAMPS=false
 
 # Thresholds
 WARN_THRESHOLD=150000
@@ -76,11 +77,14 @@ Options:
   --init                   Initialize .ralph directory only
   -v, --verbose            Show full tool outputs (file contents, diffs, etc.)
   --debug                  Show raw JSON events (implies --verbose)
+  -T, --timestamps         Show timestamps on major events (subtle, non-intrusive)
   -h, --help               Show this help
 
 Examples:
   ./ralph.sh                              # Run in current directory
   ./ralph.sh -v                           # Verbose mode - see all tool outputs
+  ./ralph.sh -T                           # Show timestamps on events
+  ./ralph.sh -v -T                        # Verbose + timestamps
   ./ralph.sh -w /path/to/project          # Run in specific project
   ./ralph.sh -m sonnet-4.5-thinking -i 10 # Use different model, 10 iterations
   ./ralph.sh -t 900                       # Kill stuck agent after 15 minutes
@@ -131,6 +135,10 @@ parse_args() {
       --debug)
         DEBUG=true
         VERBOSE=true
+        shift
+        ;;
+      -T|--timestamps)
+        SHOW_TIMESTAMPS=true
         shift
         ;;
       -h|--help)
@@ -510,6 +518,14 @@ draw_box_footer() {
   printf "${BOX_BR}${C_RESET}\n"
 }
 
+# Get timestamp prefix (returns empty if timestamps disabled)
+# Usage: printf "$(ts)${C_CYAN}..." for subtle timestamp before content
+ts() {
+  if [[ "$SHOW_TIMESTAMPS" == "true" ]]; then
+    printf "${C_BRIGHT_BLACK}%s ${C_RESET}" "$(date '+%H:%M:%S')"
+  fi
+}
+
 # Format file path nicely
 format_path() {
   local path="$1"
@@ -628,7 +644,7 @@ parse_stream() {
       "system")
         if [[ "$subtype" == "init" ]]; then
           local model=$(echo "$line" | jq -r '.model // "unknown"' 2>/dev/null) || model="unknown"
-          printf "\n${C_DIM}${BOX_VR}${BOX_H}${BOX_H} ${C_CYAN}Session${C_RESET}${C_DIM} │ Model: ${C_BRIGHT_CYAN}%s${C_RESET}\n" "$model" >&2
+          printf "\n$(ts)${C_DIM}${BOX_VR}${BOX_H}${BOX_H} ${C_CYAN}Session${C_RESET}${C_DIM} │ Model: ${C_BRIGHT_CYAN}%s${C_RESET}\n" "$model" >&2
           log_activity "SESSION START: model=$model"
         fi
         ;;
@@ -656,7 +672,7 @@ parse_stream() {
 
           # Beautiful assistant message box
           printf "\n" >&2
-          printf "${C_BRIGHT_BLUE}${BOX_TL}${BOX_H}${BOX_H} ${ICON_CHAT} ${C_BOLD}Assistant${C_RESET}${C_BRIGHT_BLUE} ${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_TR}${C_RESET}\n" >&2
+          printf "$(ts)${C_BRIGHT_BLUE}${BOX_TL}${BOX_H}${BOX_H} ${ICON_CHAT} ${C_BOLD}Assistant${C_RESET}${C_BRIGHT_BLUE} ${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_TR}${C_RESET}\n" >&2
           printf "${C_BRIGHT_BLUE}${BOX_V}${C_RESET}\n" >&2
           # Print each line with box border
           while IFS= read -r msg_line; do
@@ -724,28 +740,28 @@ parse_stream() {
           case "$tool_name" in
             "read")
               local path=$(echo "$line" | jq -r '.tool_call.readToolCall.args.path // "?"' 2>/dev/null)
-              printf "${C_CYAN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_READ} Read${C_RESET}\n" >&2
+              printf "$(ts)${C_CYAN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_READ} Read${C_RESET}\n" >&2
               printf "${C_CYAN}${BOX_V}${C_RESET}  " >&2
               format_path "$path" >&2
               printf "\n" >&2
               ;;
             "write")
               local path=$(echo "$line" | jq -r '.tool_call.writeToolCall.args.path // "?"' 2>/dev/null)
-              printf "${C_GREEN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_WRITE}Write${C_RESET}\n" >&2
+              printf "$(ts)${C_GREEN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_WRITE}Write${C_RESET}\n" >&2
               printf "${C_GREEN}${BOX_V}${C_RESET}  " >&2
               format_path "$path" >&2
               printf "\n" >&2
               ;;
             "edit")
               local path=$(echo "$line" | jq -r '.tool_call.editToolCall.args.path // "?"' 2>/dev/null)
-              printf "${C_YELLOW}${BOX_TL}${BOX_H}${BOX_H} ${ICON_EDIT} Edit${C_RESET}\n" >&2
+              printf "$(ts)${C_YELLOW}${BOX_TL}${BOX_H}${BOX_H} ${ICON_EDIT} Edit${C_RESET}\n" >&2
               printf "${C_YELLOW}${BOX_V}${C_RESET}  " >&2
               format_path "$path" >&2
               printf "\n" >&2
               ;;
             "shell")
               local cmd=$(echo "$line" | jq -r '.tool_call.shellToolCall.args.command // "?"' 2>/dev/null)
-              printf "${C_BRIGHT_MAGENTA}${BOX_TL}${BOX_H}${BOX_H} ${ICON_SHELL} Shell${C_RESET}\n" >&2
+              printf "$(ts)${C_BRIGHT_MAGENTA}${BOX_TL}${BOX_H}${BOX_H} ${ICON_SHELL} Shell${C_RESET}\n" >&2
               printf "${C_BRIGHT_MAGENTA}${BOX_V}${C_RESET}  ${C_BRIGHT_WHITE}$ %s${C_RESET}\n" "$cmd" >&2
               ;;
             "search"|"glob"|"grep"|"codeSearch")
@@ -755,12 +771,12 @@ parse_stream() {
               elif [[ "$tool_name" == "glob" ]]; then
                 pattern=$(echo "$line" | jq -r '.tool_call.globToolCall.args.pattern // "?"' 2>/dev/null)
               fi
-              printf "${C_BRIGHT_CYAN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_SEARCH} Search${C_RESET}\n" >&2
+              printf "$(ts)${C_BRIGHT_CYAN}${BOX_TL}${BOX_H}${BOX_H} ${ICON_SEARCH} Search${C_RESET}\n" >&2
               [[ -n "$pattern" ]] && printf "${C_BRIGHT_CYAN}${BOX_V}${C_RESET}  ${C_DIM}Pattern:${C_RESET} %s\n" "$pattern" >&2
               ;;
             "listFiles")
               local path=$(echo "$line" | jq -r '.tool_call.listFilesToolCall.args.path // "?"' 2>/dev/null)
-              printf "${C_DIM}${BOX_TL}${BOX_H}${BOX_H} ${ICON_FOLDER} List${C_RESET}\n" >&2
+              printf "$(ts)${C_DIM}${BOX_TL}${BOX_H}${BOX_H} ${ICON_FOLDER} List${C_RESET}\n" >&2
               printf "${C_DIM}${BOX_V}${C_RESET}  " >&2
               format_path "$path" >&2
               printf "\n" >&2
@@ -768,11 +784,11 @@ parse_stream() {
             "mcp")
               local server=$(echo "$line" | jq -r '.tool_call.mcpToolCall.args.server // "?"' 2>/dev/null)
               local tool=$(echo "$line" | jq -r '.tool_call.mcpToolCall.args.tool // "?"' 2>/dev/null)
-              printf "${C_BRIGHT_YELLOW}${BOX_TL}${BOX_H}${BOX_H} ${ICON_MCP} MCP${C_RESET}\n" >&2
+              printf "$(ts)${C_BRIGHT_YELLOW}${BOX_TL}${BOX_H}${BOX_H} ${ICON_MCP} MCP${C_RESET}\n" >&2
               printf "${C_BRIGHT_YELLOW}${BOX_V}${C_RESET}  ${C_DIM}%s${C_RESET} → ${C_BRIGHT_WHITE}%s${C_RESET}\n" "$server" "$tool" >&2
               ;;
             *)
-              printf "${C_DIM}${BOX_TL}${BOX_H}${BOX_H} 🔧 %s${C_RESET}\n" "$tool_name" >&2
+              printf "$(ts)${C_DIM}${BOX_TL}${BOX_H}${BOX_H} 🔧 %s${C_RESET}\n" "$tool_name" >&2
               if [[ "$VERBOSE" == "true" ]]; then
                 local args=$(echo "$line" | jq -c '.tool_call | to_entries[0].value.args // {}' 2>/dev/null)
                 printf "${C_DIM}${BOX_V}  Args: %s${C_RESET}\n" "$args" >&2
@@ -979,7 +995,7 @@ parse_stream() {
         local error_msg=$(echo "$line" | jq -r '.error.data.message // .error.message // .message // "Unknown error"' 2>/dev/null) || error_msg="Unknown"
         
         printf "\n" >&2
-        printf "${C_BG_RED}${C_WHITE}${C_BOLD}  ERROR  ${C_RESET}\n" >&2
+        printf "$(ts)${C_BG_RED}${C_WHITE}${C_BOLD}  ERROR  ${C_RESET}\n" >&2
         printf "${C_RED}${BOX_TL}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_TR}${C_RESET}\n" >&2
         printf "${C_RED}${BOX_V}${C_RESET} %s\n" "$error_msg" >&2
         printf "${C_RED}${BOX_BL}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_BR}${C_RESET}\n" >&2
@@ -999,7 +1015,7 @@ parse_stream() {
         local tokens=$((total_chars / 4))
         
         printf "\n" >&2
-        printf "${C_DIM}${BOX_BL}${BOX_H}${BOX_H} Session Complete ${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${C_RESET}\n" >&2
+        printf "$(ts)${C_DIM}${BOX_BL}${BOX_H}${BOX_H} Session Complete ${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${BOX_H}${C_RESET}\n" >&2
         printf "${C_DIM}  Duration: ${C_BRIGHT_WHITE}%dms${C_RESET}${C_DIM}  │  Tokens: ${C_BRIGHT_WHITE}~%d${C_RESET}\n" "$duration" "$tokens" >&2
         log_activity "SESSION END: ${duration}ms, ~$tokens tokens"
         ;;
@@ -1370,6 +1386,7 @@ main() {
   [[ "$OPEN_PR" == "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Open PR:${C_RESET}     ${C_GREEN}Yes${C_RESET}\n"
   [[ "$DEBUG" == "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Debug:${C_RESET}       ${C_YELLOW}Yes${C_RESET} ${C_DIM}(raw JSON)${C_RESET}\n"
   [[ "$VERBOSE" == "true" ]] && [[ "$DEBUG" != "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Verbose:${C_RESET}     ${C_GREEN}Yes${C_RESET} ${C_DIM}(full outputs)${C_RESET}\n"
+  [[ "$SHOW_TIMESTAMPS" == "true" ]] && printf "${C_DIM}│${C_RESET}  ${C_DIM}Timestamps:${C_RESET}  ${C_GREEN}Yes${C_RESET} ${C_DIM}(HH:MM:SS)${C_RESET}\n"
   printf "${C_DIM}├─────────────────────────────────────────────────────────────────────┤${C_RESET}\n"
   printf "${C_DIM}│${C_RESET}  ${C_DIM}Tasks:${C_RESET}       ${C_GREEN}%d${C_RESET}/${C_BRIGHT_WHITE}%d${C_RESET} complete ${C_DIM}(%d remaining)${C_RESET}\n" "$completed" "$total" "$remaining"
   printf "${C_DIM}└─────────────────────────────────────────────────────────────────────┘${C_RESET}\n"
