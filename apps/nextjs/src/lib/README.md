@@ -673,3 +673,196 @@ try {
 4. **Invalidate strategically**: Clear cache when underlying data changes
 5. **Monitor usage**: Track cache hit rates and adjust TTLs accordingly
 
+## Background Job Queue (BullMQ)
+
+### Overview
+
+QuickCarousals uses BullMQ with Redis for background job processing. The primary use case is rendering and exporting carousel PDFs/PNGs, which can take 10-30 seconds and should not block API responses.
+
+### Render Queue
+
+The render queue handles all export jobs (PDF, PNG, thumbnail generation).
+
+### Adding Jobs to Queue
+
+```typescript
+import { addRenderJob, RenderJobData } from "~/lib/queues/render-queue";
+
+export const POST = withAuth(async (req, { userId }) => {
+  // Create export record in database
+  const exportRecord = await db.insertInto("Export")
+    .values({
+      projectId: projectId,
+      exportType: "PDF",
+      status: "PENDING",
+    })
+    .returningAll()
+    .executeTakeFirstOrThrow();
+
+  // Add job to queue
+  const jobId = await addRenderJob({
+    projectId: projectId,
+    exportId: exportRecord.id,
+    exportType: "PDF",
+    userId: userId,
+    slideIds: ["slide-1", "slide-2", "slide-3"],
+  });
+
+  return NextResponse.json({
+    exportId: exportRecord.id,
+    jobId: jobId,
+    status: "PENDING",
+  });
+});
+```
+
+### Job Priority
+
+Higher priority for Pro tier users:
+
+```typescript
+import { addRenderJob } from "~/lib/queues/render-queue";
+
+// Free tier users: priority 10 (default)
+await addRenderJob(jobData);
+
+// Pro tier users: priority 1 (higher priority)
+await addRenderJob(jobData, 1);
+```
+
+### Checking Queue Status
+
+```typescript
+import { getQueueStats } from "~/lib/queues/render-queue";
+
+// Get queue statistics
+const stats = await getQueueStats();
+console.log(stats);
+// {
+//   waiting: 5,    // Jobs waiting to be processed
+//   active: 2,     // Jobs currently being processed
+//   completed: 100, // Successfully completed jobs
+//   failed: 1      // Failed jobs
+// }
+```
+
+### Checking Job Status
+
+```typescript
+import { getJobStatus } from "~/lib/queues/render-queue";
+
+// Get status by job ID (same as exportId)
+const status = await getJobStatus(exportId);
+if (status) {
+  console.log(status.state); // 'waiting', 'active', 'completed', 'failed'
+  console.log(status.progress); // Progress percentage (0-100)
+  console.log(status.failedReason); // Error message if failed
+}
+```
+
+### Queue Configuration
+
+The render queue is configured with:
+- **3 retry attempts** with exponential backoff (5s, 10s, 20s)
+- **Completed jobs kept for 24 hours** (max 1000 jobs)
+- **Failed jobs kept for 7 days** (max 5000 jobs)
+
+### Cleanup
+
+Periodically clean old jobs to prevent queue bloat:
+
+```typescript
+import { cleanOldJobs } from "~/lib/queues/render-queue";
+
+// Clean jobs older than 7 days (default)
+await cleanOldJobs();
+
+// Custom max age (e.g., 3 days)
+await cleanOldJobs(3 * 24 * 60 * 60 * 1000);
+```
+
+### Queue Status Endpoint
+
+Check queue health via API:
+
+```bash
+curl http://localhost:3000/api/queues/render/status | jq .
+```
+
+Response:
+```json
+{
+  "success": true,
+  "queue": "render",
+  "stats": {
+    "waiting": 5,
+    "active": 2,
+    "completed": 100,
+    "failed": 1
+  },
+  "timestamp": "2026-01-30T12:00:00.000Z"
+}
+```
+
+### Environment Variables
+
+BullMQ requires Redis connection via native Redis URL (not REST API):
+
+```bash
+# Option 1: Native Redis URL (preferred)
+UPSTASH_REDIS_URL="rediss://default:password@host.upstash.io:6379"
+
+# Option 2: Fallback construction from REST URL
+# If UPSTASH_REDIS_URL is not set, the queue will construct it from:
+UPSTASH_REDIS_REST_URL="https://host.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="your-rest-token"
+```
+
+Get the native URL from Upstash Console → Details → Connection → "Native Redis URL"
+
+### Worker Implementation (Next Steps)
+
+To process jobs, implement a worker:
+
+```typescript
+// worker.ts (separate process)
+import { Worker } from "bullmq";
+import { RenderJobData } from "~/lib/queues/render-queue";
+
+const worker = new Worker<RenderJobData>(
+  "render",
+  async (job) => {
+    const { projectId, exportId, exportType, userId, slideIds } = job.data;
+
+    // Update status to PROCESSING
+    await updateExportStatus(exportId, "PROCESSING");
+
+    try {
+      // Render slides to PDF/PNG
+      const fileUrl = await renderExport(projectId, slideIds, exportType);
+
+      // Update status to COMPLETED
+      await updateExportStatus(exportId, "COMPLETED", fileUrl);
+
+      return { success: true, fileUrl };
+    } catch (error) {
+      // Update status to FAILED
+      await updateExportStatus(exportId, "FAILED", null, error.message);
+      throw error;
+    }
+  },
+  {
+    connection: createRedisConnection(),
+    concurrency: 5, // Process up to 5 jobs concurrently
+  }
+);
+
+worker.on("completed", (job) => {
+  console.log(`Job ${job.id} completed`);
+});
+
+worker.on("failed", (job, err) => {
+  console.error(`Job ${job?.id} failed:`, err);
+});
+```
+

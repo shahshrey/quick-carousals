@@ -409,7 +409,7 @@
       ],
       "expected": "renderQueue created with BullMQ. /api/queues/render/status returns {waiting, active, completed, failed} counts."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-01",
