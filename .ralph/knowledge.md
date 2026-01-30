@@ -2015,3 +2015,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - All validation checks pass for signature verification, event handling, and database updates
   - **Next task dependency**: This completes the Stripe integration - users can now subscribe, and webhooks will update their subscription tier
 ---
+
+---
+## Iteration 22 - integration-04
+- **What was done**: Built billing settings page with subscription management and upgrade CTAs
+- **Files changed**: 
+  - apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx (created)
+  - apps/nextjs/src/app/api/profile/route.ts (created)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Billing page pattern**: Created client component that fetches user profile, displays current plan, and shows upgrade options
+  - **Subscription tiers**: QuickCarousals uses SubscriptionTier enum (FREE, CREATOR, PRO) - stored in Profile.subscriptionTier field
+  - **Pricing structure verified**:
+    - Free: $0 (3 carousels/month, 8 slides, watermark, 3 style kits)
+    - Creator: $15/mo (30 carousels/month, 15 slides, no watermark, all 8 style kits, 1 brand kit)
+    - Pro: $39/mo (unlimited carousels, 20 slides, all features, 5 brand kits, custom fonts, priority exports)
+  - **Stripe integration**: Upgrade buttons call POST /api/stripe/checkout with priceId, then redirect to Stripe Checkout URL
+  - **Profile API endpoint**: Created GET /api/profile that returns user's subscription tier by querying Profile table with clerkUserId
+  - **All required testids**: current_plan (shows Free/Creator/Pro), upgrade_button (on upgrade CTAs), plan_creator (on Creator card), plan_pro (on Pro card)
+  - **Current plan display**: Shows active tier with price, highlights current plan card with blue border
+  - **Upgrade flow**: Clicking upgrade button creates Stripe Checkout session, redirects to Stripe, webhooks update Profile.subscriptionTier on success
+  - **Loading states**: Shows spinner during checkout session creation with "Processing..." text
+  - **Environment variables**: Uses NEXT_PUBLIC_STRIPE_CREATOR_PRICE_ID and NEXT_PUBLIC_STRIPE_PRO_PRICE_ID from env
+  - **Working validation commands**:
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/settings/billing` - Returns 200
+    - `curl -s -X GET http://localhost:3000/api/profile -o /dev/null -w '%{http_code}'` - Returns 401 (auth required)
+    - `grep -rq 'current_plan\|upgrade_button' apps/nextjs/src` - Verify testids present
+  - **Next task dependency**: This completes the billing integration - users can now view their plan and upgrade through Stripe
+---
