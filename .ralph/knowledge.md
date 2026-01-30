@@ -1017,3 +1017,40 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **TypeScript**: Import `type Konva` for type annotations without runtime import
   - **Next task dependency**: This canvas will be the foundation for feature-13 (layer rendering)
 ---
+
+---
+## Iteration 28 - feature-13
+- **What was done**: Implemented Konva layer rendering system with /editor/test route
+- **Files changed**: 
+  - Created: LayerRenderer.tsx, types.ts, /editor/test/page.tsx
+  - Modified: EditorCanvas.tsx, editor/index.ts
+  - Updated: tasks.json (marked feature-13 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Layer rendering pattern**: Created modular LayerRenderer component that maps layer types (background, text_box) to Konva primitives (Rect, Text)
+  - **Type safety**: Defined comprehensive TypeScript types for Layer, SlideData, StyleKit, LayersBlueprint - enables type-safe layer rendering
+  - **Background layer**: Renders as Konva Rect with fixed 1080x1350 dimensions, uses styleKit.colors.background
+  - **Text box layer features**:
+    - Handles both `string` and `string[]` content types
+    - Bullet style support: 'disc' (• prefix), 'numbered' (1. prefix), or plain (no prefix)
+    - Font selection based on layer.id: headline layers use headline_font, others use body_font
+    - Font weight application: >= 600 renders as bold, < 600 as normal
+    - Text alignment: left/center/right from layer.align property
+    - Line height from styleKit.spacingRules.line_height
+  - **Test route is CRITICAL**: `/editor/test` route at `app/[lang]/(dashboard)/editor/test/page.tsx` is required by ALL subsequent editor features (14-40+) for validation
+  - **Sample slide structure**: Test route includes 5 diverse slides:
+    - hook_big_headline (centered big text)
+    - promise_two_column (headline + two body columns)
+    - value_bullets (headline + bulleted list)
+    - value_numbered_steps (headline + numbered list)
+    - cta_centered (headline + subtext + footer)
+  - **Konva Text rendering**: Text component takes x, y, width, height for bounding box, fontSize for initial size (auto-fit will come in feature-19)
+  - **Client-side route**: The test route is 'use client' component, so content won't be in SSR HTML - check HTTP 200 status, not HTML content
+  - **Route validation**: Use `curl -s -L -o /dev/null -w '%{http_code}' URL` to follow redirects and check final status
+  - **Clerk middleware**: Dashboard routes return 307 redirect for auth check, then 200 after auth - this is expected behavior
+  - **Next task dependency**: This layer renderer enables feature-14 (text editing), feature-15 (zoom/pan), and all subsequent editor features
+  - **Working commands for this task**:
+    - `grep -rq 'LayerRenderer' apps/nextjs/src/components/editor` - verify renderer exists
+    - `grep -rq 'background' apps/nextjs/src/components/editor && grep -rq 'text_box' apps/nextjs/src/components/editor` - verify layer types
+    - `test -f apps/nextjs/src/app/[lang]/\(dashboard\)/editor/test/page.tsx` - verify test route
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route loads (expect 200)
