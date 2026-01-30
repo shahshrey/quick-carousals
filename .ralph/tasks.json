@@ -1808,7 +1808,7 @@
       ],
       "expected": "All 8 style kits: colors match preview, fonts load correctly, exported PDF preserves styling."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "testing-04",
