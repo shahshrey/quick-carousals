@@ -27,6 +27,18 @@ import {
   type SlidePlan 
 } from "~/lib/openai";
 import { ApiErrors } from "~/lib/api-error";
+import { Kysely, PostgresDialect } from "kysely";
+import { Pool } from "pg";
+import type { Database } from "@saasfly/db/prisma/types";
+
+// Create database client
+const dialect = new PostgresDialect({
+  pool: new Pool({
+    connectionString: process.env.POSTGRES_URL,
+  }),
+});
+
+const db = new Kysely<Database>({ dialect });
 
 // ============================================================================
 // Request/Response Schemas
@@ -51,6 +63,7 @@ const GenerateTextRequestSchema = z.object({
     .optional()
     .default('professional')
     .describe("Tone of the carousel"),
+  applyBrandKit: z.boolean().optional().default(false).describe("Whether to apply user's brand kit"),
 });
 
 type GenerateTextRequest = z.infer<typeof GenerateTextRequestSchema>;
@@ -182,17 +195,39 @@ export const POST = withAuthAndErrors<GenerateTextResponse>(
     // 1. Validate request body
     const body = await validateBody(req, GenerateTextRequestSchema);
     
-    const { text, slideCount: requestedSlideCount, tone } = body;
+    const { text, slideCount: requestedSlideCount, tone, applyBrandKit } = body;
     const textLength = text.length;
 
     try {
-      // 2. Calculate optimal slide count based on text length
+      // 2. Fetch brand kit if requested
+      let brandKit: any = null;
+      if (applyBrandKit) {
+        // Get user's profile
+        const profile = await db
+          .selectFrom("Profile")
+          .where("clerkUserId", "=", userId)
+          .select("id")
+          .executeTakeFirst();
+
+        if (profile) {
+          // Get default brand kit or first brand kit
+          brandKit = await db
+            .selectFrom("BrandKit")
+            .where("userId", "=", profile.id)
+            .selectAll()
+            .orderBy("isDefault", "desc")
+            .orderBy("createdAt", "desc")
+            .executeTakeFirst();
+        }
+      }
+
+      // 3. Calculate optimal slide count based on text length
       const slideCount = calculateOptimalSlideCount(textLength, requestedSlideCount);
 
-      // 3. Create prompt with pacing instructions
+      // 4. Create prompt with pacing instructions
       const prompt = createTextPrompt(text, slideCount, tone || 'professional');
 
-      // 4. STEP 1: Generate slide plan (structure)
+      // 5. STEP 1: Generate slide plan (structure)
       const plan: SlidePlan = await generateSlidePlan(prompt, {
         slideCount,
         tone,
@@ -203,7 +238,7 @@ export const POST = withAuthAndErrors<GenerateTextResponse>(
         throw ApiErrors.internal("AI generated empty slide plan");
       }
 
-      // 5. STEP 2: Generate detailed copy for each slide
+      // 6. STEP 2: Generate detailed copy for each slide
       // Pass the original text as context
       const copySlides = await generateSlideCopy(plan, { topic: `Source text: ${text.substring(0, 500)}...` });
 
@@ -214,10 +249,10 @@ export const POST = withAuthAndErrors<GenerateTextResponse>(
         );
       }
 
-      // 6. STEP 3: Select appropriate layouts
+      // 7. STEP 3: Select appropriate layouts
       const layoutIds = selectLayoutsForSlides(copySlides);
 
-      // 7. Combine all data into final slides array
+      // 8. Combine all data into final slides array
       const slides: GeneratedSlide[] = plan.slides.map((planSlide, index) => {
         const copySlide = copySlides[index] || {
           headline: planSlide.headline,
@@ -225,7 +260,7 @@ export const POST = withAuthAndErrors<GenerateTextResponse>(
           emphasis_text: planSlide.emphasis,
         };
 
-        return {
+        const slide: GeneratedSlide = {
           orderIndex: index,
           slideType: planSlide.slideType,
           layoutId: layoutIds[index] || 'generic_single_focus',
@@ -233,9 +268,21 @@ export const POST = withAuthAndErrors<GenerateTextResponse>(
           body: Array.isArray(copySlide.body) ? copySlide.body : [],
           emphasis: copySlide.emphasis_text || planSlide.emphasis,
         };
+
+        // Apply brand kit if available
+        if (brandKit) {
+          (slide as any).brandKit = {
+            colors: brandKit.colors || {},
+            fonts: brandKit.fonts || {},
+            logoUrl: brandKit.logoUrl || null,
+            handle: brandKit.handle || null,
+          };
+        }
+
+        return slide;
       });
 
-      // 8. Return success response
+      // 9. Return success response
       return NextResponse.json<GenerateTextResponse>({
         slides,
         metadata: {

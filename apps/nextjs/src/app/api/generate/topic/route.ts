@@ -22,6 +22,18 @@ import {
   type SlidePlan 
 } from "~/lib/openai";
 import { ApiErrors } from "~/lib/api-error";
+import { Kysely, PostgresDialect } from "kysely";
+import { Pool } from "pg";
+import type { Database } from "@saasfly/db/prisma/types";
+
+// Create database client
+const dialect = new PostgresDialect({
+  pool: new Pool({
+    connectionString: process.env.POSTGRES_URL,
+  }),
+});
+
+const db = new Kysely<Database>({ dialect });
 
 // ============================================================================
 // Request/Response Schemas
@@ -76,7 +88,29 @@ export const POST = withAuthAndErrors<GenerateTopicResponse>(
     const { topic, slideCount, tone, applyBrandKit } = body;
 
     try {
-      // 2. STEP 1: Generate slide plan (structure)
+      // 2. Fetch brand kit if requested
+      let brandKit: any = null;
+      if (applyBrandKit) {
+        // Get user's profile
+        const profile = await db
+          .selectFrom("Profile")
+          .where("clerkUserId", "=", userId)
+          .select("id")
+          .executeTakeFirst();
+
+        if (profile) {
+          // Get default brand kit or first brand kit
+          brandKit = await db
+            .selectFrom("BrandKit")
+            .where("userId", "=", profile.id)
+            .selectAll()
+            .orderBy("isDefault", "desc")
+            .orderBy("createdAt", "desc")
+            .executeTakeFirst();
+        }
+      }
+
+      // 3. STEP 1: Generate slide plan (structure)
       const plan: SlidePlan = await generateSlidePlan(topic, {
         slideCount,
         tone,
@@ -87,7 +121,7 @@ export const POST = withAuthAndErrors<GenerateTopicResponse>(
         throw ApiErrors.internal("AI generated empty slide plan");
       }
 
-      // 3. STEP 2: Generate detailed copy for each slide
+      // 4. STEP 2: Generate detailed copy for each slide
       const copySlides = await generateSlideCopy(plan, { topic });
 
       // Validate copy matches plan length
@@ -97,10 +131,10 @@ export const POST = withAuthAndErrors<GenerateTopicResponse>(
         );
       }
 
-      // 4. STEP 3: Select appropriate layouts
+      // 5. STEP 3: Select appropriate layouts
       const layoutIds = selectLayoutsForSlides(copySlides);
 
-      // 5. Combine all data into final slides array
+      // 6. Combine all data into final slides array
       const slides: GeneratedSlide[] = plan.slides.map((planSlide, index) => {
         const copySlide = copySlides[index] || {
           headline: planSlide.headline,
@@ -108,7 +142,7 @@ export const POST = withAuthAndErrors<GenerateTopicResponse>(
           emphasis_text: planSlide.emphasis,
         };
 
-        return {
+        const slide: GeneratedSlide = {
           orderIndex: index,
           slideType: planSlide.slideType,
           layoutId: layoutIds[index] || 'generic_single_focus',
@@ -116,16 +150,28 @@ export const POST = withAuthAndErrors<GenerateTopicResponse>(
           body: Array.isArray(copySlide.body) ? copySlide.body : [],
           emphasis: copySlide.emphasis_text || planSlide.emphasis,
         };
+
+        // Apply brand kit if available
+        if (brandKit) {
+          (slide as any).brandKit = {
+            colors: brandKit.colors || {},
+            fonts: brandKit.fonts || {},
+            logoUrl: brandKit.logoUrl || null,
+            handle: brandKit.handle || null,
+          };
+        }
+
+        return slide;
       });
 
-      // 6. Validate final slide count
+      // 7. Validate final slide count
       if (slides.length < 8 || slides.length > 12) {
         console.warn(
           `Slide count outside expected range: ${slides.length} (expected 8-12)`
         );
       }
 
-      // 7. Return success response
+      // 8. Return success response
       return NextResponse.json<GenerateTopicResponse>({
         slides,
         metadata: {
