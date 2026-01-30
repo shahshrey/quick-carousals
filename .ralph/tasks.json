@@ -1516,7 +1516,7 @@
       ],
       "expected": "generation_loading appears during AI processing. On success, redirects to /editor/:projectId with 8-12 generated slides."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "integration-01",

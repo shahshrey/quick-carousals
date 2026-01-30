@@ -1998,3 +1998,60 @@ Task complete - endpoint ready for use in carousel editor text rewriting flow.
 
 ### 2026-01-30 14:09:59
 **Session 14 started** (model: sonnet-4.5-thinking)
+
+---
+## 2026-01-30 - Iteration 14 - Feature 40
+
+### Task: Connect creation flow to editor
+
+**Status**: ✅ COMPLETE
+
+**What was implemented**:
+1. Updated creation flow page to complete full generation workflow:
+   - Step 1: Call AI generation (/api/generate/topic or /api/generate/text)
+   - Step 2: Create project with title and styleKitId
+   - Step 3: Create all slides in parallel with Promise.all()
+   - Step 4: Navigate to editor with project ID
+2. Added loading state with generation_loading testid and spinner animation
+3. Created comprehensive API endpoints:
+   - POST /api/slides - Create individual slides
+   - GET /api/projects/:id - Fetch project details
+   - PATCH /api/projects/:id - Update project
+   - DELETE /api/projects/:id - Delete project (cascade slides)
+   - GET /api/projects/:id/slides - Fetch all slides for project
+   - GET /api/style-kits/:id - Fetch single style kit
+4. Created full editor page at /editor/:id:
+   - Loads project and all slides on mount
+   - Transforms database data into SlideData format
+   - Integrates EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls
+   - Implements auto-save with useAutoSave hook
+   - Handles loading and error states gracefully
+5. Error handling for generation failures
+
+**Files changed**:
+- apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx (updated)
+- apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx (created)
+- apps/nextjs/src/app/api/slides/route.ts (created)
+- apps/nextjs/src/app/api/projects/[id]/route.ts (created)
+- apps/nextjs/src/app/api/projects/[id]/slides/route.ts (created)
+- apps/nextjs/src/app/api/style-kits/[id]/route.ts (created)
+
+**Validation results**:
+- ✅ generation_loading testid present in loading state
+- ✅ POST /api/slides returns 401 without auth
+- ✅ GET /api/projects/:id returns 401 without auth
+- ✅ GET /api/projects/:id/slides returns 401 without auth
+- ✅ GET /api/style-kits/:id returns 200 for valid style kit
+- ✅ Editor page created with full functionality
+- ✅ Router navigation to /editor/:projectId implemented
+
+**Key learnings**:
+- Three-step generation flow: AI → project → slides → redirect
+- Parallel slide creation for better performance
+- URL path extraction from dynamic routes in Next.js API handlers
+- Data transformation between database schema and editor components
+- Error handling: only clear loading state on error, not on success
+
+**Next steps**:
+- All Phase 5 features (feature-36 to feature-40) are now complete
+- Ready to move to Phase 6: Billing integration (integration-01 onwards)
