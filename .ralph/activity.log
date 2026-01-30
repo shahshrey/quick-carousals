@@ -2321,3 +2321,53 @@ Successfully configured Upstash Redis connection for QuickCarousals.
 ---
 EOF → exit 0
 [05:51:23] 💬 ASSISTANT: Now let me commit the knowledge update:...
+[05:51:26] SHELL git add -A && git commit -m "ralph: [infra-04] Update knowledge base with BullMQ learnings" → exit 0
+[05:51:34] 💬 ASSISTANT: Perfect! Now let me update the progress file:...
+[05:51:36] SHELL cat >> .ralph/progress.md << 'EOF'
+
+## Iteration 21 - infra-04 (COMPLETE)
+
+**Task**: Set up BullMQ render queue
+
+**Implementation**:
+- ✅ Created render queue with BullMQ (`src/lib/queues/render-queue.ts`)
+- ✅ Installed bullmq and ioredis dependencies
+- ✅ Created `/api/queues/render/status` endpoint
+- ✅ Added job retry configuration (3 attempts, exponential backoff)
+- ✅ Implemented queue statistics functions
+- ✅ Documented in lib/README.md
+
+**Validation**:
+- Queue status endpoint returns proper stats: `{waiting: 0, active: 0, completed: 0, failed: 0}`
+- All validation checks pass:
+  - Status route exists: ✓
+  - Queue configured: ✓
+  - Retry configuration present: ✓
+
+**Key Features**:
+- Native Redis connection via ioredis (BullMQ requirement)
+- Fallback construction from REST URL if native URL not set
+- 3 retry attempts with exponential backoff (5s → 10s → 20s)
+- Completed jobs kept for 24 hours (max 1000)
+- Failed jobs kept for 7 days (max 5000)
+- Job ID uses exportId for idempotency
+- Support for job priority (for Pro tier)
+
+**Next Up**: feature-01 (OpenAI service setup)
+
+EOF → exit 0
+[05:51:44] SHELL git add .ralph/progress.md && git commit -m "ralph: [infra-04] Update progress log" → exit 0
+[05:51:49] 💬 ASSISTANT: Excellent! Task infra-04 is complete. Let me push the commits:...
+[05:51:53] SHELL git push → exit 0
+[05:52:07] 💬 ASSISTANT: Perfect! Task infra-04 is complete. Let me create a summary:
+
+## Task Summary: infra-04 - Set up BullMQ render queue
+
+**Status**: ✅ COMPLETE
+
+### What Was Implemented:
+
+1. **BullMQ Render Queue** (`ap...
+[05:52:07] → Agent signaled NEXT (task complete)
+[05:52:07] SESSION END: 306727ms, ~1940 tokens
+[05:52:07] 🧠 LEARNED: knowledge.md updated
