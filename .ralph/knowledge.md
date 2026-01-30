@@ -742,3 +742,38 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -E 'Maximum 12 words|Maximum 5 bullet' src/lib/openai.ts` - verify constraints
   - **Task completion**: Tests passing + validation commands satisfied = task complete
 ---
+
+---
+## Iteration 24 - feature-04
+- **What was done**: Implemented layout selection logic (AI Step 3) - maps slide types to layout IDs based on text length
+- **Files changed**:
+  - apps/nextjs/src/lib/openai.ts (added selectLayout and selectLayoutsForSlides functions)
+  - apps/nextjs/src/lib/openai.test.ts (added 15 new tests for layout selection, total 48 tests passing)
+  - .ralph/tasks.json (marked feature-04 complete)
+- **Result**: PASS - All 48 tests passing
+- **Learnings for future iterations**:
+  - **Layout selection pattern**: Create mapping table of slideType -> layoutId with optional maxTextLength constraints
+  - **Text length calculation**: Sum headline length + all body text lengths to determine if layout variant is needed
+  - **Fallback strategy**: Always provide a fallback layout for each slide type (e.g., generic_single_focus for long text or unknown types)
+  - **Layout mappings implemented**:
+    - hook: hook_big_headline (≤100 chars) → generic_single_focus (longer)
+    - promise: promise_two_column
+    - value: value_bullets (≤200 chars) → value_numbered_steps (longer)
+    - list: value_bullets
+    - steps: value_numbered_steps
+    - quote: value_centered_quote
+    - text_visual: value_text_left_visual_right
+    - recap: recap_grid
+    - cta: cta_centered
+    - generic: generic_single_focus
+  - **TypeScript safety**: Use optional chaining for array access to avoid "possibly undefined" errors
+  - **Test strategy**: Test each slide type + test text length variants + test unknown types + test batch processing
+  - **Database validation**: Verified all returned layout IDs exist in TemplateLayout table
+  - **Function signatures**:
+    - `selectLayout(slideType: string, headline: string, body?: string[]): string`
+    - `selectLayoutsForSlides(slides: Array<{ slideType?: string; headline: string; body?: string[] }>): string[]`
+  - **Working commands for this task**:
+    - `bun run test src/lib/openai.test.ts` - run all OpenAI tests (48 tests)
+    - `grep -rq 'selectLayout' src && echo 'PASS'` - verify function exists
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id FROM \"TemplateLayout\";"` - verify layout IDs
+---
