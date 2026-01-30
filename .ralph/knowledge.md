@@ -1317,3 +1317,29 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `test -f apps/nextjs/src/components/editor/ThemeControls.tsx` - Verify component exists
   - **Next task dependency**: feature-23 will add layout variant selection building on this theme controls foundation
 ---
+---
+## Iteration 51 - feature-23
+- **What was done**: Created layout variant selector with slideType compatibility filtering
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/LayoutVariantSelector.tsx (created)
+  - apps/nextjs/src/components/editor/index.ts (added export)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (integrated selector with handler)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Layout variant selector pattern**: Fetches all layouts from /api/layouts and filters by matching slideType
+  - **SlideType compatibility filtering**: Each layout has a slideType field (hook, promise, value, cta, etc.) - selector shows only layouts matching current slide's type
+  - **Current implementation**: Each slideType currently has only one layout, but filtering logic is ready for when more layouts are added per type
+  - **Mini canvas preview**: Shows each layout as a small preview (86x108px @ 0.08 scale) with gray placeholder boxes for text boxes
+  - **Layout change handler**: When layout changes, preserves existing content for matching layer IDs, provides "Click to edit" placeholder for new layers
+  - **Dropdown UI pattern**: Button opens dropdown panel, backdrop closes on click outside, grid layout shows 3 columns
+  - **Active state**: Current layout highlighted with blue border, blue background, and "✓ Active" badge
+  - **Database schema check**: TemplateLayout table has id, name, category, slideType, and layersBlueprint columns
+  - **Type inference**: Finds current layout by layoutId to get its slideType, then filters all layouts by that slideType
+  - **Working validation commands**:
+    - `curl -s http://localhost:3000/api/layouts | jq 'length'` - Returns 9 layouts
+    - `curl -s http://localhost:3000/api/layouts | jq -e 'length >= 9'` - Validates API
+    - `curl -s http://localhost:3000/en/editor/test` - Test route loads (200)
+    - `grep -q 'data-testid="layout_selector"' apps/nextjs/src/components/editor/LayoutVariantSelector.tsx` - Verify testid
+  - **Next task dependency**: This completes the editor's core customization features (style kit → theme controls → layout variants)
+---

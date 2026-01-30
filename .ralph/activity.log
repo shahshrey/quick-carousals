@@ -5752,3 +5752,76 @@ I successfully implemented the theme controls panel with all required features..
 [10:59:32] 💬 ASSISTANT: Perfect! Everything is in place. Now let me mark the task complete and commit the changes:...
 [10:59:35] SHELL jq '(.[] | select(.id == "feature-23") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
 [10:59:42] 💬 ASSISTANT: Now let me commit the changes:...
+[10:59:45] SHELL git add -A && git commit -m "ralph: [feature-23] - Add layout variant selector with slideType compatibility filtering
+
+- Created LayoutVariantSelector component with mini canvas previews
+- Filters layouts by matching slideType from current slide
+- Shows compatible layouts in a dropdown grid (3 columns)
+- Active layout highlighted with blue border and checkmark
+- Integrated into /editor/test page with layout change handler
+- Preserves existing content when switching layouts
+- Added data-testid='layout_selector' for validation" → exit 0
+[10:59:57] 💬 ASSISTANT: Excellent! Now let me update the knowledge.md with learnings from this iteration:...
+[11:00:00] SHELL tail -30 .ralph/knowledge.md → exit 0
+[11:00:17] SHELL cat >> .ralph/knowledge.md << 'EOF'
+---
+## Iteration 51 - feature-23
+- **What was done**: Created layout variant selector with slideType compatibility filtering
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/LayoutVariantSelector.tsx (created)
+  - apps/nextjs/src/components/editor/index.ts (added export)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (integrated selector with handler)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Layout variant selector pattern**: Fetches all layouts from /api/layouts and filters by matching slideType
+  - **SlideType compatibility filtering**: Each layout has a slideType field (hook, promise, value, cta, etc.) - selector shows only layouts matching current slide's type
+  - **Current implementation**: Each slideType currently has only one layout, but filtering logic is ready for when more layouts are added per type
+  - **Mini canvas preview**: Shows each layout as a small preview (86x108px @ 0.08 scale) with gray placeholder boxes for text boxes
+  - **Layout change handler**: When layout changes, preserves existing content for matching layer IDs, provides "Click to edit" placeholder for new layers
+  - **Dropdown UI pattern**: Button opens dropdown panel, backdrop closes on click outside, grid layout shows 3 columns
+  - **Active state**: Current layout highlighted with blue border, blue background, and "✓ Active" badge
+  - **Database schema check**: TemplateLayout table has id, name, category, slideType, and layersBlueprint columns
+  - **Type inference**: Finds current layout by layoutId to get its slideType, then filters all layouts by that slideType
+  - **Working validation commands**:
+    - `curl -s http://localhost:3000/api/layouts | jq 'length'` - Returns 9 layouts
+    - `curl -s http://localhost:3000/api/layouts | jq -e 'length >= 9'` - Validates API
+    - `curl -s http://localhost:3000/en/editor/test` - Test route loads (200)
+    - `grep -q 'data-testid="layout_selector"' apps/nextjs/src/components/editor/LayoutVariantSelector.tsx` - Verify testid
+  - **Next task dependency**: This completes the editor's core customization features (style kit → theme controls → layout variants)
+---
+EOF → exit 0
+[11:00:26] 💬 ASSISTANT: Now let me update progress.md:...
+[11:00:28] SHELL cat >> .ralph/progress.md << 'EOF'
+
+## Iteration 51 - feature-23 ✅
+
+**Task**: Add layout variant selector with slideType compatibility filtering
+
+**Implementation**:
+- Created LayoutVariantSelector component with mini canvas previews
+- Filters layouts by matching slideType from current slide's layoutId
+- Shows compatible layouts in dropdown grid (3 columns)
+- Active layout highlighted with blue border and checkmark
+- Integrated into /editor/test page with layout change handler
+- Preserves existing content when switching layouts, adds placeholder for new layers
+- Added data-testid='layout_selector' for validation
+
+**Files Modified**:
+- `apps/nextjs/src/components/editor/LayoutVariantSelector.tsx` (created)
+- `apps/nextjs/src/components/editor/index.ts` (added export)
+- `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` (integrated selector)
+- `.ralph/tasks.json` (marked complete)
+
+**Validation**:
+- ✅ /api/layouts returns 9 layouts
+- ✅ layout_selector testid exists
+- ✅ Component filters by slideType
+- ✅ /editor/test page loads with selector (HTTP 200)
+- ✅ Layout change handler updates slide blueprint and content
+
+**Result**: PASS - All validation checks passed
+
+**Commit**: `ralph: [feature-23] - Add layout variant selector with slideType compatibility filtering`
+EOF → exit 0
+[11:00:33] 💬 ASSISTANT: Perfect! Let me commit these documentation updates and push everything:...

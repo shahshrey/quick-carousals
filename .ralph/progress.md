@@ -1447,3 +1447,33 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 10:55:40
 **Session 51 started** (model: sonnet-4.5-thinking)
+
+## Iteration 51 - feature-23 ✅
+
+**Task**: Add layout variant selector with slideType compatibility filtering
+
+**Implementation**:
+- Created LayoutVariantSelector component with mini canvas previews
+- Filters layouts by matching slideType from current slide's layoutId
+- Shows compatible layouts in dropdown grid (3 columns)
+- Active layout highlighted with blue border and checkmark
+- Integrated into /editor/test page with layout change handler
+- Preserves existing content when switching layouts, adds placeholder for new layers
+- Added data-testid='layout_selector' for validation
+
+**Files Modified**:
+- `apps/nextjs/src/components/editor/LayoutVariantSelector.tsx` (created)
+- `apps/nextjs/src/components/editor/index.ts` (added export)
+- `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` (integrated selector)
+- `.ralph/tasks.json` (marked complete)
+
+**Validation**:
+- ✅ /api/layouts returns 9 layouts
+- ✅ layout_selector testid exists
+- ✅ Component filters by slideType
+- ✅ /editor/test page loads with selector (HTTP 200)
+- ✅ Layout change handler updates slide blueprint and content
+
+**Result**: PASS - All validation checks passed
+
+**Commit**: `ralph: [feature-23] - Add layout variant selector with slideType compatibility filtering`
