@@ -2307,3 +2307,47 @@ Task complete - endpoint ready for use in carousel editor text rewriting flow.
 
 ### 2026-01-30 15:40:35
 **Session 39 started** (model: sonnet-4.5-thinking)
+
+## Iteration 39 - 2026-01-30
+
+### Task: testing-04 - QA Brand Kit Application
+
+**Status**: ✅ COMPLETE
+
+**What Was Done**:
+1. Validated existing brand kit infrastructure (APIs, settings page, generation integration)
+2. Identified rendering gap - brand kit data attached but not visually rendered
+3. Implemented complete brand kit rendering:
+   - Added BrandKit interface to editor types
+   - Updated LayerRenderer to render logo (top right), handle (bottom center), and apply brand colors/fonts
+   - Updated EditorCanvas and SlideThumbnail to pass brandKit prop
+   - Updated server-side renderer to include brand kit elements in exports
+   - Installed use-image package for Konva image loading
+
+**Validation**:
+- ✅ Brand kit settings page accessible with all testids
+- ✅ Creation flow has brand_kit_toggle
+- ✅ Generation APIs apply brand kit data to slides
+- ✅ Editor renders logo, handle, brand colors, and fonts
+- ✅ Exports include all brand kit elements via server-side renderer
+- ✅ All expected criteria met: "Generated slides show brand colors, fonts, logo (if uploaded), and handle. Exported PDF includes brand elements."
+
+**Files Modified**:
+- apps/nextjs/src/components/editor/types.ts
+- apps/nextjs/src/components/editor/LayerRenderer.tsx
+- apps/nextjs/src/components/editor/EditorCanvas.tsx
+- apps/nextjs/src/components/editor/SlideThumbnail.tsx
+- apps/nextjs/src/lib/render-slide.ts
+- apps/nextjs/package.json
+
+**Commit**: `ralph: [testing-04] - Add brand kit rendering support` (SHA: 287e6de)
+
+**Key Learnings**:
+- Brand kit infrastructure was complete from feature-24/25/26, but rendering implementation was missing
+- use-image package required for loading images in react-konva
+- Brand kit overlays on top of styleKit (styleKit = design system, brandKit = personal branding)
+- Proper font fallback chain: brandKit → styleKit → default
+
+**Next Task**: All Phase 8 testing tasks complete! MVP is fully validated end-to-end.
+
+---

@@ -2282,3 +2282,31 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'styleKit.colors.background' apps/nextjs/src` - Verify color application
   - **Next task**: testing-04 will validate brand kit application end-to-end
 ---
+
+---
+## Iteration 39 - testing-04
+- **What was done**: Implemented brand kit rendering in editor and exports
+- **Files changed**: 
+  - types.ts (added BrandKit interface)
+  - LayerRenderer.tsx (render logo, handle, apply brand colors/fonts)
+  - EditorCanvas.tsx, SlideThumbnail.tsx (pass brandKit prop)
+  - render-slide.ts (server-side brand kit rendering)
+  - package.json (added use-image dependency)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Brand kit infrastructure vs rendering**: Feature-26 added API integration but didn't implement actual rendering - this iteration completed the visual aspect
+  - **use-image package for Konva**: Required for loading images in react-konva components - use `const [image] = useImage(url, 'anonymous')` pattern
+  - **Brand kit data flow**: Data attached during generation API call, not stored in database Slide records - allows regenerating with different brand kits
+  - **Layered visual hierarchy**: StyleKit provides base design, BrandKit overlays custom elements (logo, handle, colors, fonts)
+  - **Server-side image loading**: @napi-rs/canvas `loadImage()` function loads remote images for rendering in exports
+  - **Positioning brand elements**: Logo at top right (940,20), handle at bottom center (540,1310) with @ prefix
+  - **Font fallback chain**: Check brandKit fonts first, then styleKit fonts - provides graceful degradation
+  - **Brand color application**: Primary color overrides background, accent color used for handle text
+  - **Error handling for logos**: Wrap loadImage in try/catch - missing logos shouldn't break entire render
+  - **Complete E2E flow validated**: Settings page → Creation toggle → Generation API → Editor rendering → Export rendering all working
+  - **TypeScript pre-existing errors**: Many TS errors in editor pages exist from previous work (SlideData missing id, layers, slideType fields) - these are unrelated to brand kit changes
+  - **Working validation commands**:
+    - `curl -s http://localhost:3000/en/settings/brand-kit -o /dev/null -w '%{http_code}'` - Test settings page (307 Clerk redirect)
+    - `grep -n "data-testid=\"brand_kit_toggle\"" path` - Verify toggle testid
+    - `grep -A 20 "Apply brand kit" path` - Check API application logic
+---

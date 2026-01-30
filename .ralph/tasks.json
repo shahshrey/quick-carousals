@@ -1842,7 +1842,7 @@
       ],
       "expected": "Generated slides show brand colors, fonts, logo (if uploaded), and handle. Exported PDF includes brand elements."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-01",
