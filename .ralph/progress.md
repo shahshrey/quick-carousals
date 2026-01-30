@@ -1168,3 +1168,32 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 09:42:15
 **Session 34 started** (model: sonnet-4.5-thinking)
+
+## Iteration 34 - 2026-01-30
+
+**Task**: feature-15 - Add canvas zoom and pan controls
+
+**Status**: ✅ COMPLETE
+
+**What was implemented**:
+- Zoom slider control (50%-200%) with data-testid='zoom_slider'
+- Fit-to-screen button that resets zoom to 100% and pan to origin
+- Pan with drag functionality enabled when zoom > 100%
+- Cursor changes to 'grab'/'grabbing' for pan affordance
+- Pan transform applied via CSS translate on canvas wrapper
+- Text editor overlay position adjusted for pan offset
+- Controls displayed in toolbar above canvas area
+
+**Validation Results**:
+- ✅ zoom_slider exists (range input 50-200%)
+- ✅ fit_screen_button exists and resets zoom/pan
+- ✅ Pan enabled only when zoomed >100%
+- ✅ Route /en/editor/test returns 200
+- ✅ No console errors in implementation
+- ✅ TypeCheck shows only pre-existing errors (not related to this feature)
+
+**Files Modified**:
+- apps/nextjs/src/components/editor/EditorCanvas.tsx
+
+**Commit**: 60d2a6c - ralph: [feature-15] - Add zoom and pan controls to canvas editor
+

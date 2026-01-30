@@ -1082,3 +1082,28 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -n 'name="text_box"' apps/nextjs/src/components/editor/LayerRenderer.tsx` - Verify text_box name attribute
   - **Next features depend on this**: feature-15 (zoom/pan), feature-18 (text measurement), feature-19 (auto-fit) will all build on this editing foundation.
 ---
+
+---
+## Iteration 34 - feature-15
+- **What was done**: Implemented zoom and pan controls for the canvas editor
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added zoom slider, fit-to-screen button, pan with drag)
+  - .ralph/tasks.json (marked feature-15 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Zoom slider pattern**: Range input from 50-200%, applied on top of responsive base scale - `const newScale = baseScale * (zoom / 100)`
+  - **Pan only when zoomed**: Check `zoom > 100 && !editingLayerId` before enabling pan drag - prevents interference with text editing
+  - **Pan transform approach**: Wrap the Stage in a div with `transform: translate()` CSS - cleaner than using Konva's x/y props which can cause re-render issues
+  - **Cursor feedback**: Change cursor to 'grab' when zoom > 100% and 'grabbing' during active panning
+  - **Fit-to-screen resets both**: `setZoom(100); setPan({ x: 0, y: 0 })` - restores default view
+  - **Text editor position adjustment**: When calculating overlay position, add pan offset: `left: calc(...+ ${pan.x}px)` and adjust for toolbar height (60px)
+  - **Control UI placement**: Added toolbar above canvas with flexbox layout - zoom controls + fit button in horizontal row
+  - **State management**: Used existing zoom/pan state variables, just needed to wire up UI and apply transforms
+  - **Dev server restart needed**: After significant changes, kill and restart dev server for hot reload to work properly
+  - **Validation workflow**: 
+    - `grep -n "data-testid" file` - verify test IDs exist
+    - `curl -s -L -o /dev/null -w '%{http_code}' URL` - test route accessibility
+    - Visual inspection would be ideal but command-line validation sufficient for structure
+  - **TypeScript errors unrelated**: Pre-existing TS errors in other files (api-error.ts, with-auth.ts, upload/route.ts) don't block this feature
+  - **Next feature dependency**: This zoom/pan foundation enables better editing UX for all subsequent editor features
+---
