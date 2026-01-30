@@ -1,6 +1,6 @@
-# API Error Handling, Authentication & Validation
+# API Error Handling, Authentication, Validation & Storage
 
-This directory contains utilities for consistent error handling, authentication, and request validation across all API routes.
+This directory contains utilities for consistent error handling, authentication, request validation, and file storage across all API routes.
 
 ## Authentication
 
@@ -300,3 +300,161 @@ curl -X POST http://localhost:3000/api/projects \
   }
 }
 ```
+
+## File Storage
+
+### Storage Buckets
+
+QuickCarousals uses Supabase Storage with two configured buckets:
+
+- **`logos`**: Brand kit logos (5MB limit, images only)
+- **`exports`**: Carousel exports (50MB limit, PDFs and PNGs)
+
+Both buckets are private and require authentication.
+
+### Server-Side Upload
+
+Use for API routes and server actions:
+
+```typescript
+import { uploadFile, STORAGE_BUCKETS, getUserFilePath, generateUniqueFilename } from "~/lib/storage";
+
+export const POST = withAuth(async (req, { userId }) => {
+  const formData = await req.formData();
+  const file = formData.get("logo") as File;
+  
+  if (!file) {
+    throw ApiErrors.validation("Logo file is required");
+  }
+  
+  // Convert File to Buffer
+  const buffer = Buffer.from(await file.arrayBuffer());
+  
+  // Generate unique filename
+  const filename = generateUniqueFilename(file.name);
+  const path = getUserFilePath(userId, filename);
+  
+  // Upload to logos bucket
+  const { path: uploadedPath, url } = await uploadFile(
+    STORAGE_BUCKETS.LOGOS,
+    path,
+    buffer,
+    file.type
+  );
+  
+  return NextResponse.json({ logoUrl: url });
+});
+```
+
+### Client-Side Upload
+
+Use for browser file uploads:
+
+```typescript
+import { uploadFileFromBrowser, STORAGE_BUCKETS, getUserFilePath, generateUniqueFilename } from "~/lib/storage";
+
+async function handleLogoUpload(file: File, userId: string) {
+  const filename = generateUniqueFilename(file.name);
+  const path = getUserFilePath(userId, filename);
+  
+  const { path: uploadedPath, url } = await uploadFileFromBrowser(
+    STORAGE_BUCKETS.LOGOS,
+    path,
+    file
+  );
+  
+  console.log("Uploaded to:", uploadedPath);
+  console.log("URL:", url);
+}
+```
+
+### Generating Signed URLs
+
+For private files, generate temporary signed URLs:
+
+```typescript
+import { getSignedUrl, STORAGE_BUCKETS } from "~/lib/storage";
+
+export const GET = withAuth(async (req, { userId }) => {
+  const exportId = new URL(req.url).searchParams.get("exportId");
+  
+  // Get export from database
+  const exportRecord = await db.selectFrom("Export")
+    .where("id", "=", exportId)
+    .where("userId", "=", userId) // Verify ownership
+    .selectAll()
+    .executeTakeFirst();
+  
+  if (!exportRecord || !exportRecord.fileUrl) {
+    throw ApiErrors.notFound("Export");
+  }
+  
+  // Extract path from fileUrl
+  const path = exportRecord.fileUrl.split("/storage/v1/object/public/exports/")[1];
+  
+  // Generate signed URL (expires in 24 hours)
+  const signedUrl = await getSignedUrl(STORAGE_BUCKETS.EXPORTS, path, 86400);
+  
+  return NextResponse.json({ downloadUrl: signedUrl });
+});
+```
+
+### Deleting Files
+
+```typescript
+import { deleteFile, STORAGE_BUCKETS } from "~/lib/storage";
+
+export const DELETE = withAuth(async (req, { userId }) => {
+  const logoPath = `${userId}/logo-123456.png`;
+  
+  await deleteFile(STORAGE_BUCKETS.LOGOS, logoPath);
+  
+  return NextResponse.json({ success: true });
+});
+```
+
+### Listing User Files
+
+```typescript
+import { listUserFiles, STORAGE_BUCKETS } from "~/lib/storage";
+
+export const GET = withAuth(async (req, { userId }) => {
+  const files = await listUserFiles(STORAGE_BUCKETS.EXPORTS, userId);
+  
+  return NextResponse.json({ files });
+});
+```
+
+### Storage Path Helpers
+
+```typescript
+import { getUserFilePath, generateUniqueFilename } from "~/lib/storage";
+
+// Generate user-specific path
+const path = getUserFilePath("user-123", "logo.png");
+// Returns: "user-123/logo.png"
+
+// Generate unique filename with timestamp
+const filename = generateUniqueFilename("carousel.pdf");
+// Returns: "carousel-1706399999123.pdf"
+```
+
+### Storage Buckets Configuration
+
+Buckets are configured in `supabase/create_buckets.sql` with:
+
+- File size limits
+- Allowed MIME types
+- Row Level Security (RLS) policies
+- User-scoped access (users can only access their own files)
+
+### Environment Variables
+
+Storage requires the following environment variables:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+```
+

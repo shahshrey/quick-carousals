@@ -344,7 +344,7 @@
       ],
       "expected": "Storage buckets configured: 'logos' for brand assets, 'exports' for generated PDFs/PNGs"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "infra-02",
