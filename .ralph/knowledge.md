@@ -474,3 +474,29 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s http://localhost:3000/api/health | jq -e '.status == "ok"'` - validate specific field
     - `curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health` - check HTTP status
 ---
+
+---
+## Iteration 16 - setup-14
+- **What was done**: Created withAuth middleware for protected API endpoints
+- **Files changed**: 
+  - apps/nextjs/src/lib/with-auth.ts (created auth middleware)
+  - apps/nextjs/src/app/api/projects/route.ts (created test endpoint)
+  - apps/nextjs/src/utils/clerk.ts (updated to allow API routes to handle auth internally)
+  - apps/nextjs/src/lib/README.md (added authentication documentation)
+  - .ralph/tasks.json (marked setup-14 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Clerk middleware redirect issue**: The global Clerk middleware was redirecting unauthenticated API requests instead of allowing them to pass through to route handlers
+  - **Solution**: Added check in middleware to allow API routes (`/api/`) to pass through when not authenticated, so `withAuth` can return proper 401 responses
+  - **withAuth pattern**: Created reusable middleware helper that:
+    - Uses Clerk's `auth()` to get session
+    - Returns 401 Unauthorized if no userId found
+    - Passes userId in context object to route handler
+    - Handles errors gracefully with consistent ApiError format
+  - **Testing auth guards**: Use `curl -s -o /dev/null -w '%{http_code}' URL` to verify HTTP status code
+  - **Error response format**: Auth errors follow same ApiError shape: `{ error: { code, message, details?, requestId? } }`
+  - **Middleware layering**: Global middleware should pass through to route-level auth for API routes to enable proper HTTP status codes (not redirects)
+  - **Combined helpers**: Created `withAuthAndErrors` for routes that need both auth and error handling in one wrapper
+  - **Documentation important**: Updated lib/README.md with comprehensive examples of withAuth usage
+  - **API route structure**: Protected endpoints follow pattern: `export const GET = withAuth(async (req, { userId }) => { ... })`
+---
