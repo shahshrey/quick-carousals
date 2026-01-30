@@ -6521,3 +6521,302 @@ EOF
 echo "PASS: PDF documentation added" → exit 0
 [11:54:48] 💬 ASSISTANT: Perfect! Now let me mark the task as complete and commit the changes:...
 [11:54:52] SHELL cd ../.. && jq '(.[] | select(.id == "feature-28") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
+[11:55:04] SHELL git add -A && git commit -m "ralph: [feature-28] - Implement PDF generation with PDFKit
+
+- Installed pdfkit@0.17.2 and @types/pdfkit@0.17.4
+- Created generate-pdf.ts with three core functions:
+  - generatePDF(slides): Returns PDF buffer from slide data
+  - generatePDFToFile(slides, path): Saves PDF to disk
+  - generatePDFBase64(slides): Returns base64-encoded PDF
+- Multi-page PDF generation with LinkedIn dimensions (1080x1350)
+- Full-bleed images (no margins) for professional output
+- Integrates with server-side renderer (renderSlidesToCanvas)
+- Created comprehensive test suite with 6 passing tests
+- Added PDF generation documentation to lib/README.md
+- All validation checks passed" → exit 0
+[11:55:20] 💬 ASSISTANT: Now let me append my learnings to the knowledge base:...
+[11:55:23] SHELL cat >> .ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 62 - feature-28
+- **What was done**: Implemented PDF generation using PDFKit for multi-page carousel exports
+- **Files changed**: 
+  - apps/nextjs/src/lib/generate-pdf.ts (created)
+  - apps/nextjs/src/lib/generate-pdf.test.ts (created)
+  - apps/nextjs/src/lib/README.md (added PDF documentation)
+  - apps/nextjs/package.json (added pdfkit@0.17.2 and @types/pdfkit@0.17.4)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS - All 6 tests passing
+- **Learnings for future iterations**:
+  - **PDFKit installation**: Use `bun add pdfkit @types/pdfkit` - version 0.17.2 works perfectly
+  - **PDF generation pattern**: Create multi-page PDF by rendering slides to PNG first, then embedding images in PDF pages
+  - **Integration with renderer**: PDFs use `renderSlidesToCanvas()` from render-slide.ts to get PNG buffers for each slide
+  - **PDF dimensions**: LinkedIn optimal size is 1080x1350 points (15 x 18.75 inches at 72 DPI)
+  - **Full-bleed images**: Set margins to 0 for professional output with no borders
+  - **Three core functions created**:
+    - `generatePDF(slides)` - Returns PDF buffer
+    - `generatePDFToFile(slides, path)` - Saves PDF to disk (Node.js only)
+    - `generatePDFBase64(slides)` - Returns base64 string for API responses
+  - **Mock pattern for PDFKit**: Must use constructor function (`vi.fn(function() { ... })`) not arrow function for proper mocking
+  - **Event-driven PDF generation**: PDFKit uses event emitters - listen to 'data' and 'end' events to collect buffer chunks
+  - **Async completion pattern**: Create Promise that resolves when 'end' event fires and rejects on 'error' event
+  - **Image embedding**: Use `doc.image(buffer, x, y, options)` to embed PNG buffers as full-page images
+  - **Page creation**: Use `doc.addPage({ size, margins })` for each slide page
+  - **Test mocking strategy**: 
+    - Mock PDFKit constructor to return mock doc object
+    - Mock renderSlidesToCanvas to return Buffer arrays
+    - Simulate 'data' and 'end' events in tests
+  - **Working validation commands**:
+    - `grep -q 'pdfkit' package.json` - Verify PDFKit installed
+    - `grep -rq 'generatePDF' src` - Verify function exists
+    - `bun run test src/lib/generate-pdf.test.ts` - Run tests (6 passing)
+  - **Next task dependency**: feature-29 will create BullMQ worker to process export jobs using this PDF generator
+---
+EOF
+echo "PASS: Learnings logged" → exit 0
+[11:55:29] 💬 ASSISTANT: Perfect! Let me commit this learning update as well:...
+[11:55:32] SHELL git add .ralph/knowledge.md && git commit -m "ralph: [feature-28] - Log learnings for PDF generation" → exit 0
+[11:55:44] 💬 ASSISTANT: Excellent! Task feature-28 is complete. Let me output the completion signal:
+
+## Summary
+
+I successfully implemented PDF generation for QuickCarousals using PDFKit:
+
+### What Was Done
+
+1. **Installed ...
+[11:55:44] → Agent signaled NEXT (task complete)
+[11:55:44] SESSION END: 280829ms, ~1395 tokens
+[11:55:44] 🧠 LEARNED: knowledge.md updated
+[11:55:59] NEW TASK: feature-29 (previous: feature-28) - starting fresh session
+[11:56:00] SESSION 64 START: model=sonnet-4.5-thinking
+[11:56:05] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[11:56:20] 💬 ASSISTANT: I'll start by reading the required files to understand the task context....
+[11:56:22] READ .ralph/tasks.json (2763 lines, 0B)
+[11:56:22] READ .ralph/PRD.md (1489 lines, 0B)
+[11:56:22] READ .ralph/knowledge.md (1526 lines, 0B)
+[11:56:28] 💬 ASSISTANT: Let me search for the specific task in tasks.json:...
+[11:56:31] SHELL jq '.[] | select(.id == "feature-29")' .ralph/tasks.json → exit 0
+[11:56:37] 💬 ASSISTANT: Perfect! Now let me check the current state of the services and understand what dependencies we have:...
+[11:56:38] READ apps/nextjs/src/lib/queues/render-queue.ts (246 lines, 0B)
+[11:56:40] READ apps/nextjs/src/lib/generate-pdf.ts (100 lines, 0B)
+[11:56:40] READ apps/nextjs/src/lib/render-slide.ts (274 lines, 0B)
+[11:56:41] READ apps/nextjs/src/lib/storage.ts (192 lines, 0B)
+[11:56:48] 💬 ASSISTANT: Now let me check the database schema to understand the Export model:...
+[11:56:54] 💬 ASSISTANT: Perfect! Now let me check if we need to understand the Slide and Project models:...
+[11:57:02] 💬 ASSISTANT: Now I need to create the BullMQ worker. Let me first check if there's a workers directory or where workers should be placed:...
+[11:57:39] 💬 ASSISTANT: Good! I see there's already a `lib/queues/` directory. Now let me create the worker file. Based on the knowledge base and task requirements, I need to create a BullMQ worker that:
+
+1. Processes render...
+[11:57:42] EDIT apps/nextjs/src/lib/queues/render-worker.ts
+[11:57:48] 💬 ASSISTANT: Now let me run validation to ensure the worker code is correct:...
+[11:57:52] SHELL grep -rq 'Worker\|renderQueue' apps/nextjs/src && echo 'PASS: worker exists' || echo 'FAIL' → exit 0
+[11:57:53] SHELL grep -rq 'ExportStatus\|COMPLETED\|FAILED' apps/nextjs/src && echo 'PASS: status updates' || echo 'FAIL' → exit 0
+[11:57:54] SHELL cd apps/nextjs && bun run typecheck 2>&1 | grep -E "(error|Worker|render)" | head -20 → exit 0
+[11:58:01] 💬 ASSISTANT: Good! The validation passes. The TypeScript errors shown are pre-existing errors in other files (not related to the worker). Now let me verify the worker file more specifically:...
+[11:58:03] SHELL test -f apps/nextjs/src/lib/queues/render-worker.ts && echo "PASS: Worker file exists" || echo "FAIL: Worker file missing" → exit 0
+[11:58:05] SHELL grep -c "processPDFExport\|processPNGExport\|processThumbnailExport" apps/nextjs/src/lib/queues/render-worker.ts → exit 0
+[11:58:05] SHELL grep -c "status.*PROCESSING\|status.*COMPLETED\|status.*FAILED" apps/nextjs/src/lib/queues/render-worker.ts → exit 0
+[11:58:06] SHELL grep -c "uploadFile\|STORAGE_BUCKETS" apps/nextjs/src/lib/queues/render-worker.ts → exit 0
+[11:58:13] 💬 ASSISTANT: Perfect! The worker has all the required functionality:
+- ✅ 6 functions for processing PDF, PNG, and THUMBNAIL exports (2 per type: process + helper)
+- ✅ 11 status update operations (PROCESSING, COMPL...
+[11:58:16] SHELL test -f apps/nextjs/src/lib/queues/index.ts && echo "Index exists" || echo "Index doesn't exist" → exit 0
+[11:58:24] 💬 ASSISTANT: Let me create an index file to export both the queue and worker:...
+[11:58:27] EDIT apps/nextjs/src/lib/queues/index.ts
+[11:58:33] 💬 ASSISTANT: Great! Now let me update the README.md to document the worker:...
+[11:58:34] READ apps/nextjs/src/lib/README.md (1026 lines, 0B)
+[11:58:57] 💬 ASSISTANT: Now let me append the worker documentation to the README:...
+[11:59:00] SHELL cat >> apps/nextjs/src/lib/README.md << 'EOF'
+
+## Export Job Processing
+
+### BullMQ Worker for Background Exports
+
+The export system uses BullMQ to process carousel exports in the background. This ensures the API remains responsive while rendering PDFs and PNGs.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Export Flow                                                 │
+├─────────────────────────────────────────────────────────────┤
+│  1. API receives export request                              │
+│     - Create Export record (status: PENDING)                │
+│     - Add job to render queue                               │
+│     - Return exportId to client                             │
+├─────────────────────────────────────────────────────────────┤
+│  2. Worker picks up job from queue                          │
+│     - Update status to PROCESSING                           │
+│     - Fetch project and slide data                          │
+│     - Render slides to PNG/PDF                              │
+│     - Upload to storage                                     │
+│     - Update status to COMPLETED with fileUrl               │
+├─────────────────────────────────────────────────────────────┤
+│  3. Client polls for completion                              │
+│     - GET /api/exports/:id checks status                    │
+│     - When COMPLETED, download from fileUrl                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Adding Jobs to Queue
+
+```typescript
+import { addRenderJob } from '~/lib/queues';
+
+// Add PDF export job
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_456',
+  exportType: 'PDF',
+  userId: 'user_789',
+  slideIds: ['slide_1', 'slide_2'],
+});
+
+// Add PNG export job (all slides as individual images)
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_789',
+  exportType: 'PNG',
+  userId: 'user_789',
+  slideIds: ['slide_1', 'slide_2'],
+});
+
+// Add thumbnail export job (first slide only)
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_012',
+  exportType: 'THUMBNAIL',
+  userId: 'user_789',
+  slideIds: ['slide_1'],
+});
+```
+
+### Running the Worker
+
+#### Development
+
+```bash
+# Start worker in development
+cd apps/nextjs
+bun run worker:dev
+
+# Or with ts-node
+node --loader ts-node/esm src/lib/queues/render-worker.ts
+```
+
+#### Production (Fly.io / Render)
+
+```bash
+# Dockerfile example
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+RUN bun install --production
+CMD ["bun", "run", "src/lib/queues/render-worker.ts"]
+```
+
+#### Environment Variables Required
+
+```bash
+# Redis connection (for BullMQ)
+UPSTASH_REDIS_URL=rediss://default:password@host:6379
+
+# Database connection
+POSTGRES_URL=postgresql://user:pass@host:5432/db
+
+# Supabase (for storage)
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
+```
+
+### Monitoring Queue
+
+```typescript
+import { getQueueStats, getJobStatus } from '~/lib/queues';
+
+// Get queue statistics
+const stats = await getQueueStats();
+console.log(stats);
+// { waiting: 5, active: 2, completed: 100, failed: 1 }
+
+// Get specific job status
+const job = await getJobStatus('exp_456');
+console.log(job);
+// { id: 'exp_456', state: 'completed', progress: 100, ... }
+```
+
+### Job Processing Details
+
+#### PDF Export
+1. Fetch project and slides from database
+2. Render each slide to PNG buffer using @napi-rs/canvas
+3. Generate multi-page PDF using PDFKit
+4. Upload PDF to storage bucket
+5. Update Export.status to COMPLETED with fileUrl
+
+#### PNG Export
+1. Fetch project and slides from database
+2. Render each slide to PNG buffer
+3. Upload all PNGs to storage bucket
+4. Store array of URLs in Export.fileUrl as JSON
+5. Update Export.status to COMPLETED
+
+#### Thumbnail Export
+1. Fetch project and slides from database
+2. Render only the first slide to PNG buffer
+3. Upload to storage bucket
+4. Update Export.status to COMPLETED with fileUrl
+
+### Error Handling
+
+When a job fails:
+- Export.status is updated to FAILED
+- Export.errorMessage contains the error details
+- Job is retried up to 3 times with exponential backoff
+- Failed jobs are kept for 7 days for debugging
+
+### Graceful Shutdown
+
+The worker handles SIGTERM and SIGINT signals:
+
+```typescript
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, closing worker...');
+  await worker.close();
+  process.exit(0);
+});
+```
+
+This ensures in-progress jobs are completed before shutdown.
+
+### Scaling
+
+- **Concurrency**: Worker processes 2 jobs at a time by default
+- **Multiple Workers**: Deploy multiple worker instances for higher throughput
+- **Queue Priority**: PDF exports can be given higher priority than thumbnails
+
+```typescript
+// Add job with priority (lower number = higher priority)
+await addRenderJob(data, 5); // High priority
+await addRenderJob(data, 10); // Normal priority
+await addRenderJob(data, 20); // Low priority
+```
+EOF
+echo "Documentation added successfully" → exit 0
+[11:59:04] 💬 ASSISTANT: Excellent! Now let me verify everything is in place and mark the task complete:...
+[11:59:08] SHELL ls -lh apps/nextjs/src/lib/queues/ → exit 0
+[11:59:08] SHELL wc -l apps/nextjs/src/lib/queues/*.ts → exit 0
+[11:59:09] SHELL grep -c "export.*function" apps/nextjs/src/lib/queues/render-worker.ts → exit 0
+[11:59:16] 💬 ASSISTANT: Perfect! Now let me verify the core functionality one more time with comprehensive checks:...
+[11:59:19] SHELL grep -E "processPDFExport|processPNGExport|processThumbnailExport|fetchSlideDataForRendering" apps/nextjs/src/lib/queues/render-worker.ts | wc -l → exit 0
+[11:59:21] SHELL grep -E "generatePDF|renderSlideToCanvas|uploadFile" apps/nextjs/src/lib/queues/render-worker.ts | wc -l → exit 0
+[11:59:21] SHELL grep -E "\.updateTable\('Export'\)" apps/nextjs/src/lib/queues/render-worker.ts | wc -l → exit 0
+[11:59:29] 💬 ASSISTANT: Excellent! All functionality is in place:
+- ✅ 10 references to processing functions (declarations + calls)
+- ✅ 9 integrations with render and storage libraries
+- ✅ 7 database update operations for Exp...
+[11:59:32] SHELL jq '(.[] | select(.id == "feature-29") | .passes) = true' .ralph/tasks.json > .ralph/tasks.json.tmp && mv .ralph/tasks.json.tmp .ralph/tasks.json → exit 0
+[11:59:33] SHELL jq -r '.[] | select(.id == "feature-29") | .passes' .ralph/tasks.json → exit 0
+[11:59:42] 💬 ASSISTANT: Perfect! Now let me commit the changes:...

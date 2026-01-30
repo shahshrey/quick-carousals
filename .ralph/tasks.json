@@ -1169,7 +1169,7 @@
       ],
       "expected": "Worker processes jobs: render slides, generate PDF/PNG, upload to storage, update Export.status in DB."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-30",

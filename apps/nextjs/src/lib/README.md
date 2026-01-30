@@ -1023,3 +1023,178 @@ try {
 # Run PDF generation tests
 bun run test src/lib/generate-pdf.test.ts
 ```
+
+## Export Job Processing
+
+### BullMQ Worker for Background Exports
+
+The export system uses BullMQ to process carousel exports in the background. This ensures the API remains responsive while rendering PDFs and PNGs.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Export Flow                                                 │
+├─────────────────────────────────────────────────────────────┤
+│  1. API receives export request                              │
+│     - Create Export record (status: PENDING)                │
+│     - Add job to render queue                               │
+│     - Return exportId to client                             │
+├─────────────────────────────────────────────────────────────┤
+│  2. Worker picks up job from queue                          │
+│     - Update status to PROCESSING                           │
+│     - Fetch project and slide data                          │
+│     - Render slides to PNG/PDF                              │
+│     - Upload to storage                                     │
+│     - Update status to COMPLETED with fileUrl               │
+├─────────────────────────────────────────────────────────────┤
+│  3. Client polls for completion                              │
+│     - GET /api/exports/:id checks status                    │
+│     - When COMPLETED, download from fileUrl                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Adding Jobs to Queue
+
+```typescript
+import { addRenderJob } from '~/lib/queues';
+
+// Add PDF export job
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_456',
+  exportType: 'PDF',
+  userId: 'user_789',
+  slideIds: ['slide_1', 'slide_2'],
+});
+
+// Add PNG export job (all slides as individual images)
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_789',
+  exportType: 'PNG',
+  userId: 'user_789',
+  slideIds: ['slide_1', 'slide_2'],
+});
+
+// Add thumbnail export job (first slide only)
+await addRenderJob({
+  projectId: 'proj_123',
+  exportId: 'exp_012',
+  exportType: 'THUMBNAIL',
+  userId: 'user_789',
+  slideIds: ['slide_1'],
+});
+```
+
+### Running the Worker
+
+#### Development
+
+```bash
+# Start worker in development
+cd apps/nextjs
+bun run worker:dev
+
+# Or with ts-node
+node --loader ts-node/esm src/lib/queues/render-worker.ts
+```
+
+#### Production (Fly.io / Render)
+
+```bash
+# Dockerfile example
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+RUN bun install --production
+CMD ["bun", "run", "src/lib/queues/render-worker.ts"]
+```
+
+#### Environment Variables Required
+
+```bash
+# Redis connection (for BullMQ)
+UPSTASH_REDIS_URL=rediss://default:password@host:6379
+
+# Database connection
+POSTGRES_URL=postgresql://user:pass@host:5432/db
+
+# Supabase (for storage)
+NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGc...
+```
+
+### Monitoring Queue
+
+```typescript
+import { getQueueStats, getJobStatus } from '~/lib/queues';
+
+// Get queue statistics
+const stats = await getQueueStats();
+console.log(stats);
+// { waiting: 5, active: 2, completed: 100, failed: 1 }
+
+// Get specific job status
+const job = await getJobStatus('exp_456');
+console.log(job);
+// { id: 'exp_456', state: 'completed', progress: 100, ... }
+```
+
+### Job Processing Details
+
+#### PDF Export
+1. Fetch project and slides from database
+2. Render each slide to PNG buffer using @napi-rs/canvas
+3. Generate multi-page PDF using PDFKit
+4. Upload PDF to storage bucket
+5. Update Export.status to COMPLETED with fileUrl
+
+#### PNG Export
+1. Fetch project and slides from database
+2. Render each slide to PNG buffer
+3. Upload all PNGs to storage bucket
+4. Store array of URLs in Export.fileUrl as JSON
+5. Update Export.status to COMPLETED
+
+#### Thumbnail Export
+1. Fetch project and slides from database
+2. Render only the first slide to PNG buffer
+3. Upload to storage bucket
+4. Update Export.status to COMPLETED with fileUrl
+
+### Error Handling
+
+When a job fails:
+- Export.status is updated to FAILED
+- Export.errorMessage contains the error details
+- Job is retried up to 3 times with exponential backoff
+- Failed jobs are kept for 7 days for debugging
+
+### Graceful Shutdown
+
+The worker handles SIGTERM and SIGINT signals:
+
+```typescript
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, closing worker...');
+  await worker.close();
+  process.exit(0);
+});
+```
+
+This ensures in-progress jobs are completed before shutdown.
+
+### Scaling
+
+- **Concurrency**: Worker processes 2 jobs at a time by default
+- **Multiple Workers**: Deploy multiple worker instances for higher throughput
+- **Queue Priority**: PDF exports can be given higher priority than thumbnails
+
+```typescript
+// Add job with priority (lower number = higher priority)
+await addRenderJob(data, 5); // High priority
+await addRenderJob(data, 10); // Normal priority
+await addRenderJob(data, 20); // Low priority
+```
