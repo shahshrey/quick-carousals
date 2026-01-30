@@ -1538,7 +1538,7 @@
       ],
       "expected": "Stripe SDK installed. STRIPE_SECRET_KEY, STRIPE_PRICE_CREATOR, STRIPE_PRICE_PRO in .env.example."
     },
-    "passes": true
+    "passes": false
   },
   {
     "id": "integration-02",
