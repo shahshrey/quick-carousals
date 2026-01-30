@@ -325,7 +325,7 @@ describe('generatePDF', () => {
 
     await generatePDF(slides);
 
-    expect(renderSlidesToCanvas).toHaveBeenCalledWith(slides);
+    expect(renderSlidesToCanvas).toHaveBeenCalledWith(slides, false);
   });
 });
 

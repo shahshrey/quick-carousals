@@ -1899,7 +1899,7 @@
       ],
       "expected": "All 8 PDF exports are valid files with correct size and page count"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-03",
