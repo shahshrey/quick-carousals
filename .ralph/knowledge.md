@@ -1343,3 +1343,33 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -q 'data-testid="layout_selector"' apps/nextjs/src/components/editor/LayoutVariantSelector.tsx` - Verify testid
   - **Next task dependency**: This completes the editor's core customization features (style kit → theme controls → layout variants)
 ---
+
+---
+## Iteration 53 - feature-24
+- **What was done**: Created brand kit API endpoints with full CRUD operations
+- **Files changed**: 
+  - apps/nextjs/src/app/api/brand-kits/route.ts (GET, POST)
+  - apps/nextjs/src/app/api/brand-kits/[id]/route.ts (PATCH, DELETE)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Brand kit CRUD pattern**: All four endpoints (GET, POST, PATCH, DELETE) require authentication
+  - **Multipart/form-data handling**: POST and PATCH support both JSON and multipart for logo uploads
+  - **Logo upload workflow**: 
+    - Validate file type (PNG, JPEG, SVG, WebP) and size (5MB max)
+    - Upload to STORAGE_BUCKETS.LOGOS with user-scoped path
+    - Store URL in BrandKit.logoUrl field
+    - Delete old logo from storage when updating or deleting brand kit
+  - **isDefault flag handling**: When setting a brand kit as default, unset all other brand kits' isDefault flags first
+  - **Profile lookup pattern**: Always lookup Profile by clerkUserId first, then use Profile.id for relations
+  - **Dynamic route params in Next.js 15**: Access params via `await (req as any).params` not as function parameter
+  - **Storage path extraction**: Parse URL to extract userId/filename path for deleteFile operations
+  - **Kysely update pattern**: Build updates object dynamically, only include fields that were provided
+  - **Error handling**: Use try/catch for storage operations (logo deletion), log warnings but don't fail the request
+  - **Validation checks passed**:
+    - GET /api/brand-kits returns 401 without auth ✓
+    - POST /api/brand-kits returns 401 without auth ✓
+    - PATCH /api/brand-kits/:id returns 401 without auth ✓
+    - DELETE /api/brand-kits/:id returns 401 without auth ✓
+  - **Next task dependency**: feature-25 will build the brand kit management UI that calls these endpoints
+---
