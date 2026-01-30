@@ -637,3 +637,54 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq "renderQueue\|BullMQ" src` - verify queue is configured
     - `grep -q "attempts" src/lib/queues/render-queue.ts` - verify retry config
 ---
+
+---
+## Iteration 22 - feature-01
+- **What was done**: Created OpenAI service with structured output, TypeScript types, and comprehensive test suite
+- **Files changed**:
+  - apps/nextjs/src/lib/openai.ts (created with OpenAI client, types, and helper functions)
+  - apps/nextjs/src/lib/openai.test.ts (created with 25 comprehensive unit tests)
+  - apps/nextjs/vitest.config.ts (created Vitest configuration)
+  - apps/nextjs/package.json (added Vitest, test scripts, and openai package)
+  - .ralph/tasks.json (marked feature-01 complete)
+- **Result**: PASS - All 25 tests passing
+- **Learnings for future iterations**:
+  - **OpenAI SDK installation**: Use `bun add openai` - version 6.17.0 installed successfully
+  - **Vitest setup for Next.js**: Install `vitest @vitest/ui happy-dom` as dev dependencies
+  - **Vitest configuration**: Create vitest.config.ts with path alias (~) and happy-dom environment
+  - **Environment variable patterns**: Read env vars lazily in functions, not at module import time (important for testing)
+  - **Mock patterns for external SDKs**: 
+    - Use `vi.mock()` at module level
+    - Create constructor function (not arrow function) in mock: `vi.fn(function() { return mockObject })`
+    - Share mock variables across tests using module-level constants
+  - **Test structure best practices**:
+    - Use beforeEach/afterEach for env setup/cleanup
+    - Group related tests in describe blocks
+    - Test success cases, error cases, retry logic, timeouts separately
+    - Use `.mockResolvedValue()` for one-time mocks, `.mockResolvedValueOnce()` for sequential mocks
+  - **Zod schema validation in OpenAI**:
+    - Use `response_format: { type: 'json_object' }` in API call
+    - Define schemas with z.object() and export both schema and inferred type
+    - Validate API responses with schema.parse() - throws on mismatch
+  - **Retry logic implementation**:
+    - Check error status codes: 408, 429, 5xx are retryable
+    - Implement exponential backoff: [1s, 2s, 5s]
+    - Use Promise.race() for timeout handling
+    - Wrap errors in custom error classes for better handling
+  - **Test timeout configuration**: Use third parameter in it() for long-running tests: `it('test', async () => {...}, 3000)`
+  - **OpenAI structured output pattern**:
+    - System prompt sets context and output format
+    - User message contains the actual request
+    - Temperature controls randomness (0.7 default)
+    - JSON mode ensures valid JSON responses
+  - **Type generation workflow**: Types are generated from Zod schemas using `z.infer<>`
+  - **Test validation workflow**:
+    - Run `bun run test <file>` to execute specific test file
+    - Use `bun run typecheck` to verify no type errors
+    - All tests must pass before marking task complete
+  - **Working commands for this task**:
+    - `bun add openai` - install OpenAI SDK
+    - `bun add -D vitest @vitest/ui happy-dom` - install test dependencies
+    - `bun run test src/lib/openai.test.ts` - run specific test file
+    - `bun run typecheck` - verify TypeScript types
+---
