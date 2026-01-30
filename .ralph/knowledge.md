@@ -602,3 +602,38 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `redis.lpush/rpop` - list operations for queues
   - **Next task dependency**: Redis is now ready for BullMQ configuration in infra-04
 ---
+
+---
+## Iteration 21 - infra-04
+- **What was done**: Set up BullMQ render queue with status endpoint and retry configuration
+- **Files changed**: 
+  - apps/nextjs/src/lib/queues/render-queue.ts (created render queue with BullMQ)
+  - apps/nextjs/src/app/api/queues/render/status/route.ts (created status endpoint)
+  - apps/nextjs/src/lib/README.md (added BullMQ documentation)
+  - apps/nextjs/package.json (added bullmq and ioredis dependencies)
+  - .env.example (documented UPSTASH_REDIS_URL for native connection)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **BullMQ requires ioredis, not @upstash/redis**: BullMQ needs native Redis protocol, not REST API
+  - **Upstash provides two connection methods**:
+    - REST URL (UPSTASH_REDIS_REST_URL) - for @upstash/redis client
+    - Native URL (UPSTASH_REDIS_URL) - for ioredis/BullMQ (format: rediss://default:password@host:6379)
+  - **Fallback implementation**: If native URL not provided, can construct from REST URL + token
+  - **BullMQ configuration requirements**:
+    - maxRetriesPerRequest: null (required)
+    - enableReadyCheck: false (required)
+    - tls: { rejectUnauthorized: true } (for Upstash with TLS)
+  - **Queue configuration implemented**:
+    - 3 retry attempts with exponential backoff (5s, 10s, 20s)
+    - Completed jobs kept for 24 hours (max 1000)
+    - Failed jobs kept for 7 days (max 5000)
+    - Job IDs use exportId for idempotency
+  - **Status endpoint validation**: Tested successfully with curl, returns proper JSON with {waiting, active, completed, failed} counts
+  - **Queue functions exported**: getRenderQueue(), addRenderJob(), getQueueStats(), getJobStatus(), cleanOldJobs(), closeRenderQueue()
+  - **Next task dependency**: Worker implementation will use this queue to process export jobs (feature-27 onwards)
+  - **Working validation commands**:
+    - `curl -s http://localhost:3000/api/queues/render/status | jq .` - test endpoint
+    - `test -f src/app/api/queues/render/status/route.ts` - verify route exists
+    - `grep -rq "renderQueue\|BullMQ" src` - verify queue is configured
+    - `grep -q "attempts" src/lib/queues/render-queue.ts` - verify retry config
+---
