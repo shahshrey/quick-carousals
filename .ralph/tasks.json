@@ -680,7 +680,7 @@
       ],
       "expected": "GET /api/layouts returns 9 layouts each with layers_blueprint"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-12",
