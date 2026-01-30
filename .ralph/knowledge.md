@@ -1449,3 +1449,41 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -A 10 "Apply brand kit if available" apps/nextjs/src/app/api/generate/text/route.ts` - Verify logic
   - **Next task dependency**: This completes brand kit integration - editor now needs to render with brand kit styling
 ---
+
+---
+## Iteration 60 - feature-27
+- **What was done**: Created server-side canvas renderer with @napi-rs/canvas
+- **Files changed**: 
+  - apps/nextjs/src/lib/render-slide.ts (created)
+  - apps/nextjs/src/lib/render-slide.test.ts (created)
+  - apps/nextjs/package.json (added @napi-rs/canvas@0.1.89)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS - All 5 tests passing
+- **Learnings for future iterations**:
+  - **@napi-rs/canvas installation**: Use `bun add @napi-rs/canvas` - version 0.1.89 installed successfully with Skia-based rendering
+  - **Server-side rendering pattern**: Created renderSlideToCanvas(slide: SlideData): Promise<Buffer> that returns PNG buffer
+  - **Font handling strategy**: 
+    - registerFont(family, path, weight) for custom font loading
+    - loadDefaultFonts() loads bundled fonts (Inter, Poppins, etc.)
+    - GlobalFonts.registerFromPath() from @napi-rs/canvas for font registration
+    - In production, fonts will be fetched from R2/S3 storage
+  - **Auto-fit algorithm implementation**:
+    - Binary search finds optimal font size between min/max bounds
+    - Uses SKRSContext2D.measureText() for accurate text measurement
+    - Accounts for line height from styleKit.spacingRules.line_height
+    - breakTextIntoLines() helper function for word wrapping
+  - **Layer rendering logic**:
+    - Background: Simple fillRect with styleKit.colors.background
+    - Text boxes: Auto-fit text, apply alignment (left/center/right), handle bullet styles
+    - Bullet styles: 'disc' adds '• ' prefix, 'numbered' adds '1. ' prefix
+    - Font selection: headline layers use headline_font, others use body_font
+  - **Testing approach**: Mock @napi-rs/canvas with vi.mock(), provide rough character width estimates (10px/char)
+  - **Type safety**: All types imported from ~/components/editor/types (SlideData, Layer, TextBoxLayer, StyleKit)
+  - **Canvas dimensions**: Fixed 1080x1350 (LinkedIn portrait format) defined as constants
+  - **renderSlidesToCanvas()**: Batch function for multiple slides, calls renderSlideToCanvas in loop
+  - **Working commands**:
+    - `bun add @napi-rs/canvas` - install server renderer
+    - `bun run test src/lib/render-slide.test.ts` - run tests (5 passing)
+    - `grep -q '@napi-rs/canvas' package.json` - verify installation
+  - **Next task dependency**: feature-28 will use this renderer to generate multi-page PDFs with PDFKit
+---

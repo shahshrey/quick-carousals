@@ -1558,3 +1558,38 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 11:44:54
 **Session 60 started** (model: sonnet-4.5-thinking)
+
+## Iteration 60 - feature-27: Server-side canvas renderer
+
+**Completed:** ✅
+
+### Implementation Summary
+- Installed @napi-rs/canvas (v0.1.89) for server-side Skia rendering
+- Created `renderSlideToCanvas()` function that converts SlideData to PNG buffer
+- Implemented auto-fit text algorithm with binary search optimization
+- Added font loading infrastructure (registerFont, loadDefaultFonts)
+- Full support for backgrounds, text boxes, bullet lists (disc/numbered)
+- Created comprehensive test suite with 5 passing tests
+
+### Key Functions
+- `renderSlideToCanvas(slide: SlideData): Promise<Buffer>` - Single slide to PNG
+- `renderSlidesToCanvas(slides: SlideData[]): Promise<Buffer[]>` - Batch rendering
+- `registerFont(family, path, weight)` - Register custom fonts
+- `loadDefaultFonts()` - Load bundled fonts (Inter, Poppins, etc.)
+
+### Files Created
+- `apps/nextjs/src/lib/render-slide.ts` - Main renderer implementation
+- `apps/nextjs/src/lib/render-slide.test.ts` - Test suite (5 tests passing)
+
+### Validation Results
+- ✅ @napi-rs/canvas installed in package.json
+- ✅ renderSlideToCanvas function exists and works
+- ✅ All 5 tests passing
+- ✅ TypeScript compilation successful
+- ✅ Returns PNG buffer ready for PDF generation
+
+### Next Steps
+- feature-28: PDF generation with PDFKit (multi-page PDF from PNG buffers)
+- feature-29: Export worker with BullMQ queue
+- feature-30: /api/exports endpoint
+
