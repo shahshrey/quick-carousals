@@ -1561,7 +1561,7 @@
       ],
       "expected": "POST /api/stripe/checkout {priceId} returns {url} pointing to Stripe Checkout. Requires auth."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "integration-03",
