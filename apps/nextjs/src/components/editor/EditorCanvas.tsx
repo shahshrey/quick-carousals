@@ -5,6 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import type Konva from 'konva';
 import { LayerRenderer } from './LayerRenderer';
 import type { SlideData } from './types';
+import { measureText } from '~/lib/text-measure';
 
 interface EditorCanvasProps {
   className?: string;
@@ -184,8 +185,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
     const layer = slide.blueprint.layers.find(l => l.type === 'text_box' && l.id === layerId);
     if (!layer || layer.type !== 'text_box') return false;
 
-    // Import text measurement utilities
-    const { measureText } = require('~/lib/text-measure');
+    // Check if running on server
     if (typeof window === 'undefined') return false;
 
     const content = slide.content[layerId];

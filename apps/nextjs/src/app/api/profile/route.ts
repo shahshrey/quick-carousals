@@ -6,20 +6,9 @@
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
-import type { DB as Database } from "@saasfly/db/prisma/types";
+import { db } from "@saasfly/db";
 import { withAuthAndErrors } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
-
-// Create database client
-const dialect = new PostgresDialect({
-  pool: new Pool({
-    connectionString: process.env.POSTGRES_URL,
-  }),
-});
-
-const db = new Kysely<Database>({ dialect });
 
 export const GET = withAuthAndErrors(async (req, { userId }) => {
   try {

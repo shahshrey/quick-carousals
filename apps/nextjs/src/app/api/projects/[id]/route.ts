@@ -6,22 +6,11 @@
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
 import { z } from "zod";
-import { withAuth } from "~/lib/with-auth";
+import { db } from "@saasfly/db";
+import { withAuthAndErrors } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
 import { validateBody } from "~/lib/validations/api";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-
-// Create Kysely database client
-const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.POSTGRES_URL,
-    }),
-  }),
-});
 
 // Validation schema for updating a project
 const updateProjectSchema = z.object({
@@ -35,7 +24,7 @@ const updateProjectSchema = z.object({
  * GET /api/projects/:id
  * Returns project details for the authenticated user
  */
-export const GET = withAuth(async (req, { userId }) => {
+export const GET = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Extract project ID from URL
     const url = new URL(req.url);
@@ -85,7 +74,7 @@ export const GET = withAuth(async (req, { userId }) => {
  * PATCH /api/projects/:id
  * Updates project details
  */
-export const PATCH = withAuth(async (req, { userId }) => {
+export const PATCH = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Extract project ID from URL
     const url = new URL(req.url);
@@ -148,7 +137,7 @@ export const PATCH = withAuth(async (req, { userId }) => {
  * DELETE /api/projects/:id
  * Deletes a project and all its slides (cascade)
  */
-export const DELETE = withAuth(async (req, { userId }) => {
+export const DELETE = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Extract project ID from URL
     const url = new URL(req.url);

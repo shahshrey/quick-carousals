@@ -4,19 +4,8 @@
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
+import { db } from "@saasfly/db";
 import { ApiErrors } from "~/lib/api-error";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-
-// Create Kysely database client
-const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.POSTGRES_URL,
-    }),
-  }),
-});
 
 /**
  * GET /api/style-kits/:id

@@ -6,23 +6,12 @@
  */
 
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { db } from "@saasfly/db";
 import { withAuthAndErrors } from "~/lib/with-auth";
 import { validateBody } from "~/lib/validations/api";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-import { z } from "zod";
 import { uploadFile, getUserFilePath, generateUniqueFilename, deleteFile, STORAGE_BUCKETS } from "~/lib/storage";
 import { ApiErrors } from "~/lib/api-error";
-
-// Create database client
-const dialect = new PostgresDialect({
-  pool: new Pool({
-    connectionString: process.env.POSTGRES_URL,
-  }),
-});
-
-const db = new Kysely<Database>({ dialect });
 
 /**
  * Validation schema for updating a brand kit

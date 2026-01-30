@@ -5,22 +5,11 @@
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
 import { z } from "zod";
-import { withAuth } from "~/lib/with-auth";
+import { db } from "@saasfly/db";
+import { withAuthAndErrors } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
 import { validateBody } from "~/lib/validations/api";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-
-// Create Kysely database client
-const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.POSTGRES_URL,
-    }),
-  }),
-});
 
 // Validation schema for updating slides
 const updateSlidesSchema = z.object({
@@ -38,7 +27,7 @@ const updateSlidesSchema = z.object({
  * GET /api/projects/:id/slides
  * Returns all slides for a project, ordered by orderIndex
  */
-export const GET = withAuth(async (req, { userId }) => {
+export const GET = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Extract project ID from URL
     const url = new URL(req.url);
@@ -98,7 +87,7 @@ export const GET = withAuth(async (req, { userId }) => {
  * PUT /api/projects/:id/slides
  * Updates all slides for a project in bulk
  */
-export const PUT = withAuth(async (req, { userId }) => {
+export const PUT = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Extract project ID from URL
     const url = new URL(req.url);

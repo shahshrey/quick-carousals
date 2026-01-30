@@ -1,25 +1,14 @@
 /**
  * Projects API endpoint
- * Protected by withAuth middleware - requires valid Clerk session
+ * Protected by withAuthAndErrors middleware - requires valid Clerk session
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
 import { z } from "zod";
-import { withAuth } from "~/lib/with-auth";
+import { db } from "@saasfly/db";
+import { withAuthAndErrors } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
 import { validateBody } from "~/lib/validations/api";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-
-// Create Kysely database client
-const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.POSTGRES_URL,
-    }),
-  }),
-});
 
 // Validation schema for creating a project
 const createProjectSchema = z.object({
@@ -35,7 +24,7 @@ const createProjectSchema = z.object({
  * @returns 200 - List of user's projects
  * @returns 401 - Not authenticated
  */
-export const GET = withAuth(async (req, { userId }) => {
+export const GET = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Get Profile ID from clerkUserId
     const profile = await db
@@ -80,7 +69,7 @@ export const GET = withAuth(async (req, { userId }) => {
  * @returns 400 - Validation error
  * @returns 401 - Not authenticated
  */
-export const POST = withAuth(async (req, { userId }) => {
+export const POST = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Validate request body
     const body = await validateBody(req, createProjectSchema);

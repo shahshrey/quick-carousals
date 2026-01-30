@@ -1,25 +1,14 @@
 /**
  * Slides API endpoint
- * Protected by withAuth middleware - requires valid Clerk session
+ * Protected by withAuthAndErrors middleware - requires valid Clerk session
  */
 
 import { NextResponse } from "next/server";
-import { Kysely, PostgresDialect } from "kysely";
-import { Pool } from "pg";
 import { z } from "zod";
-import { withAuth } from "~/lib/with-auth";
+import { db } from "@saasfly/db";
+import { withAuthAndErrors } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
 import { validateBody } from "~/lib/validations/api";
-import type { DB as Database } from "@saasfly/db/prisma/types";
-
-// Create Kysely database client
-const db = new Kysely<Database>({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      connectionString: process.env.POSTGRES_URL,
-    }),
-  }),
-});
 
 // Validation schema for creating a slide
 const createSlideSchema = z.object({
@@ -43,7 +32,7 @@ const createSlideSchema = z.object({
  * @returns 401 - Not authenticated
  * @returns 403 - Project not owned by user
  */
-export const POST = withAuth(async (req, { userId }) => {
+export const POST = withAuthAndErrors(async (req, { userId }) => {
   try {
     // Validate request body
     const body = await validateBody(req, createSlideSchema);
