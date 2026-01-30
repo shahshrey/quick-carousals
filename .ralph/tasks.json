@@ -1659,7 +1659,7 @@
       ],
       "expected": "Dashboard responsive: mobile shows stacked cards, desktop shows grid. Hover states on project cards. Empty state has illustration."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "styling-02",
