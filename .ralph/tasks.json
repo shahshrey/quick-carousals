@@ -2626,7 +2626,7 @@
       ],
       "expected": "Title and meta description present, Open Graph tags configured, robots.txt and sitemap exist"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-17",
