@@ -57,15 +57,25 @@ export default function DashboardPage() {
         text="Create and manage your LinkedIn carousels"
       >
         <Link href="/create">
-          <Button data-testid="new_project_button">
+          <Button data-testid="new_project_button" size="lg" className="shadow-sm">
             New Carousel
           </Button>
         </Link>
       </DashboardHeader>
       <div>
         {loading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <p className="text-muted-foreground">Loading projects...</p>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="h-full">
+                <CardHeader className="pb-3">
+                  <div className="h-6 bg-muted rounded animate-pulse mb-2" />
+                  <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="h-4 bg-muted rounded w-32 animate-pulse" />
+                </CardContent>
+              </Card>
+            ))}
           </div>
         ) : projects.length > 0 ? (
           <div 
@@ -74,16 +84,26 @@ export default function DashboardPage() {
           >
             {projects.map((project) => (
               <Link key={project.id} href={`/editor/${project.id}`}>
-                <Card className="hover:border-primary transition-colors cursor-pointer">
-                  <CardHeader>
-                    <CardTitle className="line-clamp-1">{project.title}</CardTitle>
-                    <CardDescription>
-                      {project.status === 'DRAFT' && 'Draft'}
-                      {project.status === 'PUBLISHED' && 'Published'}
-                      {project.status === 'ARCHIVED' && 'Archived'}
+                <Card className="group hover:border-primary hover:shadow-md transition-all duration-200 cursor-pointer h-full">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-2 mt-2">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        project.status === 'DRAFT' 
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' 
+                          : project.status === 'PUBLISHED'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                      }`}>
+                        {project.status === 'DRAFT' && 'Draft'}
+                        {project.status === 'PUBLISHED' && 'Published'}
+                        {project.status === 'ARCHIVED' && 'Archived'}
+                      </span>
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0">
                     <p className="text-sm text-muted-foreground">
                       Last updated: {formatDate(project.updatedAt)}
                     </p>
@@ -93,8 +113,8 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : (
-          <EmptyPlaceholder data-testid="empty_state">
-            <EmptyPlaceholder.Icon name="File" />
+          <EmptyPlaceholder data-testid="empty_state" className="border-2">
+            <EmptyPlaceholder.Icon name="Sparkles" />
             <EmptyPlaceholder.Title>
               No carousels yet
             </EmptyPlaceholder.Title>
@@ -102,7 +122,7 @@ export default function DashboardPage() {
               Get started by creating your first LinkedIn carousel. It only takes 3 minutes!
             </EmptyPlaceholder.Description>
             <Link href="/create">
-              <Button variant="outline">
+              <Button size="lg" className="mt-2">
                 Create Your First Carousel
               </Button>
             </Link>
