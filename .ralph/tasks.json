@@ -1584,7 +1584,7 @@
       ],
       "expected": "Webhook verifies signature, handles checkout.session.completed, updates subscriptionTier in DB."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "integration-04",
