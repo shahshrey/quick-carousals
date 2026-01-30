@@ -2953,3 +2953,96 @@ cat .ralph/progress.md | tail -30 → exit 0
 [07:31:03] 💬 ASSISTANT: Now let me verify the change:...
 [07:31:06] SHELL cd /Users/shrey/Downloads/quick-carousals && jq '.[] | select(.id == "feature-05") | .passes' .ralph/tasks.json → exit 0
 [07:31:15] 💬 ASSISTANT: Perfect! Now let me commit the changes:...
+[07:31:17] SHELL cd /Users/shrey/Downloads/quick-carousals && git add -A && git commit -m "ralph: [feature-05] - implement /api/generate/topic endpoint with tests
+
+- Created POST /api/generate/topic route handler
+- Chains generateSlidePlan → generateSlideCopy → selectLayoutsForSlides
+- Validates input with Zod schema (topic, slideCount 8-12, tone)
+- Returns complete slides array with layoutIds, headlines, body content
+- Requires authentication via withAuthAndErrors middleware
+- Comprehensive test suite with 12 passing tests:
+  * Auth validation (401 for unauthenticated)
+  * Input validation (400 for invalid/missing fields)
+  * Success cases (generates 8-12 slides)
+  * Error handling (timeout, rate limit, empty plan)
+- Fixed import path in validations/api.ts (../api-error)
+- All tests passing (12/12)" → exit 0
+[07:31:34] 💬 ASSISTANT: Excellent! Now let me append the learnings to the knowledge base:...
+[07:31:36] SHELL cat >> /Users/shrey/Downloads/quick-carousals/.ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 11 - feature-05
+- **What was done**: Created /api/generate/topic endpoint that chains AI operations to generate complete carousel slides
+- **Files changed**: 
+  - apps/nextjs/src/app/api/generate/topic/route.ts (created)
+  - apps/nextjs/src/app/api/generate/topic/route.test.ts (created)
+  - apps/nextjs/src/lib/validations/api.ts (fixed import path)
+  - .ralph/tasks.json (marked feature-05 complete)
+- **Result**: PASS - All 12 tests passing
+- **Learnings for future iterations**:
+  - **API route pattern for AI endpoints**: Use `withAuthAndErrors` wrapper for auth + error handling in one
+  - **Three-step AI pipeline**: 
+    1. generateSlidePlan (structure) 
+    2. generateSlideCopy (detailed copy with constraints)
+    3. selectLayoutsForSlides (map to template layouts)
+  - **Input validation with Zod**: 
+    - topic (string, 1-500 chars)
+    - slideCount (8-12, default 10)
+    - tone (enum: bold/calm/contrarian/professional, default professional)
+    - applyBrandKit (boolean, default false)
+  - **Error handling specifics**:
+    - Check `statusCode` property to identify ApiError instances - re-throw them directly
+    - Check error message for "timeout" → internal error with timeout message
+    - Check error message for "rate limit" → use `ApiErrors.rateLimited(60)` (not `rateLimit`)
+    - All other errors → generic internal error
+  - **API error factory methods**: 
+    - `ApiErrors.validation()` (400)
+    - `ApiErrors.unauthorized()` (401)
+    - `ApiErrors.forbidden()` (403)
+    - `ApiErrors.notFound()` (404)
+    - `ApiErrors.rateLimited(seconds)` (429) - note: it's `rateLimited` not `rateLimit`
+    - `ApiErrors.internal()` (500)
+  - **Import path fix**: validations/api.ts needs `../api-error` not `./api-error`
+  - **Test patterns for API routes**:
+    - Mock Clerk auth with `vi.mock('@clerk/nextjs/server')`
+    - Mock OpenAI functions with `vi.mock('~/lib/openai')`
+    - Test auth (401), validation (400), success (200), and error handling
+    - Use dynamic imports in tests to ensure mocks are applied before importing route
+  - **Response structure**: Returns `{ slides: [...], metadata: { topic, tone, slideCount, generatedAt } }`
+  - **Slide structure**: Each slide has `{ orderIndex, slideType, layoutId, headline, body[], emphasis[] }`
+  - **Validation commands from tasks.json are reference examples**: Adapt them to your implementation - the endpoint requires auth, so unauthenticated requests return 401 (this is correct behavior)
+---
+EOF → exit 0
+[07:31:46] 💬 ASSISTANT: Perfect! Let me also update the progress file:...
+[07:31:49] SHELL cat >> /Users/shrey/Downloads/quick-carousals/.ralph/progress.md << 'EOF'
+
+## Iteration 11 - feature-05 (Complete)
+
+**Task**: Create /api/generate/topic endpoint
+
+**Implementation**:
+- Created POST /api/generate/topic route handler at apps/nextjs/src/app/api/generate/topic/route.ts
+- Chains three AI operations: slidePlan → slideCopy → layoutSelection
+- Input validation: topic (required), slideCount (8-12), tone (bold/calm/contrarian/professional)
+- Returns complete slides array with layoutIds, headlines, body content, emphasis
+- Requires authentication via withAuthAndErrors middleware
+- Fixed import path in validations/api.ts (../api-error)
+
+**Tests**:
+- Created comprehensive test suite with 12 tests (all passing):
+  * Authentication validation (401 for unauthenticated)
+  * Input validation (400 for invalid/missing fields)
+  * Success cases (generates 8-12 slides)
+  * Error handling (timeout, rate limit, empty plan, generic errors)
+
+**Validation**:
+✅ Route exists at apps/nextjs/src/app/api/generate/topic/route.ts
+✅ Test file exists at apps/nextjs/src/app/api/generate/topic/route.test.ts
+✅ All 12 tests passing
+✅ Empty input returns 401 (auth required) - correct behavior
+✅ Endpoint correctly chains AI operations
+
+**Next Task**: feature-06 - Create /api/generate/text endpoint
+
+EOF → exit 0
+[07:31:54] 💬 ASSISTANT: Now let me commit these documentation updates:...

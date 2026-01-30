@@ -777,3 +777,46 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'selectLayout' src && echo 'PASS'` - verify function exists
     - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT id FROM \"TemplateLayout\";"` - verify layout IDs
 ---
+
+---
+## Iteration 11 - feature-05
+- **What was done**: Created /api/generate/topic endpoint that chains AI operations to generate complete carousel slides
+- **Files changed**: 
+  - apps/nextjs/src/app/api/generate/topic/route.ts (created)
+  - apps/nextjs/src/app/api/generate/topic/route.test.ts (created)
+  - apps/nextjs/src/lib/validations/api.ts (fixed import path)
+  - .ralph/tasks.json (marked feature-05 complete)
+- **Result**: PASS - All 12 tests passing
+- **Learnings for future iterations**:
+  - **API route pattern for AI endpoints**: Use `withAuthAndErrors` wrapper for auth + error handling in one
+  - **Three-step AI pipeline**: 
+    1. generateSlidePlan (structure) 
+    2. generateSlideCopy (detailed copy with constraints)
+    3. selectLayoutsForSlides (map to template layouts)
+  - **Input validation with Zod**: 
+    - topic (string, 1-500 chars)
+    - slideCount (8-12, default 10)
+    - tone (enum: bold/calm/contrarian/professional, default professional)
+    - applyBrandKit (boolean, default false)
+  - **Error handling specifics**:
+    - Check `statusCode` property to identify ApiError instances - re-throw them directly
+    - Check error message for "timeout" → internal error with timeout message
+    - Check error message for "rate limit" → use `ApiErrors.rateLimited(60)` (not `rateLimit`)
+    - All other errors → generic internal error
+  - **API error factory methods**: 
+    - `ApiErrors.validation()` (400)
+    - `ApiErrors.unauthorized()` (401)
+    - `ApiErrors.forbidden()` (403)
+    - `ApiErrors.notFound()` (404)
+    - `ApiErrors.rateLimited(seconds)` (429) - note: it's `rateLimited` not `rateLimit`
+    - `ApiErrors.internal()` (500)
+  - **Import path fix**: validations/api.ts needs `../api-error` not `./api-error`
+  - **Test patterns for API routes**:
+    - Mock Clerk auth with `vi.mock('@clerk/nextjs/server')`
+    - Mock OpenAI functions with `vi.mock('~/lib/openai')`
+    - Test auth (401), validation (400), success (200), and error handling
+    - Use dynamic imports in tests to ensure mocks are applied before importing route
+  - **Response structure**: Returns `{ slides: [...], metadata: { topic, tone, slideCount, generatedAt } }`
+  - **Slide structure**: Each slide has `{ orderIndex, slideType, layoutId, headline, body[], emphasis[] }`
+  - **Validation commands from tasks.json are reference examples**: Adapt them to your implementation - the endpoint requires auth, so unauthenticated requests return 401 (this is correct behavior)
+---

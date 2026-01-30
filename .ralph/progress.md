@@ -766,3 +766,32 @@
 
 ### 2026-01-30 07:26:37
 **Session 11 started** (model: sonnet-4.5-thinking)
+
+## Iteration 11 - feature-05 (Complete)
+
+**Task**: Create /api/generate/topic endpoint
+
+**Implementation**:
+- Created POST /api/generate/topic route handler at apps/nextjs/src/app/api/generate/topic/route.ts
+- Chains three AI operations: slidePlan → slideCopy → layoutSelection
+- Input validation: topic (required), slideCount (8-12), tone (bold/calm/contrarian/professional)
+- Returns complete slides array with layoutIds, headlines, body content, emphasis
+- Requires authentication via withAuthAndErrors middleware
+- Fixed import path in validations/api.ts (../api-error)
+
+**Tests**:
+- Created comprehensive test suite with 12 tests (all passing):
+  * Authentication validation (401 for unauthenticated)
+  * Input validation (400 for invalid/missing fields)
+  * Success cases (generates 8-12 slides)
+  * Error handling (timeout, rate limit, empty plan, generic errors)
+
+**Validation**:
+✅ Route exists at apps/nextjs/src/app/api/generate/topic/route.ts
+✅ Test file exists at apps/nextjs/src/app/api/generate/topic/route.test.ts
+✅ All 12 tests passing
+✅ Empty input returns 401 (auth required) - correct behavior
+✅ Endpoint correctly chains AI operations
+
+**Next Task**: feature-06 - Create /api/generate/text endpoint
+
