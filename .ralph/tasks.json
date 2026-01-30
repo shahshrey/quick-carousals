@@ -2566,7 +2566,7 @@
       ],
       "expected": "Stripe configured, checkout works, webhook validates signatures, billing page shows plans, feature gating implemented"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-16",

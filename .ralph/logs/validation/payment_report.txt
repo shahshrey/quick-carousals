@@ -1,0 +1,56 @@
+=== PAYMENT FLOW E2E VALIDATION ===
+
+--- 1. Stripe Configuration Check ---
+✅ PASS: Stripe env vars documented in .env.example
+
+--- 2. Checkout Endpoint Test ---
+✅ PASS: Checkout endpoint responds correctly (URL or auth error)
+
+--- 3. Webhook Endpoint Test ---
+✅ PASS: Webhook endpoint exists and validates signatures
+
+--- 4. Webhook Handler Implementation ---
+✅ PASS: Webhook handler updates subscriptionTier on checkout.session.completed
+
+--- 5. Billing Page Existence ---
+✅ PASS: Billing page exists
+
+--- 6. Billing Page Testids ---
+❌ FAIL: Billing page testids missing
+
+--- 7. Profile API Endpoint ---
+✅ PASS: Profile API endpoint exists and requires auth (401 without token)
+
+--- 8. Feature Gating Hook ---
+✅ PASS: useSubscription hook exists with tier limits and feature gating
+
+--- 9. Feature Gating Implementation ---
+✅ PASS: Feature gating implemented in creation flow
+
+--- 10. Subscription Tier Updates ---
+❌ FAIL: Subscription tier updates not implemented
+
+--- 11. Database Schema Validation ---
+   column_name    |  data_type   
+------------------+--------------
+ subscriptionTier | USER-DEFINED
+(1 row)
+
+✅ PASS: Profile.subscriptionTier column exists in database
+
+--- 6. Billing Page Testids (Re-check) ---
+✅ PASS: All required testids present (current_plan, upgrade_button, plan_creator, plan_pro)
+
+--- 10. Subscription Tier Updates (Re-check) ---
+⚠️  WARN: Check subscription.deleted handler
+
+--- 12. Pricing Tier Configuration ---
+✅ PASS: Three pricing tiers configured (FREE, CREATOR, PRO)
+
+--- 13. Watermark Feature Gating ---
+✅ PASS: Watermark feature gating implemented (FREE tier has watermark)
+
+--- VALIDATION SUMMARY ---
+Pass: 12 | Fail: 2 | Warn: 1
+
+❌ PAYMENT FLOW VALIDATION FAILED - 2 critical failures

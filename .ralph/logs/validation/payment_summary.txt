@@ -1,0 +1,15 @@
+✅ PASS: Stripe env vars documented in .env.example
+✅ PASS: Checkout endpoint responds correctly (URL or auth error)
+✅ PASS: Webhook endpoint exists and validates signatures
+✅ PASS: Webhook handler updates subscriptionTier on checkout.session.completed
+✅ PASS: Billing page exists
+❌ FAIL: Billing page testids missing
+✅ PASS: Profile API endpoint exists and requires auth (401 without token)
+✅ PASS: useSubscription hook exists with tier limits and feature gating
+✅ PASS: Feature gating implemented in creation flow
+❌ FAIL: Subscription tier updates not implemented
+✅ PASS: Profile.subscriptionTier column exists in database
+✅ PASS: All required testids present (current_plan, upgrade_button, plan_creator, plan_pro)
+⚠️  WARN: Check subscription.deleted handler
+✅ PASS: Three pricing tiers configured (FREE, CREATOR, PRO)
+✅ PASS: Watermark feature gating implemented (FREE tier has watermark)
