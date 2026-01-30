@@ -536,3 +536,36 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **Database verification**: Query `storage.buckets` and `pg_policies` tables to verify configuration
   - **Package installation**: Use `bun add @supabase/supabase-js` from apps/nextjs directory
 ---
+
+---
+## Iteration 17 - infra-02
+- **What was done**: Implemented signed URL generation and upload endpoint
+- **Files changed**: 
+  - apps/nextjs/src/app/api/upload/route.ts (created)
+  - .ralph/tasks.json (marked task complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **getSignedUrl utility already existed** from iteration 15 (infra-01) with 24hr default expiry
+  - **Import path alias**: This codebase uses `~/` not `@/` for imports - always check tsconfig paths
+  - **Upload endpoint pattern**: Created authenticated file upload endpoint with:
+    - Form-data parsing (bucket, file, optional filename)
+    - Per-bucket validation (file size limits, MIME type restrictions)
+    - User-scoped file paths using userId from withAuth context
+    - Signed URL generation with 24hr expiry
+  - **Bucket configurations validated**:
+    - logos: 5MB limit, images only (png/jpeg/svg/webp)
+    - exports: 50MB limit, PDFs and PNGs
+  - **Authentication testing**: unauthenticated requests correctly return 401 with proper ApiError format
+  - **Module resolution error fixed**: Changed imports from `@/lib/*` to `~/lib/*` to match project tsconfig
+  - **Dev server hot reload**: After fixing imports, dev server hot-reloaded automatically (no restart needed)
+  - **Working validation workflow**:
+    - Check route file exists: `test -f apps/nextjs/src/app/api/upload/route.ts`
+    - Check utility exists: `grep -q 'getSignedUrl' apps/nextjs/src/lib/storage.ts`
+    - Test endpoint: `curl -X POST http://localhost:3000/api/upload` (should return 401)
+  - **File upload implementation details**:
+    - Convert File to Buffer via arrayBuffer() for server-side upload
+    - Use generateUniqueFilename() to avoid collisions
+    - Use getUserFilePath() to organize files by userId
+    - Upload returns path, then generate signed URL separately
+    - Comprehensive error handling for validation and upload failures
+---

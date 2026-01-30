@@ -387,7 +387,7 @@
       ],
       "expected": "Redis client singleton in lib/redis.ts, env vars REDIS_URL or UPSTASH_REDIS_REST_URL documented"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "infra-04",

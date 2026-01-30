@@ -539,3 +539,40 @@
 
 ### 2026-01-30 05:38:53
 **Session 17 started** (model: sonnet-4.5-thinking)
+
+## Iteration 17 - 2026-01-30
+
+**Task:** infra-02 - Implement signed URL generation and upload endpoint
+
+**Status:** ✅ COMPLETE
+
+**What was done:**
+- Created `/api/upload` endpoint for authenticated file uploads
+- Endpoint validates bucket, file size, and MIME types
+- Uploads files to Supabase Storage with user-scoped paths
+- Returns signed URLs with 24hr expiry
+- Fixed import path resolution (~/lib/* not @/lib/*)
+
+**Validation:**
+- Route file exists at `apps/nextjs/src/app/api/upload/route.ts`
+- getSignedUrl utility exists with 24hr default expiry
+- Endpoint returns 401 for unauthenticated requests
+- Proper ApiError format in responses
+
+**Files changed:**
+- `apps/nextjs/src/app/api/upload/route.ts` (created)
+- `.ralph/tasks.json` (marked infra-02 complete)
+
+**Next task:** infra-03 - Redis configuration
+
+### 2026-01-30 05:42:28
+**Knowledge base updated** - agent added new learnings
+
+### 2026-01-30 05:42:53
+**Session 17 ended** - 71 tasks remaining (no signal)
+
+### 2026-01-30 05:42:55
+**Session 18 ended** - 📋 New task: infra-03 (was: infra-02)
+
+### 2026-01-30 05:42:55
+**Session 19 started** (model: sonnet-4.5-thinking)

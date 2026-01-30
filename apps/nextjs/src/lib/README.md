@@ -1,6 +1,6 @@
-# API Error Handling, Authentication, Validation & Storage
+# API Error Handling, Authentication, Validation, Storage & Caching
 
-This directory contains utilities for consistent error handling, authentication, request validation, and file storage across all API routes.
+This directory contains utilities for consistent error handling, authentication, request validation, file storage, and caching across all API routes.
 
 ## Authentication
 
@@ -457,4 +457,219 @@ NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
 SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ```
+
+## Redis Caching
+
+### Redis Client Singleton
+
+QuickCarousals uses Upstash Redis for:
+- Caching (API responses, database queries)
+- Session storage
+- Job queue backend (BullMQ for exports)
+
+The Redis client is implemented as a singleton to ensure efficient connection reuse.
+
+### Basic Usage
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+
+// Get the Redis client
+const redis = getRedisClient();
+
+// Set a value
+await redis.set("key", "value");
+
+// Get a value
+const value = await redis.get<string>("key");
+
+// Set with expiration (in seconds)
+await redis.set("cache:projects", projectsData, { ex: 3600 });
+
+// Delete a key
+await redis.del("key");
+
+// Increment a counter
+await redis.incr("counter:api-calls");
+```
+
+### Caching API Responses
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+import { NextResponse } from "next/server";
+
+export const GET = withAuth(async (req, { userId }) => {
+  const redis = getRedisClient();
+  const cacheKey = `projects:${userId}`;
+
+  // Try to get from cache
+  const cached = await redis.get<Project[]>(cacheKey);
+  if (cached) {
+    return NextResponse.json({ projects: cached, cached: true });
+  }
+
+  // Fetch from database
+  const projects = await db.selectFrom("Project")
+    .where("userId", "=", userId)
+    .selectAll()
+    .execute();
+
+  // Store in cache for 1 hour
+  await redis.set(cacheKey, projects, { ex: 3600 });
+
+  return NextResponse.json({ projects, cached: false });
+});
+```
+
+### Cache Invalidation
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+
+export const POST = withAuth(async (req, { userId }) => {
+  const redis = getRedisClient();
+
+  // Create new project
+  const project = await createProject(data);
+
+  // Invalidate user's projects cache
+  await redis.del(`projects:${userId}`);
+
+  return NextResponse.json({ project });
+});
+```
+
+### Hash Operations
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+
+const redis = getRedisClient();
+
+// Store user session data
+await redis.hset("session:abc123", {
+  userId: "user-123",
+  email: "user@example.com",
+  lastActivity: Date.now(),
+});
+
+// Get session data
+const session = await redis.hgetall<SessionData>("session:abc123");
+
+// Update specific field
+await redis.hset("session:abc123", { lastActivity: Date.now() });
+
+// Delete session
+await redis.del("session:abc123");
+```
+
+### List Operations (Queues)
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+
+const redis = getRedisClient();
+
+// Add job to queue (left push)
+await redis.lpush("export-queue", JSON.stringify({ projectId: "123", type: "PDF" }));
+
+// Process job (right pop)
+const job = await redis.rpop<string>("export-queue");
+if (job) {
+  const { projectId, type } = JSON.parse(job);
+  // Process export...
+}
+
+// Get queue length
+const queueLength = await redis.llen("export-queue");
+```
+
+### Rate Limiting
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+import { ApiErrors } from "~/lib/api-error";
+
+export const POST = withAuth(async (req, { userId }) => {
+  const redis = getRedisClient();
+  const rateLimitKey = `rate-limit:${userId}:generate`;
+
+  // Increment request count
+  const count = await redis.incr(rateLimitKey);
+
+  // Set expiry on first request (1 hour window)
+  if (count === 1) {
+    await redis.expire(rateLimitKey, 3600);
+  }
+
+  // Check limit (e.g., 30 requests per hour for Creator tier)
+  if (count > 30) {
+    const ttl = await redis.ttl(rateLimitKey);
+    throw ApiErrors.rateLimited(ttl);
+  }
+
+  // Process request...
+  return NextResponse.json({ success: true });
+});
+```
+
+### Testing Redis Connection
+
+```typescript
+import { testRedisConnection, getRedisConnectionInfo } from "~/lib/redis";
+
+// Test connection (useful for health checks)
+try {
+  await testRedisConnection();
+  console.log("Redis is healthy");
+} catch (error) {
+  console.error("Redis connection failed:", error);
+}
+
+// Get connection info for debugging
+const info = getRedisConnectionInfo();
+console.log("Redis configured:", info.configured);
+console.log("Redis URL:", info.url);
+```
+
+### Environment Variables
+
+Redis requires the following environment variables:
+
+```bash
+# Upstash Redis (recommended)
+UPSTASH_REDIS_REST_URL="https://your-redis.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="your-rest-token"
+
+# Alternative: Standard Redis URL
+# REDIS_URL="redis://localhost:6379"
+```
+
+### Error Handling
+
+The Redis client automatically:
+- Retries failed requests (up to 3 times)
+- Uses exponential backoff (up to 10 seconds)
+- Throws descriptive errors if configuration is missing
+
+```typescript
+import { getRedisClient } from "~/lib/redis";
+
+try {
+  const redis = getRedisClient();
+  await redis.set("key", "value");
+} catch (error) {
+  // Handle error (e.g., configuration missing, connection failed)
+  console.error("Redis operation failed:", error);
+}
+```
+
+### Best Practices
+
+1. **Use expiration times**: Always set expiration for cached data to prevent stale data
+2. **Namespace keys**: Use prefixes to organize keys (e.g., `cache:`, `session:`, `rate-limit:`)
+3. **Handle cache misses**: Always have fallback logic to fetch from primary data source
+4. **Invalidate strategically**: Clear cache when underlying data changes
+5. **Monitor usage**: Track cache hit rates and adjust TTLs accordingly
 
