@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 import { ApiErrors } from "~/lib/api-error";
-import type { Database } from "@saasfly/db/prisma/types";
+import type { DB as Database } from "@saasfly/db/prisma/types";
 
 // Create Kysely database client
 const db = new Kysely<Database>({

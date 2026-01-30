@@ -1,0 +1,536 @@
+$ turbo build 
+• Packages in scope: @saasfly/api, @saasfly/auth, @saasfly/auth-proxy, @saasfly/common, @saasfly/db, @saasfly/eslint-config, @saasfly/prettier-config, @saasfly/stripe, @saasfly/tailwind-config, @saasfly/typescript-config, @saasfly/ui, quickcarousals
+• Running build in 12 packages
+• Remote caching disabled
+quickcarousals:build: cache miss, executing cba13bdf9d2ca32c
+quickcarousals:build: $ contentlayer2 build && bun with-env next build
+quickcarousals:build: Generated 9 documents in .contentlayer
+quickcarousals:build: $ dotenv -e ../../.env.local -- next build
+quickcarousals:build:   ▲ Next.js 14.2.5
+quickcarousals:build: 
+quickcarousals:build:    Creating an optimized production build ...
+quickcarousals:build: <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (121kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+quickcarousals:build: Browserslist: caniuse-lite is outdated. Please run:
+quickcarousals:build:   npx update-browserslist-db@latest
+quickcarousals:build:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+quickcarousals:build: (node:37508) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/shrey/Downloads/quick-carousals/tooling/tailwind-config/index.ts is not specified and it doesn't parse as CommonJS.
+quickcarousals:build: Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+quickcarousals:build: To eliminate this warning, add "type": "module" to /Users/shrey/Downloads/quick-carousals/tooling/tailwind-config/package.json.
+quickcarousals:build: (Use `node --trace-warnings ...` to show where the warning was created)
+quickcarousals:build: Browserslist: caniuse-lite is outdated. Please run:
+quickcarousals:build:   npx update-browserslist-db@latest
+quickcarousals:build:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+quickcarousals:build:  ✓ Compiled successfully
+quickcarousals:build:    Skipping validation of types
+quickcarousals:build:    Skipping linting
+quickcarousals:build:    Collecting page data ...
+quickcarousals:build:  ⚠ Using edge runtime on a page currently disables static generation for that page
+quickcarousals:build: ⚠️ Using UPSTASH_REDIS_REST_URL to construct native URL. Set UPSTASH_REDIS_URL for better performance.
+quickcarousals:build: ⚠️ Using UPSTASH_REDIS_REST_URL to construct native URL. Set UPSTASH_REDIS_URL for better performance.
+quickcarousals:build:    Generating static pages (0/59) ...
+quickcarousals:build: Auth middleware error: n [Error]: Dynamic server usage: Route /api/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:     at d (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4570)
+quickcarousals:build:     at n (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6690.js:1:4187)
+quickcarousals:build:     at async _ (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6690.js:1:1972)
+quickcarousals:build:     at async /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/9546.js:33:1604
+quickcarousals:build:     at async /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:36258
+quickcarousals:build:     at async eR.execute (/Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:26874)
+quickcarousals:build:     at async eR.handle (/Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js:6:37512)
+quickcarousals:build:     at async exportAppRoute (/Users/shrey/Downloads/quick-carousals/node_modules/next/dist/export/routes/app-route.js:77:26)
+quickcarousals:build:     at async exportPageImpl (/Users/shrey/Downloads/quick-carousals/node_modules/next/dist/export/worker.js:175:20) {
+quickcarousals:build:   description: "Route /api/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:   digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build: }
+quickcarousals:build:    Generating static pages (14/59) 
+quickcarousals:build: ⚠️ Using UPSTASH_REDIS_REST_URL to construct native URL. Set UPSTASH_REDIS_URL for better performance.
+quickcarousals:build: ⚠️ Using UPSTASH_REDIS_REST_URL to construct native URL. Set UPSTASH_REDIS_URL for better performance.
+quickcarousals:build: ✅ Render queue initialized
+quickcarousals:build: [97;46m << query [1;97;46m #1 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:       at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:       at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:       at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:       at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #2 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:     at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:     at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:     at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '1493296208',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #1 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #2 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 0
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #1 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #1 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 5
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '522713875',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '522713875',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /ko/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #2 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:       at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:       at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:       at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:       at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '2207547251',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:     at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:     at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:     at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '3654172880',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /ja/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '592609779',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /en/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: [97;46m << query [1;97;46m #2 auth.mySubscription [0m {
+quickcarousals:build:   input: undefined,
+quickcarousals:build:   result: u [TRPCClientError]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:       at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:       at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:       at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:       at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:     meta: undefined,
+quickcarousals:build:     shape: undefined,
+quickcarousals:build:     data: undefined,
+quickcarousals:build:     [cause]: n [Error]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:         at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:         at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:         at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:         at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:       description: "Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:       digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:     }
+quickcarousals:build:   },
+quickcarousals:build:   elapsedMs: 1
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240 {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '2593642899',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build: u [TRPCClientError]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:     at u.from (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:1:987)
+quickcarousals:build:     at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13240
+quickcarousals:build:     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+quickcarousals:build:     at runNextTicks (node:internal/process/task_queues:69:3)
+quickcarousals:build:     at listOnTimeout (node:internal/timers:569:9)
+quickcarousals:build:     at process.processTimers (node:internal/timers:543:7) {
+quickcarousals:build:   meta: undefined,
+quickcarousals:build:   shape: undefined,
+quickcarousals:build:   data: undefined,
+quickcarousals:build:   digest: '1329672240',
+quickcarousals:build:   [cause]: n [Error]: Dynamic server usage: Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+quickcarousals:build:       at l (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/4522.js:1:56357)
+quickcarousals:build:       at f (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/3509.js:39:4824)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:12871
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:12:185493
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/app/[lang]/(dashboard)/dashboard/billing/page.js:1:13066
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:5378)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:867
+quickcarousals:build:       at Object.subscribe (/Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:4732)
+quickcarousals:build:       at /Users/shrey/Downloads/quick-carousals/apps/nextjs/.next/server/chunks/6020.js:5:1329 {
+quickcarousals:build:     description: "Route /zh/dashboard/billing couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+quickcarousals:build:     digest: 'DYNAMIC_SERVER_USAGE'
+quickcarousals:build:   }
+quickcarousals:build: }
+quickcarousals:build:    Generating static pages (29/59) 
+quickcarousals:build:    Generating static pages (44/59) 
+quickcarousals:build: IMPORTANT! Eviction policy is optimistic-volatile. It should be "noeviction"
+quickcarousals:build:  ✓ Generating static pages (59/59)
+quickcarousals:build:    Finalizing page optimization ...
+quickcarousals:build:    Collecting build traces ...
+quickcarousals:build: 
+quickcarousals:build: Route (app)                                         Size     First Load JS
+quickcarousals:build: ┌ ○ /_not-found                                     882 B          88.2 kB
+quickcarousals:build: ├ ƒ /[lang]                                         55.5 kB         173 kB
+quickcarousals:build: ├ ƒ /[lang]/blog                                    1.11 kB         100 kB
+quickcarousals:build: ├ ● /[lang]/blog/[...slug]                          1.14 kB         103 kB
+quickcarousals:build: ├   ├ /en/blog/deploying-next-apps
+quickcarousals:build: ├   ├ /en/blog/dynamic-routing-static-regeneration
+quickcarousals:build: ├   ├ /en/blog/preview-mode-headless-cms
+quickcarousals:build: ├   └ [+13 more paths]
+quickcarousals:build: ├ ƒ /[lang]/create                                  6.62 kB         107 kB
+quickcarousals:build: ├ ● /[lang]/dashboard                               3.87 kB         116 kB
+quickcarousals:build: ├   ├ /en/dashboard
+quickcarousals:build: ├   ├ /zh/dashboard
+quickcarousals:build: ├   ├ /ko/dashboard
+quickcarousals:build: ├   └ /ja/dashboard
+quickcarousals:build: ├ ● /[lang]/dashboard/billing                       2.27 kB         103 kB
+quickcarousals:build: ├   ├ /en/dashboard/billing
+quickcarousals:build: ├   ├ /zh/dashboard/billing
+quickcarousals:build: ├   ├ /ko/dashboard/billing
+quickcarousals:build: ├   └ /ja/dashboard/billing
+quickcarousals:build: ├ ● /[lang]/dashboard/settings                      4.49 kB         143 kB
+quickcarousals:build: ├   ├ /en/dashboard/settings
+quickcarousals:build: ├   ├ /zh/dashboard/settings
+quickcarousals:build: ├   ├ /ko/dashboard/settings
+quickcarousals:build: ├   └ /ja/dashboard/settings
+quickcarousals:build: ├ ● /[lang]/docs/[[...slug]]                        1.02 kB         109 kB
+quickcarousals:build: ├   ├ /en/docs/in-progress
+quickcarousals:build: ├   ├ /en/docs
+quickcarousals:build: ├   ├ /en/docs/documentation
+quickcarousals:build: ├   └ [+9 more paths]
+quickcarousals:build: ├ ƒ /[lang]/editor/[id]                             2.85 kB         204 kB
+quickcarousals:build: ├ ƒ /[lang]/editor/cluster/[clusterId]              23.3 kB         179 kB
+quickcarousals:build: ├ ƒ /[lang]/editor/test                             3.88 kB         205 kB
+quickcarousals:build: ├ ƒ /[lang]/login                                   2.5 kB          154 kB
+quickcarousals:build: ├ ƒ /[lang]/login-clerk/[[...rest]]                 2.1 kB          133 kB
+quickcarousals:build: ├ ƒ /[lang]/pricing                                 12.9 kB         151 kB
+quickcarousals:build: ├ ƒ /[lang]/register                                2.49 kB         149 kB
+quickcarousals:build: ├ ƒ /[lang]/settings/billing                        5.19 kB        99.1 kB
+quickcarousals:build: ├ ƒ /[lang]/settings/brand-kit                      5.03 kB        98.9 kB
+quickcarousals:build: ├ ƒ /admin/dashboard                                2.68 kB         140 kB
+quickcarousals:build: ├ ○ /admin/login                                    3.22 kB         132 kB
+quickcarousals:build: ├ ƒ /api/auth/[...nextauth]                         0 B                0 B
+quickcarousals:build: ├ ƒ /api/brand-kits                                 0 B                0 B
+quickcarousals:build: ├ ƒ /api/brand-kits/[id]                            0 B                0 B
+quickcarousals:build: ├ ƒ /api/exports                                    0 B                0 B
+quickcarousals:build: ├ ƒ /api/exports/[id]                               0 B                0 B
+quickcarousals:build: ├ ƒ /api/generate/text                              0 B                0 B
+quickcarousals:build: ├ ƒ /api/generate/topic                             0 B                0 B
+quickcarousals:build: ├ ƒ /api/health                                     0 B                0 B
+quickcarousals:build: ├ ○ /api/layouts                                    0 B                0 B
+quickcarousals:build: ├ ƒ /api/profile                                    0 B                0 B
+quickcarousals:build: ├ ƒ /api/projects                                   0 B                0 B
+quickcarousals:build: ├ ƒ /api/projects/[id]                              0 B                0 B
+quickcarousals:build: ├ ƒ /api/projects/[id]/slides                       0 B                0 B
+quickcarousals:build: ├ ○ /api/queues/render/status                       0 B                0 B
+quickcarousals:build: ├ ƒ /api/rewrite                                    0 B                0 B
+quickcarousals:build: ├ ƒ /api/slides                                     0 B                0 B
+quickcarousals:build: ├ ƒ /api/stripe/checkout                            0 B                0 B
+quickcarousals:build: ├ ○ /api/style-kits                                 0 B                0 B
+quickcarousals:build: ├ ƒ /api/style-kits/[id]                            0 B                0 B
+quickcarousals:build: ├ ƒ /api/trpc/edge/[trpc]                           0 B                0 B
+quickcarousals:build: ├ ƒ /api/upload                                     0 B                0 B
+quickcarousals:build: ├ ƒ /api/webhooks/stripe                            0 B                0 B
+quickcarousals:build: └ ○ /robots.txt                                     0 B                0 B
+quickcarousals:build: + First Load JS shared by all                       87.3 kB
+quickcarousals:build:   ├ chunks/1dd3208c-b02fa9c568811b7b.js             53.7 kB
+quickcarousals:build:   ├ chunks/286-6c61218c9174b9a1.js                  31.7 kB
+quickcarousals:build:   └ other shared chunks (total)                     1.99 kB
+quickcarousals:build: 
+quickcarousals:build: 
+quickcarousals:build: ƒ Middleware                                        88.4 kB
+quickcarousals:build: 
+quickcarousals:build: ○  (Static)   prerendered as static content
+quickcarousals:build: ●  (SSG)      prerendered as static HTML (uses getStaticProps)
+quickcarousals:build: ƒ  (Dynamic)  server-rendered on demand
+quickcarousals:build: 
+
+ Tasks:    1 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    27.346s 
+

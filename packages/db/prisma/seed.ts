@@ -1,6 +1,6 @@
 import { Kysely, PostgresDialect } from 'kysely'
 import { Pool } from 'pg'
-import type { Database } from './types'
+import type { DB } from './types'
 
 // Create database connection
 const dialect = new PostgresDialect({
@@ -9,7 +9,7 @@ const dialect = new PostgresDialect({
   }),
 })
 
-const db = new Kysely<Database>({ dialect })
+const db = new Kysely<DB>({ dialect })
 
 // 8 Default StyleKits based on PRD
 const styleKits = [

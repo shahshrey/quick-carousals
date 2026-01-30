@@ -16,7 +16,7 @@ import type { RenderJobData } from './render-queue';
 import { generatePDF } from '../generate-pdf';
 import { renderSlideToCanvas } from '../render-slide';
 import { uploadFile, getUserFilePath, STORAGE_BUCKETS } from '../storage';
-import type { Database } from '@saasfly/db/prisma/types';
+import type { DB as Database } from '@saasfly/db/prisma/types';
 import type { SlideData, StyleKit, LayersBlueprint } from '~/components/editor/types';
 
 /**

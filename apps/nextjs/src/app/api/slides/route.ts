@@ -10,7 +10,7 @@ import { z } from "zod";
 import { withAuth } from "~/lib/with-auth";
 import { ApiErrors } from "~/lib/api-error";
 import { validateBody } from "~/lib/validations/api";
-import type { Database } from "@saasfly/db/prisma/types";
+import type { DB as Database } from "@saasfly/db/prisma/types";
 
 // Create Kysely database client
 const db = new Kysely<Database>({

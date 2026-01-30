@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./prisma/types": "./prisma/types.ts",
+    "./prisma/enums": "./prisma/enums.ts"
   },
   "main": "./index.ts",
   "types": "./index.ts",

@@ -1,0 +1,158 @@
+$ turbo typecheck
+• Packages in scope: @saasfly/api, @saasfly/auth, @saasfly/auth-proxy, @saasfly/common, @saasfly/db, @saasfly/eslint-config, @saasfly/prettier-config, @saasfly/stripe, @saasfly/tailwind-config, @saasfly/typescript-config, @saasfly/ui, quickcarousals
+• Running typecheck in 12 packages
+• Remote caching disabled
+@saasfly/prettier-config:typecheck: cache hit, replaying logs 6d8ec27a91007d65
+@saasfly/prettier-config:typecheck: $ tsc --noEmit
+@saasfly/eslint-config:typecheck: cache hit, replaying logs 8f50f2e1595cc6f3
+@saasfly/eslint-config:typecheck: $ tsc --noEmit
+@saasfly/db:typecheck: cache miss, executing 1e1992005b990a36
+@saasfly/tailwind-config:typecheck: cache hit, replaying logs 60a4df0553714275
+@saasfly/tailwind-config:typecheck: $ tsc --noEmit
+@saasfly/stripe:typecheck: cache miss, executing da5ffb105977d1af
+@saasfly/auth:typecheck: cache miss, executing 509149df263b41d7
+@saasfly/auth-proxy:typecheck: cache hit, replaying logs 0507847d9028461b
+@saasfly/auth-proxy:typecheck: $ tsc --noEmit
+@saasfly/api:typecheck: cache miss, executing 0bfc7caf55542969
+@saasfly/db:typecheck: $ tsc --noEmit
+quickcarousals:typecheck: cache miss, executing e13791d96c0eebc2
+@saasfly/stripe:typecheck: $ tsc --noEmit
+@saasfly/auth:typecheck: $ tsc --noEmit
+@saasfly/api:typecheck: $ tsc --noEmit
+quickcarousals:typecheck: $ tsc --noEmit
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(6,36): error TS2305: Module '"~/components/editor/types"' has no exported member 'ExportOptions'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(38,23): error TS2339: Property 'id' does not exist on type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(41,27): error TS2339: Property 'layers' does not exist on type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(135,7): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(150,36): error TS2345: Argument of type '{ id: string; layoutId?: string | undefined; blueprint?: LayersBlueprint | undefined; content?: SlideContent | undefined; styleKit?: StyleKit | undefined; brandKit?: BrandKit | undefined; }' is not assignable to parameter of type 'SlideData'.
+quickcarousals:typecheck:   Types of property 'layoutId' are incompatible.
+quickcarousals:typecheck:     Type 'string | undefined' is not assignable to type 'string'.
+quickcarousals:typecheck:       Type 'undefined' is not assignable to type 'string'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(165,34): error TS2345: Argument of type 'SlideData | undefined' is not assignable to parameter of type 'SlideData'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(177,7): error TS2322: Type '{ layoutId: string; blueprint?: LayersBlueprint | undefined; content?: SlideContent | undefined; styleKit?: StyleKit | undefined; brandKit?: BrandKit | undefined; }' is not assignable to type 'SlideData'.
+quickcarousals:typecheck:   Types of property 'blueprint' are incompatible.
+quickcarousals:typecheck:     Type 'LayersBlueprint | undefined' is not assignable to type 'LayersBlueprint'.
+quickcarousals:typecheck:       Type 'undefined' is not assignable to type 'LayersBlueprint'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(275,13): error TS2322: Type '{ slides: SlideData[]; activeSlideIndex: number; onSlideClick: Dispatch<SetStateAction<number>>; onSlideAdd: () => void; onSlideDuplicate: (index: number) => void; onSlideDelete: (index: number) => void; onSlideReorder: (fromIndex: number, toIndex: number) => void; }' is not assignable to type 'IntrinsicAttributes & ThumbnailRailProps'.
+quickcarousals:typecheck:   Property 'onSlideClick' does not exist on type 'IntrinsicAttributes & ThumbnailRailProps'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(298,77): error TS2339: Property 'slideType' does not exist on type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(312,13): error TS2322: Type '{ currentLayoutId: string; slideType: any; onLayoutChange: (newLayoutId: string) => void; }' is not assignable to type 'IntrinsicAttributes & LayoutVariantSelectorProps'.
+quickcarousals:typecheck:   Property 'currentLayoutId' does not exist on type 'IntrinsicAttributes & LayoutVariantSelectorProps'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(313,50): error TS2339: Property 'slideType' does not exist on type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/[id]/page.tsx(323,11): error TS2322: Type '(options: ExportOptions) => Promise<void>' is not assignable to type '(options: ExportOptions) => Promise<{ exportId: string; projectId: string; }>'.
+quickcarousals:typecheck:   Type 'Promise<void>' is not assignable to type 'Promise<{ exportId: string; projectId: string; }>'.
+quickcarousals:typecheck:     Type 'void' is not assignable to type '{ exportId: string; projectId: string; }'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(288,15): error TS2322: Type 'string | string[] | undefined' is not assignable to type 'string | string[]'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'string | string[]'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(342,11): error TS2322: Type '{ content: { [layerId: string]: string | string[]; }; layoutId?: string | undefined; blueprint?: LayersBlueprint | undefined; styleKit?: StyleKit | undefined; brandKit?: BrandKit | undefined; }' is not assignable to type 'SlideData'.
+quickcarousals:typecheck:   Types of property 'layoutId' are incompatible.
+quickcarousals:typecheck:     Type 'string | undefined' is not assignable to type 'string'.
+quickcarousals:typecheck:       Type 'undefined' is not assignable to type 'string'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(344,21): error TS18048: 'slideToDuplicate' is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(376,36): error TS2345: Argument of type 'SlideData | undefined' is not assignable to parameter of type 'SlideData'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(525,27): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(537,17): error TS2322: Type 'SlideData | undefined' is not assignable to type 'SlideData'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'SlideData'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(555,72): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(559,66): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(564,22): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(617,63): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(621,61): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(621,122): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(625,61): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(625,118): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(633,51): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(641,51): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/[lang]/(dashboard)/editor/test/page.tsx(649,51): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: src/app/admin/login/page.tsx(59,15): error TS2322: Type '{ children: string; translateZ: number; as: ForwardRefExoticComponent<Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof InternalLinkProps> & InternalLinkProps & { ...; } & RefAttributes<...>>; href: string; target: string; className: string; }' is not assignable to type 'IntrinsicAttributes & { as?: ElementType<any, keyof IntrinsicElements> | undefined; children: ReactNode; ... 6 more ...; rotateZ?: string | ... 1 more ... | undefined; }'.
+quickcarousals:typecheck:   Property 'href' does not exist on type 'IntrinsicAttributes & { as?: ElementType<any, keyof IntrinsicElements> | undefined; children: ReactNode; ... 6 more ...; rotateZ?: string | ... 1 more ... | undefined; }'.
+quickcarousals:typecheck: src/app/api/auth/[...nextauth]/route.ts(7,26): error TS2345: Argument of type '{ pages: { signIn: string; }; }' is not assignable to parameter of type 'AuthOptions'.
+quickcarousals:typecheck:   Property 'providers' is missing in type '{ pages: { signIn: string; }; }' but required in type 'AuthOptions'.
+quickcarousals:typecheck: src/app/api/brand-kits/[id]/route.ts(13,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/brand-kits/route.ts(13,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/exports/[id]/route.ts(11,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/exports/route.ts(12,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/generate/text/route.ts(32,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/generate/topic/route.ts(27,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/layouts/route.ts(5,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/profile/route.ts(11,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/projects/[id]/route.ts(15,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/projects/[id]/slides/route.ts(11,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/projects/route.ts(13,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/queues/render/status/route.ts(32,16): error TS2339: Property 'internal' does not exist on type 'typeof ApiError'.
+quickcarousals:typecheck: src/app/api/slides/route.ts(13,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/style-kits/[id]/route.ts(10,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/style-kits/route.ts(5,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/app/api/trpc/edge/[trpc]/route.ts(12,23): error TS2345: Argument of type 'NextRequest' is not assignable to parameter of type 'RequestLike'.
+quickcarousals:typecheck:   Type 'import("/Users/shrey/Downloads/quick-carousals/node_modules/next/dist/server/web/spec-extension/request").NextRequest' is not assignable to type 'import("/Users/shrey/Downloads/quick-carousals/node_modules/@clerk/nextjs/node_modules/next/dist/server/web/spec-extension/request").NextRequest'.
+quickcarousals:typecheck: src/app/api/upload/route.ts(38,30): error TS2345: Argument of type '(req: Request, { userId }: { userId: string; }) => Promise<NextResponse<ApiErrorResponse> | NextResponse<{ success: boolean; data: { path: string; url: string; bucket: string; filename: string; size: number; contentType: string; }; }>>' is not assignable to parameter of type '(req: Request, context: { userId: string; }) => Promise<NextResponse<ApiErrorResponse>>'.
+quickcarousals:typecheck:   Type 'Promise<NextResponse<ApiErrorResponse> | NextResponse<{ success: boolean; data: { path: string; url: string; bucket: string; filename: string; size: number; contentType: string; }; }>>' is not assignable to type 'Promise<NextResponse<ApiErrorResponse>>'.
+quickcarousals:typecheck:     Type 'NextResponse<ApiErrorResponse> | NextResponse<{ success: boolean; data: { path: string; url: string; bucket: string; filename: string; size: number; contentType: string; }; }>' is not assignable to type 'NextResponse<ApiErrorResponse>'.
+quickcarousals:typecheck:       Type 'NextResponse<{ success: boolean; data: { path: string; url: string; bucket: string; filename: string; size: number; contentType: string; }; }>' is not assignable to type 'NextResponse<ApiErrorResponse>'.
+quickcarousals:typecheck:         Property 'error' is missing in type '{ success: boolean; data: { path: string; url: string; bucket: string; filename: string; size: number; contentType: string; }; }' but required in type 'ApiErrorResponse'.
+quickcarousals:typecheck: src/app/api/upload/route.ts(68,32): error TS2345: Argument of type 'string' is not assignable to parameter of type '"image/png"'.
+quickcarousals:typecheck: src/components/editor/ThemeControls.tsx(70,9): error TS2322: Type '"tight" | "normal" | "roomy" | undefined' is not assignable to type '"tight" | "normal" | "roomy"'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type '"tight" | "normal" | "roomy"'.
+quickcarousals:typecheck: src/components/editor/ThemeControls.tsx(71,36): error TS2538: Type 'undefined' cannot be used as an index type.
+quickcarousals:typecheck: src/config/price/price-data.ts(58,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(59,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(79,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(80,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(129,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(130,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(150,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(151,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(200,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(201,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(221,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(222,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(268,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(269,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(289,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/config/price/price-data.ts(290,9): error TS2322: Type 'string | undefined' is not assignable to type 'string | null'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(84,41): error TS2345: Argument of type '{ blueprint: { layers: ({ type: "background"; id?: undefined; position?: undefined; constraints?: undefined; } | { type: "text_box"; id: string; position: { x: number; y: number; width: number; height: number; }; constraints: { ...; }; })[]; }; content: { ...; }; styleKit: { ...; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: ({ type: "background"; id?: undefined; position?: undefined; constraints?: undefined; } | { type: "text_box"; id: string; position: { x: number; y: number; width: number; height: number; }; constraints: { ...; }; })[]; }; content: { ...; }; styleKit: { ...; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(177,41): error TS2345: Argument of type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(222,30): error TS2345: Argument of type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(264,23): error TS2345: Argument of type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(326,23): error TS2345: Argument of type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.test.ts(376,44): error TS2345: Argument of type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }[]' is not assignable to parameter of type 'SlideData[]'.
+quickcarousals:typecheck:   Property 'layoutId' is missing in type '{ blueprint: { layers: { type: "background"; }[]; }; content: {}; styleKit: { typography: { headline_font: string; headline_weight: number; body_font: string; body_weight: number; }; colors: { background: string; foreground: string; accent: string; }; spacingRules: { ...; }; }; }' but required in type 'SlideData'.
+quickcarousals:typecheck: src/lib/generate-pdf.ts(59,15): error TS2345: Argument of type 'Buffer | undefined' is not assignable to parameter of type 'ImageSrc'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'ImageSrc'.
+quickcarousals:typecheck: src/lib/openai.ts(207,5): error TS2322: Type 'number | boolean | undefined' is not assignable to type 'boolean'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'boolean'.
+quickcarousals:typecheck: src/lib/openai.ts(244,21): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'number'.
+quickcarousals:typecheck: src/lib/queues/render-queue.ts(139,3): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'string'.
+quickcarousals:typecheck: src/lib/queues/render-worker.ts(19,15): error TS2305: Module '"@saasfly/db/prisma/types"' has no exported member 'Database'.
+quickcarousals:typecheck: src/lib/queues/render-worker.ts(209,7): error TS2345: Argument of type 'Buffer | undefined' is not assignable to parameter of type 'Blob | Buffer'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'Blob | Buffer'.
+quickcarousals:typecheck: src/lib/queues/render-worker.ts(266,44): error TS2345: Argument of type 'SlideData | undefined' is not assignable to parameter of type 'SlideData'.
+quickcarousals:typecheck:   Type 'undefined' is not assignable to type 'SlideData'.
+quickcarousals:typecheck: src/lib/with-auth.ts(52,19): error TS2345: Argument of type '(req: Request, context: { userId: string; }) => Promise<NextResponse<T> | NextResponse<{ error: { code: any; message: string; details: any; }; }> | NextResponse<...>>' is not assignable to parameter of type '(req: Request, context: { userId: string; }) => Promise<NextResponse<T>>'.
+quickcarousals:typecheck:   Type 'Promise<NextResponse<T> | NextResponse<{ error: { code: any; message: string; details: any; }; }> | NextResponse<ApiErrorResponse>>' is not assignable to type 'Promise<NextResponse<T>>'.
+quickcarousals:typecheck:     Type 'NextResponse<T> | NextResponse<{ error: { code: any; message: string; details: any; }; }> | NextResponse<ApiErrorResponse>' is not assignable to type 'NextResponse<T>'.
+quickcarousals:typecheck:       Type 'NextResponse<{ error: { code: any; message: string; details: any; }; }>' is not assignable to type 'NextResponse<T>'.
+quickcarousals:typecheck:         Type '{ error: { code: any; message: string; details: any; }; }' is not assignable to type 'T'.
+quickcarousals:typecheck:           'T' could be instantiated with an arbitrary type which could be unrelated to '{ error: { code: any; message: string; details: any; }; }'.
+quickcarousals:typecheck: ../../packages/ui/src/glowing-effect.tsx(59,22): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: ../../packages/ui/src/glowing-effect.tsx(60,22): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: ../../packages/ui/src/glowing-effect.tsx(83,35): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: ../../packages/ui/src/glowing-effect.tsx(83,60): error TS2532: Object is possibly 'undefined'.
+quickcarousals:typecheck: ERROR: command finished with error: command (/Users/shrey/Downloads/quick-carousals/apps/nextjs) /Users/shrey/.bun/bin/bun run typecheck exited (2)
+quickcarousals#typecheck: command (/Users/shrey/Downloads/quick-carousals/apps/nextjs) /Users/shrey/.bun/bin/bun run typecheck exited (2)
+
+ Tasks:    8 successful, 9 total
+Cached:    4 cached, 9 total
+  Time:    3.637s 
+Failed:    quickcarousals#typecheck
+
+ ERROR  run failed: command  exited (2)

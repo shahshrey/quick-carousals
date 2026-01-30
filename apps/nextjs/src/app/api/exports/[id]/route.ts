@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 import { withAuthAndErrors } from "~/lib/with-auth";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
-import type { Database } from "@saasfly/db/prisma/types";
+import type { DB as Database } from "@saasfly/db/prisma/types";
 import { ApiErrors } from "~/lib/api-error";
 import { getSignedUrl, STORAGE_BUCKETS } from "~/lib/storage";
 

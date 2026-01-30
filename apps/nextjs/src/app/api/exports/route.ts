@@ -9,7 +9,7 @@ import { withAuthAndErrors } from "~/lib/with-auth";
 import { validateBody } from "~/lib/validations/api";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
-import type { Database } from "@saasfly/db/prisma/types";
+import type { DB as Database } from "@saasfly/db/prisma/types";
 import { z } from "zod";
 import { addRenderJob } from "~/lib/queues/render-queue";
 import { ApiErrors } from "~/lib/api-error";
