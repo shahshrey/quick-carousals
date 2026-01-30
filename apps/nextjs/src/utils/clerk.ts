@@ -108,6 +108,14 @@ export const middleware = clerkMiddleware(async (auth, req: NextRequest) => {
     }
     return null;
   }
+  
+  // For API routes, let the route handler (withAuth) handle authentication
+  // This allows proper 401 responses instead of redirects
+  const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
+  if (isApiRoute && !isAuth) {
+    return NextResponse.next();
+  }
+  
   if (!isAuth) {
     let from = req.nextUrl.pathname;
     if (req.nextUrl.search) {

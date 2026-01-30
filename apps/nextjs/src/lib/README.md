@@ -1,6 +1,80 @@
-# API Error Handling & Validation
+# API Error Handling, Authentication & Validation
 
-This directory contains utilities for consistent error handling and request validation across all API routes.
+This directory contains utilities for consistent error handling, authentication, and request validation across all API routes.
+
+## Authentication
+
+### Protected API Routes
+
+Use `withAuth` to protect endpoints that require authentication:
+
+```typescript
+import { withAuth } from "~/lib/with-auth";
+import { NextResponse } from "next/server";
+
+export const GET = withAuth(async (req, { userId }) => {
+  // userId is guaranteed to exist and is extracted from Clerk session
+  
+  const projects = await db.selectFrom("Project")
+    .where("userId", "=", userId)
+    .selectAll()
+    .execute();
+
+  return NextResponse.json({ projects });
+});
+```
+
+### withAuth Behavior
+
+- Returns **401 Unauthorized** if no valid Clerk session is found
+- Extracts `userId` from Clerk session and passes it to your handler
+- Handles auth errors gracefully with consistent error responses
+
+### Combined Auth + Error Handling
+
+Use `withAuthAndErrors` for endpoints that need both authentication and error handling:
+
+```typescript
+import { withAuthAndErrors } from "~/lib/with-auth";
+import { ApiErrors } from "~/lib/api-error";
+import { NextResponse } from "next/server";
+
+export const DELETE = withAuthAndErrors(async (req, { userId }) => {
+  const projectId = new URL(req.url).searchParams.get("id");
+  
+  if (!projectId) {
+    throw ApiErrors.validation("Project ID is required");
+  }
+
+  // Verify ownership
+  const project = await db.selectFrom("Project")
+    .where("id", "=", projectId)
+    .where("userId", "=", userId)
+    .selectAll()
+    .executeTakeFirst();
+
+  if (!project) {
+    throw ApiErrors.notFound("Project");
+  }
+
+  // Delete project...
+  
+  return NextResponse.json({ success: true });
+});
+```
+
+### Testing Protected Endpoints
+
+```bash
+# Without authentication - should return 401
+curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/projects
+# Output: 401
+
+# With authentication (requires valid Clerk session cookie)
+curl -s http://localhost:3000/api/projects \
+  -H "Cookie: __session=<clerk-session-token>"
+# Output: { "projects": [...] }
+```
 
 ## Error Handling
 

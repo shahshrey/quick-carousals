@@ -322,7 +322,7 @@
       ],
       "expected": "withAuth middleware returns 401 for unauthenticated requests, extracts userId from session for authenticated requests"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "infra-01",
