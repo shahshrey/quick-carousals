@@ -588,7 +588,7 @@
       ],
       "expected": "4 style kits seeded: Minimal Clean, High Contrast Punch, Marker Highlight, Sticky Note"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-08",
