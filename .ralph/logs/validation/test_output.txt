@@ -1,0 +1,307 @@
+$ vitest run --run
+
+ RUN  v4.0.18 /Users/shrey/Downloads/quick-carousals/apps/nextjs
+
+ ✓ src/lib/render-slide.test.ts (5 tests) 25ms
+ ✓ src/lib/text-measure.test.ts (11 tests) 19ms
+ ✓ src/lib/generate-pdf.test.ts (6 tests) 44ms
+stderr | src/hooks/use-auto-save.test.ts > useAutoSave > Save Status Indicator > should show error state on save failure
+Auto-save error: Error: Save failed
+    at performSave (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/hooks/use-auto-save.ts:78:17)
+
+stderr | src/hooks/use-auto-save.test.ts > useAutoSave > Save Status Indicator > should handle network errors gracefully
+Auto-save error: Error: Network error
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/hooks/use-auto-save.test.ts:191:51
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+ ✓ src/hooks/use-auto-save.test.ts (9 tests) 19ms
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > returns 400 for empty request body
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:86:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:82:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > returns 400 when text is missing
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.ts:196:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:70:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > returns 400 for missing topic field
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:86:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:97:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > returns 400 for invalid slideCount (too low)
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:86:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:112:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > returns 400 when text is too short
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.ts:196:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:85:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > returns 400 for invalid slideCount (too high)
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:86:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:127:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > returns 400 when text is too long
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.ts:196:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:102:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > returns 400 for invalid tone
+API Error: ApiError: Invalid request body
+    at Object.validation (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:51:5)
+    at validateBody (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/validations/api.ts:21:23)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:86:18
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:142:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'VALIDATION_ERROR',
+  statusCode: 400,
+  details: { issues: [ [Object] ] }
+}
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > handles AI generation errors
+OpenAI generation error: Error: OpenAI API error
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:203:45
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles OpenAI timeout gracefully
+OpenAI generation error: Error: Request timeout
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:267:45
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > handles AI generation errors
+API Error: ApiError: Failed to generate carousel from text. Please try again with clearer content.
+    at Object.internal (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:86:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.ts:316:25
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:213:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'INTERNAL_ERROR',
+  statusCode: 500,
+  details: undefined
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles OpenAI timeout gracefully
+API Error: ApiError: AI generation timed out. Please try again.
+    at Object.internal (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:86:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:197:27
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:276:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'INTERNAL_ERROR',
+  statusCode: 500,
+  details: undefined
+}
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > handles rate limit errors
+OpenAI generation error: Error: Rate limit exceeded
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:220:45
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles OpenAI rate limit error
+OpenAI generation error: Error: Rate limit exceeded
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:285:45
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stderr | src/app/api/generate/text/route.test.ts > POST /api/generate/text > handles rate limit errors
+API Error: ApiError: Too many requests. Please try again in 60 seconds.
+    at Object.rateLimited (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:75:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.ts:312:27
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/text/route.test.ts:230:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'RATE_LIMITED',
+  statusCode: 429,
+  details: { retryAfter: 60 }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles OpenAI rate limit error
+API Error: ApiError: Too many requests. Please try again in 60 seconds.
+    at Object.rateLimited (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:75:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:201:27
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:294:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'RATE_LIMITED',
+  statusCode: 429,
+  details: { retryAfter: 60 }
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles generic OpenAI failure
+OpenAI generation error: Error: OpenAI service error
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:302:45
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:145:11
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:26
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1243:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1209:10)
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:37
+    at Traces.$ (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/traces.CCmnQaNT.js:142:27)
+    at trace (file:///Users/shrey/Downloads/quick-carousals/node_modules/vitest/dist/chunks/test.B8ej_ZHS.js:239:21)
+    at runTest (file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:1653:12)
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles generic OpenAI failure
+API Error: ApiError: Failed to generate carousel. Please try again with a clearer topic.
+    at Object.internal (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:86:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:205:25
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:311:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'INTERNAL_ERROR',
+  statusCode: 500,
+  details: undefined
+}
+
+stderr | src/app/api/generate/topic/route.test.ts > POST /api/generate/topic > handles empty slide plan from AI
+API Error: ApiError: AI generated empty slide plan
+    at Object.internal (/Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/api-error.ts:86:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.ts:121:25
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:54:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/lib/with-auth.ts:33:14
+    at /Users/shrey/Downloads/quick-carousals/apps/nextjs/src/app/api/generate/topic/route.test.ts:328:22
+    at file:///Users/shrey/Downloads/quick-carousals/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'INTERNAL_ERROR',
+  statusCode: 500,
+  details: undefined
+}
+
+ ✓ src/app/api/generate/text/route.test.ts (9 tests) 125ms
+ ✓ src/app/api/generate/topic/route.test.ts (12 tests) 144ms
+ ✓ src/app/api/projects/route.test.ts (7 tests) 228ms
+ ✓ src/lib/openai.test.ts (48 tests) 7449ms
+       ✓ should retry on transient errors (500)  3007ms
+       ✓ should retry on timeout errors  1106ms
+       ✓ should throw after max retries exceeded  3006ms
+
+ Test Files  8 passed (8)
+      Tests  107 passed (107)
+   Start at  16:50:43
+   Duration  8.01s (transform 637ms, setup 0ms, import 708ms, tests 8.05s, environment 2.58s)
+
