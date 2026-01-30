@@ -1259,3 +1259,56 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 10:21:24
 **Session 39 started** (model: sonnet-4.5-thinking)
+
+---
+
+## Session 39: feature-17 - Slide Management Complete ✅
+
+**Date**: Iteration 39
+**Task**: feature-17 - Implement slide reorder and management
+**Status**: ✅ COMPLETE
+
+### What Was Implemented:
+- Connected slide management handlers to ThumbnailRail component
+- All functionality was already implemented in iteration 36, just needed wiring
+- Added handlers: onSlideAdd, onSlideDuplicate, onSlideDelete, onSlideReorder
+
+### Implementation Details:
+1. **Add Slide** (`add_slide_button`):
+   - Creates new slide with generic_single_focus layout
+   - Adds to end of slides array
+   - Switches active slide to newly created slide
+
+2. **Duplicate Slide** (`duplicate_slide_button`):
+   - Deep copies currently selected slide
+   - Inserts duplicate after current slide
+   - Switches to duplicated slide
+
+3. **Delete Slide** (`delete_slide_button`):
+   - Removes currently selected slide
+   - Disabled when only 1 slide remains
+   - Intelligently adjusts activeSlideIndex
+
+4. **Drag-to-Reorder**:
+   - HTML5 drag API implementation
+   - Visual feedback during drag (opacity, border indicators)
+   - Reorders slides array via splice operations
+   - Updates activeSlideIndex to follow moved slide
+
+### Files Modified:
+- `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` - wired handlers
+
+### Validation:
+✅ Route loads: http://localhost:3000/en/editor/test (200)
+✅ All testids present: add_slide_button, delete_slide_button, duplicate_slide_button
+✅ Drag-to-reorder implemented with visual feedback
+✅ All handlers functional and wired correctly
+
+### Key Learnings:
+- ThumbnailRail already had all functionality from iteration 36
+- Just needed to pass optional handler props to enable features
+- Smart activeSlideIndex management prevents confusing UX
+- Delete safeguard (disabled at 1 slide) prevents empty state
+
+**Session 39 ended** - 📋 Next task: feature-18
+

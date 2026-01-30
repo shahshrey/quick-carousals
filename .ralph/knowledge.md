@@ -1140,3 +1140,29 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route (200)
   - **Next feature dependency**: feature-17 will add slide management (add/delete/duplicate/reorder) building on this thumbnail rail
 ---
+
+---
+## Iteration 39 - feature-17
+- **What was done**: Connected slide management handlers (add, duplicate, delete, reorder) to ThumbnailRail component in test page
+- **Files changed**: 
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (wired handlers to ThumbnailRail)
+  - .ralph/tasks.json (marked feature-17 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was mostly complete from iteration 36**: The ThumbnailRail component already had all the slide management functionality implemented (add, duplicate, delete, drag-to-reorder) but handlers weren't passed in test page
+  - **Simple fix**: Just needed to pass the optional handler props (`onSlideAdd`, `onSlideDuplicate`, `onSlideDelete`, `onSlideReorder`) to ThumbnailRail component
+  - **Drag-to-reorder pattern**: Uses HTML5 drag API with draggable={true}, onDragStart, onDragOver, onDrop, onDragEnd handlers
+  - **Visual feedback during drag**: opacity: 0.5 for dragged item, border-top indicator for drop zone
+  - **State management for drag**: draggedIndex and dragOverIndex tracked in component state
+  - **Smart activeSlideIndex updates**: All operations (add, duplicate, delete, reorder) properly update activeSlideIndex to follow user's focus
+  - **Reorder logic**: splice to remove from old position, splice to insert at new position, update activeSlideIndex to follow moved slide
+  - **Delete safeguards**: Delete button disabled when slides.length <= 1 to prevent empty state
+  - **Add slide logic**: Creates new slide with generic_single_focus layout, adds to end, switches to it
+  - **Duplicate slide logic**: Deep copies current slide, inserts after current position, switches to it
+  - **All testids present**: add_slide_button, delete_slide_button, duplicate_slide_button, slide_thumbnail_N
+  - **Working validation commands**:
+    - `grep -q 'data-testid="add_slide_button"' apps/nextjs/src/components/editor/ThumbnailRail.tsx` - verify testid
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route (200)
+    - `grep -q 'onSlideAdd={handleAddSlide}' apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` - verify wiring
+  - **Next feature dependency**: feature-18 will add text measurement utilities for auto-fit, building on this editor foundation
+---
