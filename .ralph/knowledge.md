@@ -1107,3 +1107,36 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
   - **TypeScript errors unrelated**: Pre-existing TS errors in other files (api-error.ts, with-auth.ts, upload/route.ts) don't block this feature
   - **Next feature dependency**: This zoom/pan foundation enables better editing UX for all subsequent editor features
 ---
+
+---
+## Iteration 36 - feature-16
+- **What was done**: Created slide thumbnail rail component with mini canvas previews and slide switching
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/SlideThumbnail.tsx (created)
+  - apps/nextjs/src/components/editor/ThumbnailRail.tsx (created)
+  - apps/nextjs/src/components/editor/index.ts (added exports)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (integrated thumbnail rail)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Mini canvas pattern**: Create scaled-down Konva Stage with same LayerRenderer for thumbnails
+  - **Thumbnail scaling**: Use 10% scale (THUMBNAIL_SCALE = 0.1) for 108x135 thumbnails from 1080x1350 canvas
+  - **LayerRenderer reuse**: Same LayerRenderer component renders both full canvas and thumbnails - excellent code reuse
+  - **Active state highlighting**: Combine multiple visual cues for active state:
+    - Background color change (#e0e7ff for active)
+    - Border color and thickness (2px solid #3b82f6)
+    - Box shadow for depth (0 4px 6px rgba(59, 130, 246, 0.3))
+  - **Hover feedback**: Add hover effects on inactive thumbnails for better UX (gray background on hover)
+  - **Slide number display**: Show slide number (index + 1) above each thumbnail for easy reference
+  - **Container layout**: ThumbnailRail uses flexbox column with gap for vertical stacking, fixed width (160px), scrollable overflow
+  - **State management pattern**: Parent component manages activeSlideIndex state, passes to both ThumbnailRail and EditorCanvas
+  - **Click handling**: Use onClick callback from ThumbnailRail to update parent's activeSlideIndex, which switches main canvas
+  - **data-testid format**: Use one-based indexing for user-facing elements (slide_thumbnail_1, not slide_thumbnail_0)
+  - **Component composition**: SlideThumbnail is atomic component, ThumbnailRail maps over slides array to render them
+  - **Test route structure**: Updated test page from grid layout to flex layout with thumbnail rail on left, main canvas on right
+  - **Working commands for this task**:
+    - `test -f apps/nextjs/src/components/editor/SlideThumbnail.tsx` - verify component exists
+    - `grep -q 'slide_thumbnail_' apps/nextjs/src/components/editor/SlideThumbnail.tsx` - verify data-testid
+    - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route (200)
+  - **Next feature dependency**: feature-17 will add slide management (add/delete/duplicate/reorder) building on this thumbnail rail
+---

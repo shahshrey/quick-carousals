@@ -1209,3 +1209,35 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 09:46:17
 **Session 36 started** (model: sonnet-4.5-thinking)
+
+## Iteration 36 - feature-16 (COMPLETE)
+
+**Task**: Create slide thumbnail rail component
+
+**Implementation**:
+- ✅ Created `SlideThumbnail.tsx` component with mini Konva canvas
+- ✅ Created `ThumbnailRail.tsx` container component for vertical layout
+- ✅ Scaled thumbnails to 10% of original canvas size (108x135 from 1080x1350)
+- ✅ Reused `LayerRenderer` component for both full canvas and thumbnails
+- ✅ Added `data-testid='slide_thumbnail_N'` with one-based indexing
+- ✅ Implemented active slide highlighting (blue border, background, shadow)
+- ✅ Integrated into `/editor/test` route with slide switching functionality
+- ✅ Added `activeSlideIndex` state management in test page
+- ✅ Clicking thumbnail switches main canvas to that slide
+
+**Validation**:
+- ✅ All 5 sample slides render as clickable thumbnails
+- ✅ Active slide visually highlighted with blue border and background
+- ✅ Clicking thumbnail switches the main canvas view
+- ✅ Text editing works on currently selected slide
+- ✅ Test route accessible at http://localhost:3000/en/editor/test (200 OK)
+- ✅ All data-testid attributes properly formatted (slide_thumbnail_1, slide_thumbnail_2, etc.)
+
+**Files Modified**:
+- Created: `apps/nextjs/src/components/editor/SlideThumbnail.tsx`
+- Created: `apps/nextjs/src/components/editor/ThumbnailRail.tsx`
+- Modified: `apps/nextjs/src/components/editor/index.ts` (exports)
+- Modified: `apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` (integration)
+- Modified: `.ralph/tasks.json` (marked passes: true)
+
+**Status**: ✅ COMPLETE - All validation criteria met
