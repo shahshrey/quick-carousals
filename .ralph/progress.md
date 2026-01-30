@@ -688,3 +688,33 @@
 
 ### 2026-01-30 07:14:32
 **Session 7 started** (model: sonnet-4.5-thinking)
+
+## Iteration 24 - 2025-01-30 07:18 UTC
+
+### Task: feature-03 - Implement slide copy generation (AI Step 2)
+
+**Status**: ✅ COMPLETE
+
+**What was done**:
+- Implemented `generateSlideCopy` function that takes a slide plan and generates detailed copy
+- Added `SlideCopySchema` and `SlidesCopySchema` for validation
+- Enforces hard constraints: headline ≤12 words, body ≤5 bullets
+- Returns `{headline, body, emphasis_text}` per slide
+- Added 4 comprehensive tests for the new function
+- Fixed TypeScript optional chaining issues in tests
+
+**Tests**: All 31 tests passing
+
+**Validation**:
+- ✅ Function exists: `generateSlideCopy` in openai.ts
+- ✅ Output fields: headline, body, emphasis_text
+- ✅ Constraints: Maximum 12 words (headline), Maximum 5 bullets (body)
+- ✅ All tests pass
+
+**Files changed**:
+- apps/nextjs/src/lib/openai.ts
+- apps/nextjs/src/lib/openai.test.ts
+- .ralph/tasks.json
+- .ralph/knowledge.md
+
+**Next task**: feature-04 - Layout selection algorithm

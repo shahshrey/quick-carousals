@@ -713,3 +713,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - Default: 10 slides, professional tone
     - Constraints: 3-20 slides enforced by Zod schema
 ---
+
+---
+## Iteration 24 - feature-03
+- **What was done**: Implemented slide copy generation function with strict word constraints
+- **Files changed**: 
+  - apps/nextjs/src/lib/openai.ts (added generateSlideCopy function and schemas)
+  - apps/nextjs/src/lib/openai.test.ts (added 4 tests for generateSlideCopy, fixed TypeScript errors)
+  - .ralph/tasks.json (marked feature-03 complete)
+- **Result**: PASS - All 31 tests passing
+- **Learnings for future iterations**:
+  - **Two-step AI generation pattern**: Separate structure generation (feature-02) from copy generation (feature-03) for better control
+  - **generateSlideCopy function signature**: `generateSlideCopy(plan: SlidePlan, options?: { topic?: string }): Promise<SlideCopy[]>`
+  - **Hard constraints enforced in prompt**:
+    - Headline: Maximum 12 words (8-12 ideal)
+    - Body: Maximum 5 bullet points (3-5 ideal)
+    - Each slide focuses on ONE clear idea
+    - Returns array of `{headline, body, emphasis_text}` objects
+  - **Schema structure**:
+    - `SlideCopySchema`: Single slide copy (headline, body, emphasis_text)
+    - `SlidesCopySchema`: Array of slide copies wrapped in `{ slides: SlideCopy[] }`
+  - **Testing pattern**: Use dynamic imports (`await import('./openai')`) to avoid circular dependency issues in tests
+  - **TypeScript optional chaining**: Use `result[0]?.body?.length` to avoid "possibly undefined" errors in tests
+  - **Prompt engineering approach**: Extract slide structure (type + goal) from plan and pass to AI for focused copy generation
+  - **Validation workflow**:
+    - `bun run test src/lib/openai.test.ts` - run all OpenAI tests
+    - `grep -q 'generateSlideCopy' src/lib/openai.ts` - verify function exists
+    - `grep -E 'Maximum 12 words|Maximum 5 bullet' src/lib/openai.ts` - verify constraints
+  - **Task completion**: Tests passing + validation commands satisfied = task complete
+---
