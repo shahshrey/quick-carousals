@@ -38,11 +38,26 @@ export interface SlideContent {
   [layerId: string]: string | string[];
 }
 
+export interface BrandKit {
+  colors?: {
+    primary?: string;
+    secondary?: string;
+    accent?: string;
+  };
+  fonts?: {
+    headline?: string;
+    body?: string;
+  };
+  logoUrl?: string | null;
+  handle?: string | null;
+}
+
 export interface SlideData {
   layoutId: string;
   blueprint: LayersBlueprint;
   content: SlideContent;
   styleKit: StyleKit;
+  brandKit?: BrandKit;
 }
 
 export interface StyleKit {

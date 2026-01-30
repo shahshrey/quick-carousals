@@ -74,6 +74,7 @@ export function SlideThumbnail({ slide, index, isActive, onClick }: SlideThumbna
               layers={slide.blueprint.layers}
               content={slide.content}
               styleKit={slide.styleKit}
+              brandKit={slide.brandKit}
               // No click interaction for thumbnails
             />
           </Layer>

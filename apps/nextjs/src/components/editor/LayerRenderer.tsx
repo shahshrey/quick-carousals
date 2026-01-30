@@ -1,16 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Rect, Text, Group } from 'react-konva';
-import type { Layer, TextBoxLayer, SlideContent, StyleKit } from './types';
+import { Rect, Text, Group, Image as KonvaImage } from 'react-konva';
+import type { Layer, TextBoxLayer, SlideContent, StyleKit, BrandKit } from './types';
 import { calculateOptimalFontSize, measureText } from '~/lib/text-measure';
+import useImage from 'use-image';
 
 interface LayerRendererProps {
   layers: Layer[];
   content: SlideContent;
   styleKit: StyleKit;
+  brandKit?: BrandKit;
   onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void;
-  showWatermark?: boolean; // Add watermark prop
+  showWatermark?: boolean;
 }
 
 interface TextFitResult {
@@ -22,15 +24,21 @@ interface TextBoxComponentProps {
   layer: TextBoxLayer;
   content: SlideContent;
   styleKit: StyleKit;
+  brandKit?: BrandKit;
   index: number;
   onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void;
 }
 
-export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showWatermark = false }: LayerRendererProps) {
+export function LayerRenderer({ layers, content, styleKit, brandKit, onTextBoxClick, showWatermark = false }: LayerRendererProps) {
+  // Load logo image if present
+  const [logoImage] = useImage(brandKit?.logoUrl || '', 'anonymous');
+
   return (
     <>
       {layers.map((layer, index) => {
         if (layer.type === 'background') {
+          // Use brand kit primary color if available, otherwise use styleKit background
+          const backgroundColor = brandKit?.colors?.primary || styleKit.colors.background;
           return (
             <Rect
               key={`bg-${index}`}
@@ -38,7 +46,7 @@ export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showW
               y={0}
               width={1080}
               height={1350}
-              fill={styleKit.colors.background}
+              fill={backgroundColor}
             />
           );
         } else if (layer.type === 'text_box') {
@@ -48,6 +56,7 @@ export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showW
               layer={layer}
               content={content}
               styleKit={styleKit}
+              brandKit={brandKit}
               index={index}
               onTextBoxClick={onTextBoxClick}
             />
@@ -55,6 +64,32 @@ export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showW
         }
         return null;
       })}
+      
+      {/* Brand Kit Logo - Top Right Corner */}
+      {brandKit?.logoUrl && logoImage && (
+        <KonvaImage
+          image={logoImage}
+          x={940} // 1080 - 120 (logo width) - 20 (padding)
+          y={20}
+          width={120}
+          height={120}
+        />
+      )}
+      
+      {/* Brand Kit Handle - Bottom Center */}
+      {brandKit?.handle && (
+        <Text
+          x={540}
+          y={1310}
+          text={`@${brandKit.handle}`}
+          fontSize={16}
+          fontFamily="Inter"
+          fontStyle="600"
+          fill={brandKit.colors?.accent || styleKit.colors.accent}
+          align="center"
+          offsetX={80} // Center the text
+        />
+      )}
       
       {/* Watermark for free tier */}
       {showWatermark && (
@@ -73,7 +108,7 @@ export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showW
   );
 }
 
-function TextBoxComponent({ layer, content, styleKit, index, onTextBoxClick }: TextBoxComponentProps) {
+function TextBoxComponent({ layer, content, styleKit, brandKit, index, onTextBoxClick }: TextBoxComponentProps) {
   const layerContent = content[layer.id];
   const [textFit, setTextFit] = useState<TextFitResult>({ fontSize: layer.constraints.max_font, overflow: false });
   
@@ -94,9 +129,13 @@ function TextBoxComponent({ layer, content, styleKit, index, onTextBoxClick }: T
     text = layerContent;
   }
 
-  // Determine font family based on layer id
+  // Determine font family based on layer id and brand kit
   const isHeadline = layer.id.includes('headline');
-  const fontFamily = isHeadline 
+  const fontFamily = (isHeadline && brandKit?.fonts?.headline) 
+    ? brandKit.fonts.headline
+    : (!isHeadline && brandKit?.fonts?.body)
+    ? brandKit.fonts.body
+    : isHeadline 
     ? styleKit.typography.headline_font 
     : styleKit.typography.body_font;
   const fontWeight = isHeadline 

@@ -3,13 +3,14 @@
  * Uses @napi-rs/canvas (Skia-based) for consistent, high-quality rendering
  */
 
-import { createCanvas, GlobalFonts, SKRSContext2D } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts, SKRSContext2D, loadImage } from '@napi-rs/canvas';
 import type {
   SlideData,
   Layer,
   TextBoxLayer,
   StyleKit,
   SlideContent,
+  BrandKit,
 } from '~/components/editor/types';
 
 // Canvas dimensions (LinkedIn portrait format)
@@ -148,7 +149,8 @@ function renderTextBox(
   ctx: SKRSContext2D,
   layer: TextBoxLayer,
   content: SlideContent,
-  styleKit: StyleKit
+  styleKit: StyleKit,
+  brandKit?: BrandKit
 ) {
   const layerContent = content[layer.id];
   if (!layerContent) return;
@@ -169,9 +171,13 @@ function renderTextBox(
   
   if (!text) return;
   
-  // Determine font based on layer id
+  // Determine font based on layer id and brand kit
   const isHeadline = layer.id.includes('headline');
-  const fontFamily = isHeadline 
+  const fontFamily = (isHeadline && brandKit?.fonts?.headline)
+    ? brandKit.fonts.headline
+    : (!isHeadline && brandKit?.fonts?.body)
+    ? brandKit.fonts.body
+    : isHeadline 
     ? styleKit.typography.headline_font 
     : styleKit.typography.body_font;
   const fontWeight = isHeadline 
@@ -242,13 +248,31 @@ export async function renderSlideToCanvas(slide: SlideData, showWatermark = fals
   // Render layers
   for (const layer of slide.blueprint.layers) {
     if (layer.type === 'background') {
-      // Render background
-      ctx.fillStyle = slide.styleKit.colors.background;
+      // Use brand kit primary color if available, otherwise styleKit background
+      ctx.fillStyle = slide.brandKit?.colors?.primary || slide.styleKit.colors.background;
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     } else if (layer.type === 'text_box') {
-      // Render text box
-      renderTextBox(ctx, layer, slide.content, slide.styleKit);
+      // Render text box with brand kit fonts
+      renderTextBox(ctx, layer, slide.content, slide.styleKit, slide.brandKit);
     }
+  }
+  
+  // Render brand kit logo (top right corner)
+  if (slide.brandKit?.logoUrl) {
+    try {
+      const logoImg = await loadImage(slide.brandKit.logoUrl);
+      ctx.drawImage(logoImg, CANVAS_WIDTH - 140, 20, 120, 120);
+    } catch (error) {
+      console.warn('Failed to load brand kit logo:', error);
+    }
+  }
+  
+  // Render brand kit handle (bottom center)
+  if (slide.brandKit?.handle) {
+    ctx.fillStyle = slide.brandKit.colors?.accent || slide.styleKit.colors.accent;
+    ctx.font = '600 16px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(`@${slide.brandKit.handle}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT - 40);
   }
   
   // Add watermark for free tier

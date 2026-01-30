@@ -377,6 +377,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                   layers={slide.blueprint.layers}
                   content={slide.content}
                   styleKit={slide.styleKit}
+                  brandKit={slide.brandKit}
                   onTextBoxClick={handleTextBoxClick}
                   showWatermark={showWatermark}
                 />
