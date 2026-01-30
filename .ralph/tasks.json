@@ -1251,7 +1251,7 @@
       ],
       "expected": "export_button in editor header opens modal. Modal contains: format_pdf/format_png toggle, filename_input text field, optional cover thumbnail checkbox, start_export_button. No console errors."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-33",

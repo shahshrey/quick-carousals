@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector } from '~/components/editor';
-import type { SlideData, StyleKit, LayersBlueprint } from '~/components/editor';
+import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector, ExportModal } from '~/components/editor';
+import type { SlideData, StyleKit, LayersBlueprint, ExportOptions } from '~/components/editor';
 
 // Sample style kit (Minimal Clean)
 const minimalCleanStyleKit = {
@@ -213,6 +213,9 @@ export default function EditorTestPage() {
   // Track current style kit (start with minimal_clean)
   const [currentStyleKitId, setCurrentStyleKitId] = useState('minimal_clean');
 
+  // Export modal state
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
   // Handle content change for a specific slide
   const handleContentChange = (slideIndex: number, layerId: string, content: string | string[]) => {
     setSlides(prev => prev.map((slide, idx) => {
@@ -359,22 +362,41 @@ export default function EditorTestPage() {
     }
   };
 
+  // Handle export
+  const handleExport = (options: ExportOptions) => {
+    console.log('Export with options:', options);
+    // TODO: Call export API in feature-33
+    alert(`Export started: ${options.format} - ${options.filename}`);
+    setIsExportModalOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Editor Canvas Test - Theme Controls
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Choose a style kit and fine-tune colors, fonts, and spacing. Changes apply to canvas immediately.
-          </p>
-          <div className="mt-4 rounded-lg bg-blue-50 p-4">
-            <p className="text-sm text-blue-900">
-              <strong>Feature 22:</strong> Theme controls panel with color palette editor, font pair selector, 
-              and spacing scale toggle (tight/normal/roomy).
+        {/* Header with Export Button */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Editor Canvas Test - Theme Controls
+            </h1>
+            <p className="mt-2 text-gray-600">
+              Choose a style kit and fine-tune colors, fonts, and spacing. Changes apply to canvas immediately.
             </p>
+            <div className="mt-4 rounded-lg bg-blue-50 p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Feature 22:</strong> Theme controls panel with color palette editor, font pair selector, 
+                and spacing scale toggle (tight/normal/roomy).
+              </p>
+            </div>
           </div>
+          <button
+            data-testid="export_button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition-colors"
+          >
+            <span className="text-lg">📥</span>
+            <span className="font-medium">Export</span>
+          </button>
         </div>
 
         {/* Editor with thumbnail rail and controls */}
@@ -496,6 +518,13 @@ export default function EditorTestPage() {
             </div>
           </div>
         </div>
+
+        {/* Export Modal */}
+        <ExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          onExport={handleExport}
+        />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ export { ThumbnailRail } from './ThumbnailRail';
 export { StyleKitSelector } from './StyleKitSelector';
 export { ThemeControls } from './ThemeControls';
 export { LayoutVariantSelector } from './LayoutVariantSelector';
+export { ExportModal } from './ExportModal';
+export type { ExportOptions } from './ExportModal';
 export type {
   Layer,
   BackgroundLayer,
