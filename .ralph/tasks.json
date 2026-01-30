@@ -564,7 +564,7 @@
       ],
       "expected": "POST /api/generate/text accepts {text, slideCount}. Handles <500 chars and >6000 chars. Returns {slides: [...]}."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-07",
