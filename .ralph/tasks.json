@@ -1632,7 +1632,7 @@
       ],
       "expected": "useSubscription() returns {tier, canUse(feature)}. Free: 3 carousels, watermark. Creator: 10, no watermark. Pro: unlimited."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "styling-01",

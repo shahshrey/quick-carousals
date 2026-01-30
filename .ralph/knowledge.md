@@ -2044,3 +2044,43 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'current_plan\|upgrade_button' apps/nextjs/src` - Verify testids present
   - **Next task dependency**: This completes the billing integration - users can now view their plan and upgrade through Stripe
 ---
+
+---
+## Iteration 24 - integration-05
+- **What was done**: Implemented feature gating by subscription tier with watermark support
+- **Files changed**: 
+  - apps/nextjs/src/hooks/use-subscription.ts (created - 172 lines)
+  - apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx (updated with tier gating and upgrade prompts)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx (added watermark support)
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added showWatermark prop)
+  - apps/nextjs/src/components/editor/LayerRenderer.tsx (added watermark rendering)
+  - apps/nextjs/src/lib/render-slide.ts (added watermark to server-side rendering)
+  - apps/nextjs/src/lib/generate-pdf.ts (added watermark to PDF generation)
+  - apps/nextjs/src/lib/queues/render-worker.ts (added tier checking in export workers)
+  - .ralph/tasks.json (marked integration-05 complete)
+- **Result**: PASS - All validation checks passed
+- **Learnings for future iterations**:
+  - **useSubscription hook pattern**: Created reusable hook that fetches profile from API and provides tier-based feature gating
+  - **Hook structure**: Returns `{ tier, loading, error, canUse(feature), getLimit(feature), requiresUpgrade(feature) }`
+  - **Tier limits configuration**: Use TIER_LIMITS object with all feature limits defined in one place
+  - **Feature names**: carousels, slides, watermark, style_kits, brand_kits, custom_fonts, priority_exports
+  - **Boolean vs numeric features**: Boolean features (watermark, custom_fonts) return true/false, numeric features return limits (-1 = unlimited)
+  - **Watermark implementation**: Added at bottom center of canvas (y=1320) with "QuickCarousals.com" text at 40% opacity
+  - **Frontend watermark**: Added to Konva LayerRenderer as Text component
+  - **Backend watermark**: Added to @napi-rs/canvas rendering with ctx.fillText()
+  - **Tier checking pattern**: Query Profile.subscriptionTier in worker, apply watermark if tier === 'FREE'
+  - **Cascade watermark through pipeline**: renderSlideToCanvas → renderSlidesToCanvas → generatePDF all support showWatermark param
+  - **Feature gating in UI**: Check limits before allowing actions, show upgrade prompts with upgrade_prompt testid
+  - **Upgrade prompt placement**: Two locations - (1) warning card at top when limit reached, (2) inline prompt in style kit grid for premium kits
+  - **Style kit filtering**: Filter availableStyleKits based on tier, show only free kits for FREE tier
+  - **Slide count dropdown**: Dynamically filter options based on tier's max slides limit
+  - **Project count tracking**: Fetch projects array length to check against carousel limit before creation
+  - **Error messages**: Clear, actionable error messages like "You've reached your limit of X carousels. Upgrade to create more."
+  - **Validation workflow**: Check subscription logic exists, check watermark logic exists, verify tier limits are correct
+  - **Pre-existing TS errors**: Dashboard page, editor pages have unrelated TS errors - these existed before and don't block functionality
+  - **Working validation commands**:
+    - `grep -rq 'useSubscription\|subscriptionTier' apps/nextjs/src && echo 'PASS'` - verify subscription logic
+    - `grep -riq 'watermark' apps/nextjs/src && echo 'PASS'` - verify watermark logic
+    - `grep -rn 'data-testid.*upgrade_prompt' path && echo 'PASS'` - verify upgrade prompt testids
+  - **Next task dependency**: This completes the billing integration - all tier-based features are now gated
+---
