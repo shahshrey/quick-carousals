@@ -279,16 +279,17 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
       {/* Zoom and Pan Controls */}
       <div
         style={{
-          padding: '12px 16px',
+          padding: '16px 20px',
           backgroundColor: '#fff',
-          borderBottom: '1px solid #ddd',
+          borderBottom: '2px solid #e2e8f0',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '20px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}
       >
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-          <span>Zoom:</span>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14px', fontWeight: 500 }}>
+          <span className="text-gray-700">🔍 Zoom:</span>
           <input
             type="range"
             min="50"
@@ -296,24 +297,43 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
             value={zoom}
             onChange={handleZoomChange}
             data-testid="zoom_slider"
-            style={{ width: '150px' }}
+            title="Zoom level (Cmd++ / Cmd+-)"
+            style={{ 
+              width: '180px',
+              cursor: 'pointer',
+              accentColor: '#3b82f6',
+            }}
           />
-          <span style={{ minWidth: '45px' }}>{zoom}%</span>
+          <span style={{ minWidth: '50px', fontWeight: 600, color: '#374151' }}>{zoom}%</span>
         </label>
         <button
           onClick={handleFitToScreen}
           data-testid="fit_screen_button"
+          title="Fit to screen (Cmd+0)"
           style={{
-            padding: '6px 12px',
+            padding: '8px 16px',
             fontSize: '14px',
+            fontWeight: 600,
             backgroundColor: '#3b82f6',
             color: '#fff',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '8px',
             cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 1px 3px rgba(59, 130, 246, 0.2)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#2563eb';
+            e.currentTarget.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.3)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#3b82f6';
+            e.currentTarget.style.boxShadow = '0 1px 3px rgba(59, 130, 246, 0.2)';
+            e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          Fit to Screen
+          ⊡ Fit to Screen
         </button>
       </div>
 
@@ -504,6 +524,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       handleRewriteAction('shorter');
                     }}
                     data-testid="rewrite_shorter"
+                    title="Reduce text length while preserving meaning"
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -514,12 +535,15 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       border: 'none',
                       cursor: 'pointer',
                       borderBottom: '1px solid #eee',
+                      transition: 'all 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                      e.currentTarget.style.backgroundColor = '#f0f9ff';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.paddingLeft = '16px';
                     }}
                   >
                     ✂️ Make Shorter
@@ -532,6 +556,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       handleRewriteAction('punchier');
                     }}
                     data-testid="rewrite_punchier"
+                    title="Make text more impactful and attention-grabbing"
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -542,12 +567,15 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       border: 'none',
                       cursor: 'pointer',
                       borderBottom: '1px solid #eee',
+                      transition: 'all 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                      e.currentTarget.style.backgroundColor = '#f0f9ff';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.paddingLeft = '16px';
                     }}
                   >
                     💥 Make Punchier
@@ -560,6 +588,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       handleRewriteAction('examples');
                     }}
                     data-testid="rewrite_examples"
+                    title="Add concrete, relevant examples to illustrate concepts"
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -570,12 +599,15 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       border: 'none',
                       cursor: 'pointer',
                       borderBottom: '1px solid #eee',
+                      transition: 'all 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                      e.currentTarget.style.backgroundColor = '#f0f9ff';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.paddingLeft = '16px';
                     }}
                   >
                     📝 Add Examples
@@ -588,6 +620,7 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       handleRewriteAction('reduce_jargon');
                     }}
                     data-testid="rewrite_jargon"
+                    title="Simplify technical terms for general audience"
                     style={{
                       width: '100%',
                       padding: '12px 16px',
@@ -597,12 +630,15 @@ export function EditorCanvas({ className, slide, onContentChange, showWatermark 
                       color: '#333',
                       border: 'none',
                       cursor: 'pointer',
+                      transition: 'all 0.15s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5';
+                      e.currentTarget.style.backgroundColor = '#f0f9ff';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.paddingLeft = '16px';
                     }}
                   >
                     🔧 Reduce Jargon

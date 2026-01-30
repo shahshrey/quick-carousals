@@ -468,10 +468,12 @@ export default function EditorTestPage() {
             <button
               data-testid="export_button"
               onClick={() => setIsExportModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition-colors"
+              title="Export carousel (Cmd+E)"
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 font-medium"
             >
               <span className="text-lg">📥</span>
-              <span className="font-medium">Export</span>
+              <span>Export</span>
+              <span className="text-xs opacity-75 ml-1">⌘E</span>
             </button>
           </div>
         </div>
@@ -500,10 +502,11 @@ export default function EditorTestPage() {
           </div>
 
           {/* Controls panel on the right */}
-          <div className="w-[320px] flex-shrink-0 space-y-4">
+          <div className="w-[340px] flex-shrink-0 space-y-5">
             {/* Style Kit Selector */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            <div className="rounded-xl bg-white p-5 shadow-md border border-gray-100 transition-all duration-200 hover:shadow-lg">
+              <h3 className="mb-4 text-sm font-bold text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                <span>🎨</span>
                 Style Kit
               </h3>
               <StyleKitSelector
@@ -513,8 +516,9 @@ export default function EditorTestPage() {
             </div>
 
             {/* Theme Controls */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            <div className="rounded-xl bg-white p-5 shadow-md border border-gray-100 transition-all duration-200 hover:shadow-lg">
+              <h3 className="mb-4 text-sm font-bold text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                <span>⚙️</span>
                 Theme Controls
               </h3>
               <ThemeControls
@@ -524,8 +528,9 @@ export default function EditorTestPage() {
             </div>
 
             {/* Layout Variant Selector */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            <div className="rounded-xl bg-white p-5 shadow-md border border-gray-100 transition-all duration-200 hover:shadow-lg">
+              <h3 className="mb-4 text-sm font-bold text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                <span>📐</span>
                 Layout Variant
               </h3>
               <LayoutVariantSelector
@@ -535,60 +540,117 @@ export default function EditorTestPage() {
             </div>
 
             {/* Slide info */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            <div className="rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 p-5 shadow-md border border-blue-100">
+              <h3 className="mb-4 text-sm font-bold text-blue-900 uppercase tracking-wide flex items-center gap-2">
+                <span>📄</span>
                 Active Slide
               </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>
-                  <strong>Slide:</strong> {activeSlideIndex + 1} of {slides.length}
-                </p>
-                <p>
-                  <strong>Layout:</strong> {slides[activeSlideIndex].layoutId}
-                </p>
-                <p>
-                  <strong>Layers:</strong> {slides[activeSlideIndex].blueprint.layers.length}
-                </p>
-                <p>
-                  <strong>Text Boxes:</strong>{' '}
-                  {slides[activeSlideIndex].blueprint.layers.filter(l => l.type === 'text_box').length}
-                </p>
+              <div className="space-y-2.5 text-sm">
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Slide:</span>
+                  <span className="font-semibold text-gray-900">{activeSlideIndex + 1} of {slides.length}</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Layout:</span>
+                  <span className="font-medium text-gray-800 text-xs">{slides[activeSlideIndex].layoutId}</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Layers:</span>
+                  <span className="font-semibold text-gray-900">{slides[activeSlideIndex].blueprint.layers.length}</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Text Boxes:</span>
+                  <span className="font-semibold text-gray-900">
+                    {slides[activeSlideIndex].blueprint.layers.filter(l => l.type === 'text_box').length}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Keyboard Shortcuts */}
+            <div className="rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 p-5 shadow-md border border-purple-100">
+              <h3 className="mb-4 text-sm font-bold text-purple-900 uppercase tracking-wide flex items-center gap-2">
+                <span>⌨️</span>
+                Keyboard Shortcuts
+              </h3>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Export</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd+E</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Save</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd+S</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Duplicate</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd+D</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Delete</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Delete</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Zoom In</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd++</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Zoom Out</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd+-</kbd>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+                  <span className="text-gray-600">Fit Screen</span>
+                  <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono text-gray-700">Cmd+0</kbd>
+                </div>
               </div>
             </div>
 
             {/* Current style kit info */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+            <div className="rounded-xl bg-white p-5 shadow-md border border-gray-100">
+              <h3 className="mb-4 text-sm font-bold text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                <span>🎯</span>
                 Current Style
               </h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>
-                  <strong>Kit:</strong> {slides[activeSlideIndex].styleKit.name}
-                </p>
-                <p>
-                  <strong>Headline:</strong> {slides[activeSlideIndex].styleKit.typography.headline_font} {slides[activeSlideIndex].styleKit.typography.headline_weight}
-                </p>
-                <p>
-                  <strong>Body:</strong> {slides[activeSlideIndex].styleKit.typography.body_font} {slides[activeSlideIndex].styleKit.typography.body_weight}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <strong>Colors:</strong>
-                  <div className="flex space-x-1">
-                    <div
-                      className="h-6 w-6 rounded border border-gray-200"
-                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.background }}
-                      title="Background"
-                    />
-                    <div
-                      className="h-6 w-6 rounded border border-gray-200"
-                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.foreground }}
-                      title="Foreground"
-                    />
-                    <div
-                      className="h-6 w-6 rounded border border-gray-200"
-                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.accent }}
-                      title="Accent"
-                    />
+              <div className="space-y-2.5 text-sm">
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs">Kit</span>
+                  <p className="font-semibold text-gray-900">{slides[activeSlideIndex].styleKit.name}</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs">Headline</span>
+                  <p className="font-medium text-gray-800">{slides[activeSlideIndex].styleKit.typography.headline_font} {slides[activeSlideIndex].styleKit.typography.headline_weight}</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs">Body</span>
+                  <p className="font-medium text-gray-800">{slides[activeSlideIndex].styleKit.typography.body_font} {slides[activeSlideIndex].styleKit.typography.body_weight}</p>
+                </div>
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs block mb-2">Colors</span>
+                  <div className="flex gap-2">
+                    <div className="flex-1 flex flex-col items-center gap-1">
+                      <div
+                        className="h-10 w-10 rounded-lg border-2 border-gray-200 shadow-sm transition-transform hover:scale-110"
+                        style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.background }}
+                        title="Background"
+                      />
+                      <span className="text-xs text-gray-500">BG</span>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center gap-1">
+                      <div
+                        className="h-10 w-10 rounded-lg border-2 border-gray-200 shadow-sm transition-transform hover:scale-110"
+                        style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.foreground }}
+                        title="Foreground"
+                      />
+                      <span className="text-xs text-gray-500">FG</span>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center gap-1">
+                      <div
+                        className="h-10 w-10 rounded-lg border-2 border-gray-200 shadow-sm transition-transform hover:scale-110"
+                        style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.accent }}
+                        title="Accent"
+                      />
+                      <span className="text-xs text-gray-500">Accent</span>
+                    </div>
                   </div>
                 </div>
               </div>
