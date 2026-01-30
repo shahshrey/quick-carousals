@@ -121,11 +121,20 @@ async function processPDFExport(
     .where('id', '=', exportId)
     .execute();
 
+  // Fetch user's profile to get subscription tier
+  const profile = await db
+    .selectFrom('Profile')
+    .where('id', '=', userId)
+    .select('subscriptionTier')
+    .executeTakeFirst();
+  
+  const showWatermark = profile?.subscriptionTier === 'FREE';
+
   // Fetch slide data
   const slides = await fetchSlideDataForRendering(db, projectId);
 
-  // Generate PDF
-  const pdfBuffer = await generatePDF(slides);
+  // Generate PDF with watermark if free tier
+  const pdfBuffer = await generatePDF(slides, showWatermark);
 
   // Upload to storage
   const filename = `${projectId}-${Date.now()}.pdf`;
@@ -168,13 +177,22 @@ async function processPNGExport(
     .where('id', '=', exportId)
     .execute();
 
+  // Fetch user's profile to get subscription tier
+  const profile = await db
+    .selectFrom('Profile')
+    .where('id', '=', userId)
+    .select('subscriptionTier')
+    .executeTakeFirst();
+  
+  const showWatermark = profile?.subscriptionTier === 'FREE';
+
   // Fetch slide data
   const slides = await fetchSlideDataForRendering(db, projectId);
 
-  // Render all slides to PNG buffers
+  // Render all slides to PNG buffers with watermark if free tier
   const buffers: Buffer[] = [];
   for (const slide of slides) {
-    const buffer = await renderSlideToCanvas(slide);
+    const buffer = await renderSlideToCanvas(slide, showWatermark);
     buffers.push(buffer);
   }
 
@@ -228,6 +246,15 @@ async function processThumbnailExport(
     .where('id', '=', exportId)
     .execute();
 
+  // Fetch user's profile to get subscription tier
+  const profile = await db
+    .selectFrom('Profile')
+    .where('id', '=', userId)
+    .select('subscriptionTier')
+    .executeTakeFirst();
+  
+  const showWatermark = profile?.subscriptionTier === 'FREE';
+
   // Fetch slide data (only first slide for thumbnail)
   const slides = await fetchSlideDataForRendering(db, projectId);
   
@@ -235,8 +262,8 @@ async function processThumbnailExport(
     throw new Error('No slides found for thumbnail export');
   }
 
-  // Render first slide as thumbnail
-  const buffer = await renderSlideToCanvas(slides[0]);
+  // Render first slide as thumbnail with watermark if free tier
+  const buffer = await renderSlideToCanvas(slides[0], showWatermark);
 
   // Upload to storage
   const filename = `${projectId}-thumbnail-${Date.now()}.png`;

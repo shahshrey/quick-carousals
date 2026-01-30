@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card } from '@saasfly/ui/card';
 import { Button } from '@saasfly/ui/button';
 import { Input } from '@saasfly/ui/input';
 import { Label } from '@saasfly/ui/label';
+import { useSubscription } from '~/hooks/use-subscription';
 
 interface StyleKit {
   id: string;
@@ -26,6 +28,7 @@ interface StyleKit {
 
 export default function CreateCarouselPage() {
   const router = useRouter();
+  const subscription = useSubscription();
   const [mode, setMode] = useState<'topic' | 'text'>('topic');
   const [topic, setTopic] = useState('');
   const [text, setText] = useState('');
@@ -36,6 +39,7 @@ export default function CreateCarouselPage() {
   const [applyBrandKit, setApplyBrandKit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [projectCount, setProjectCount] = useState<number>(0);
 
   // Fetch style kits on mount
   useEffect(() => {
@@ -53,7 +57,58 @@ export default function CreateCarouselPage() {
     fetchStyleKits();
   }, []);
 
+  // Fetch project count for carousel limit check
+  useEffect(() => {
+    async function fetchProjectCount() {
+      try {
+        const response = await fetch('/api/projects');
+        if (response.ok) {
+          const projects = await response.json();
+          setProjectCount(projects.length);
+        }
+      } catch (err) {
+        console.error('Failed to fetch project count:', err);
+      }
+    }
+    fetchProjectCount();
+  }, []);
+
+  // Check if user can create more carousels
+  const carouselLimit = subscription.getLimit('carousels');
+  const hasReachedCarouselLimit = carouselLimit !== -1 && projectCount >= carouselLimit;
+
+  // Check if user can access selected style kit
+  const selectedKit = styleKits.find(kit => kit.id === selectedStyleKit);
+  const canAccessStyleKit = !selectedKit?.isPremium || subscription.tier !== 'FREE';
+
+  // Filter style kits based on tier
+  const availableStyleKits = styleKits.filter(kit => {
+    if (!kit.isPremium) return true; // Free kits available to all
+    return subscription.tier !== 'FREE'; // Premium kits only for Creator/Pro
+  });
+
+  // Get max slides for tier
+  const maxSlides = subscription.getLimit('slides');
+
   const handleGenerate = async () => {
+    // Check carousel limit
+    if (hasReachedCarouselLimit) {
+      setError(`You've reached your limit of ${carouselLimit} carousels. Upgrade to create more.`);
+      return;
+    }
+
+    // Check style kit access
+    if (!canAccessStyleKit) {
+      setError('This style kit requires a Creator or Pro subscription.');
+      return;
+    }
+
+    // Check slide count limit
+    if (slideCount > maxSlides) {
+      setError(`Your plan allows up to ${maxSlides} slides. Upgrade for more.`);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -139,6 +194,26 @@ export default function CreateCarouselPage() {
         <p className="text-gray-600">Generate a professional LinkedIn carousel in minutes</p>
       </div>
 
+      {/* Carousel Limit Warning */}
+      {hasReachedCarouselLimit && (
+        <Card className="p-4 mb-6 bg-yellow-50 border-yellow-200">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div className="flex-1">
+              <h3 className="font-semibold text-yellow-900 mb-1">Carousel Limit Reached</h3>
+              <p className="text-sm text-yellow-800 mb-2">
+                You've created {projectCount} of {carouselLimit} carousels allowed on your {subscription.tier} plan.
+              </p>
+              <Link href="/settings/billing">
+                <Button size="sm" variant="default" data-testid="upgrade_prompt">
+                  Upgrade to Create More
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <Card className="p-6 mb-6">
         {/* Mode Selection */}
         <div className="mb-6">
@@ -197,35 +272,47 @@ export default function CreateCarouselPage() {
           {styleKits.length === 0 ? (
             <p className="text-sm text-gray-500">Loading style kits...</p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {styleKits.map((kit) => (
-                <button
-                  key={kit.id}
-                  onClick={() => setSelectedStyleKit(kit.id)}
-                  className={`p-3 border-2 rounded-lg transition-all ${
-                    selectedStyleKit === kit.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div
-                    className="w-full h-16 rounded mb-2"
-                    style={{ backgroundColor: kit.colors.background }}
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {availableStyleKits.map((kit) => (
+                  <button
+                    key={kit.id}
+                    onClick={() => setSelectedStyleKit(kit.id)}
+                    className={`p-3 border-2 rounded-lg transition-all ${
+                      selectedStyleKit === kit.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
                   >
                     <div
-                      className="w-1/2 h-full rounded"
-                      style={{ backgroundColor: kit.colors.accent }}
-                    />
-                  </div>
-                  <p className="text-sm font-medium text-gray-900">{kit.name}</p>
-                  {kit.isPremium && (
-                    <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
-                      PRO
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
+                      className="w-full h-16 rounded mb-2"
+                      style={{ backgroundColor: kit.colors.background }}
+                    >
+                      <div
+                        className="w-1/2 h-full rounded"
+                        style={{ backgroundColor: kit.colors.accent }}
+                      />
+                    </div>
+                    <p className="text-sm font-medium text-gray-900">{kit.name}</p>
+                    {kit.isPremium && (
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                        PRO
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              {subscription.tier === 'FREE' && styleKits.some(kit => kit.isPremium) && (
+                <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-md" data-testid="upgrade_prompt">
+                  <p className="text-sm text-purple-900">
+                    🎨 <strong>Unlock all {styleKits.length} style kits</strong> with Creator or Pro. 
+                    <Link href="/settings/billing" className="ml-1 text-purple-700 font-medium hover:underline">
+                      Upgrade now
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -241,10 +328,15 @@ export default function CreateCarouselPage() {
               value={slideCount}
               onChange={(e) => setSlideCount(Number(e.target.value))}
             >
-              {[8, 9, 10, 11, 12].map(count => (
+              {[8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].filter(count => count <= maxSlides).map(count => (
                 <option key={count} value={count}>{count} slides</option>
               ))}
             </select>
+            {subscription.tier !== 'PRO' && maxSlides < 20 && (
+              <p className="text-xs text-gray-500 mt-1">
+                Your plan allows up to {maxSlides} slides. <Link href="/settings/billing" className="text-blue-600 hover:underline">Upgrade</Link> for more.
+              </p>
+            )}
           </div>
 
           {/* Tone */}

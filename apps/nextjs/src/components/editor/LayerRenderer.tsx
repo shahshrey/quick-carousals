@@ -10,6 +10,7 @@ interface LayerRendererProps {
   content: SlideContent;
   styleKit: StyleKit;
   onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void;
+  showWatermark?: boolean; // Add watermark prop
 }
 
 interface TextFitResult {
@@ -25,7 +26,7 @@ interface TextBoxComponentProps {
   onTextBoxClick?: (layerId: string, position: { x: number; y: number; width: number; height: number }) => void;
 }
 
-export function LayerRenderer({ layers, content, styleKit, onTextBoxClick }: LayerRendererProps) {
+export function LayerRenderer({ layers, content, styleKit, onTextBoxClick, showWatermark = false }: LayerRendererProps) {
   return (
     <>
       {layers.map((layer, index) => {
@@ -54,6 +55,20 @@ export function LayerRenderer({ layers, content, styleKit, onTextBoxClick }: Lay
         }
         return null;
       })}
+      
+      {/* Watermark for free tier */}
+      {showWatermark && (
+        <Text
+          x={540}
+          y={1320}
+          text="QuickCarousals.com"
+          fontSize={14}
+          fontFamily="Inter"
+          fill="rgba(0, 0, 0, 0.4)"
+          align="center"
+          offsetX={70} // Center the text
+        />
+      )}
     </>
   );
 }

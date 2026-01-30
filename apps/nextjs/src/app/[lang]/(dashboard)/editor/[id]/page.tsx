@@ -5,11 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector, ExportModal } from '~/components/editor';
 import type { SlideData, StyleKit, ExportOptions } from '~/components/editor/types';
 import { useAutoSave } from '~/hooks/use-auto-save';
+import { useSubscription } from '~/hooks/use-subscription';
 
 export default function EditorPage() {
   const params = useParams();
   const router = useRouter();
   const projectId = params.id as string;
+  const subscription = useSubscription();
 
   const [slides, setSlides] = useState<SlideData[]>([]);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -17,6 +19,9 @@ export default function EditorPage() {
   const [error, setError] = useState<string | null>(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [projectTitle, setProjectTitle] = useState('');
+
+  // Check if watermark should be shown (free tier)
+  const showWatermark = subscription.canUse('watermark');
 
   // Auto-save hook
   const { status: saveStatus } = useAutoSave({
@@ -281,6 +286,7 @@ export default function EditorPage() {
             onContentChange={(layerId, content) => 
               handleContentChange(activeSlideIndex, layerId, content)
             }
+            showWatermark={showWatermark}
           />
         </div>
 

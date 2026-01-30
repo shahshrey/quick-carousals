@@ -231,7 +231,7 @@ function renderTextBox(
  * @param slide Slide data with layout, content, and style
  * @returns PNG buffer
  */
-export async function renderSlideToCanvas(slide: SlideData): Promise<Buffer> {
+export async function renderSlideToCanvas(slide: SlideData, showWatermark = false): Promise<Buffer> {
   // Load fonts if not already loaded
   await loadDefaultFonts();
   
@@ -251,6 +251,14 @@ export async function renderSlideToCanvas(slide: SlideData): Promise<Buffer> {
     }
   }
   
+  // Add watermark for free tier
+  if (showWatermark) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.font = '14px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('QuickCarousals.com', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 30);
+  }
+  
   // Return PNG buffer
   return canvas.toBuffer('image/png');
 }
@@ -258,14 +266,15 @@ export async function renderSlideToCanvas(slide: SlideData): Promise<Buffer> {
 /**
  * Render multiple slides to PNG buffers
  * @param slides Array of slide data
+ * @param showWatermark Whether to add watermark (for free tier)
  * @returns Array of PNG buffers
  */
-export async function renderSlidesToCanvas(slides: SlideData[]): Promise<Buffer[]> {
+export async function renderSlidesToCanvas(slides: SlideData[], showWatermark = false): Promise<Buffer[]> {
   await loadDefaultFonts();
   
   const buffers: Buffer[] = [];
   for (const slide of slides) {
-    const buffer = await renderSlideToCanvas(slide);
+    const buffer = await renderSlideToCanvas(slide, showWatermark);
     buffers.push(buffer);
   }
   

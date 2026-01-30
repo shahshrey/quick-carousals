@@ -22,9 +22,9 @@ const PDF_HEIGHT = CANVAS_HEIGHT;
  * @param slides Array of slide data with layouts, content, and styles
  * @returns PDF buffer
  */
-export async function generatePDF(slides: SlideData[]): Promise<Buffer> {
+export async function generatePDF(slides: SlideData[], showWatermark = false): Promise<Buffer> {
   // Render all slides to PNG buffers first
-  const slideBuffers = await renderSlidesToCanvas(slides);
+  const slideBuffers = await renderSlidesToCanvas(slides, showWatermark);
   
   // Create PDF document
   const doc = new PDFDocument({
@@ -78,9 +78,10 @@ export async function generatePDF(slides: SlideData[]): Promise<Buffer> {
  */
 export async function generatePDFToFile(
   slides: SlideData[],
-  outputPath: string
+  outputPath: string,
+  showWatermark = false
 ): Promise<void> {
-  const pdfBuffer = await generatePDF(slides);
+  const pdfBuffer = await generatePDF(slides, showWatermark);
   
   // In Node.js, write to file
   if (typeof window === 'undefined') {
@@ -93,7 +94,7 @@ export async function generatePDFToFile(
  * Generate PDF and return as base64 string
  * Useful for API responses or browser downloads
  */
-export async function generatePDFBase64(slides: SlideData[]): Promise<string> {
-  const pdfBuffer = await generatePDF(slides);
+export async function generatePDFBase64(slides: SlideData[], showWatermark = false): Promise<string> {
+  const pdfBuffer = await generatePDF(slides, showWatermark);
   return pdfBuffer.toString('base64');
 }

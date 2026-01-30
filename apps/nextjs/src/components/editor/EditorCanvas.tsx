@@ -10,13 +10,14 @@ interface EditorCanvasProps {
   className?: string;
   slide?: SlideData;
   onContentChange?: (layerId: string, content: string | string[]) => void;
+  showWatermark?: boolean; // Add watermark prop
 }
 
 // Fixed canvas dimensions (LinkedIn portrait format)
 const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 1350;
 
-export function EditorCanvas({ className, slide, onContentChange }: EditorCanvasProps) {
+export function EditorCanvas({ className, slide, onContentChange, showWatermark = false }: EditorCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [scale, setScale] = useState(1);
@@ -357,6 +358,7 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
                   content={slide.content}
                   styleKit={slide.styleKit}
                   onTextBoxClick={handleTextBoxClick}
+                  showWatermark={showWatermark}
                 />
               )}
             </Layer>
