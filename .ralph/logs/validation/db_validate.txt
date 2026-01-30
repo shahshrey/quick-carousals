@@ -1,0 +1,7 @@
+$ dotenv -e ../../.env.local -- prisma validate
+Prisma schema loaded from prisma/schema.prisma
+
+Prisma schema warnings:
+- With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. Learn more at https://pris.ly/d/relation-mode-prisma-indexes" 
+- With `relationMode = "prisma"`, no foreign keys are used, so relation fields will not benefit from the index usually created by the relational database under the hood. This can lead to poor performance when querying these fields. We recommend adding an index manually. Learn more at https://pris.ly/d/relation-mode-prisma-indexes" 
+The schema at /Users/shrey/Downloads/quick-carousals/packages/db/prisma/schema.prisma is valid 🚀

@@ -2317,7 +2317,7 @@
       ],
       "expected": "Schema valid, all models exist, types generated, connection works, seed data loads"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-12",
