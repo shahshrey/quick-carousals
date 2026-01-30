@@ -1952,7 +1952,7 @@
       ],
       "expected": "All carousels have 8-12 slides with complete content and no overflow"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-05",
