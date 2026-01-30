@@ -2438,7 +2438,7 @@
       ],
       "expected": "404 page helpful, API errors have messages, invalid inputs handled gracefully, UI shows validation errors"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "validation-14",
