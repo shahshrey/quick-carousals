@@ -1685,7 +1685,7 @@
       ],
       "expected": "Mode tabs styled with active indicator. Inputs have focus states. Style kit grid shows preview cards. Loading animation is smooth."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "styling-03",

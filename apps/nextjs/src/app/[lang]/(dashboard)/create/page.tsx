@@ -217,20 +217,32 @@ export default function CreateCarouselPage() {
       <Card className="p-6 mb-6">
         {/* Mode Selection */}
         <div className="mb-6">
-          <Label className="mb-3 block">Choose Mode</Label>
-          <div className="flex gap-2">
+          <Label className="mb-3 block text-base font-semibold">Choose Mode</Label>
+          <div className="flex gap-3">
             <Button
               data-testid="mode_topic"
               variant={mode === 'topic' ? 'default' : 'outline'}
               onClick={() => setMode('topic')}
+              className={`flex-1 py-6 text-base font-medium transition-all duration-200 ${
+                mode === 'topic' 
+                  ? 'bg-primary text-white shadow-md hover:shadow-lg' 
+                  : 'hover:bg-gray-50 hover:border-gray-400'
+              }`}
             >
+              <span className="mr-2">💡</span>
               From Topic
             </Button>
             <Button
               data-testid="mode_text"
               variant={mode === 'text' ? 'default' : 'outline'}
               onClick={() => setMode('text')}
+              className={`flex-1 py-6 text-base font-medium transition-all duration-200 ${
+                mode === 'text' 
+                  ? 'bg-primary text-white shadow-md hover:shadow-lg' 
+                  : 'hover:bg-gray-50 hover:border-gray-400'
+              }`}
             >
+              <span className="mr-2">📝</span>
               From Text
             </Button>
           </div>
@@ -239,7 +251,7 @@ export default function CreateCarouselPage() {
         {/* Input Area */}
         {mode === 'topic' ? (
           <div className="mb-6">
-            <Label htmlFor="topic" className="mb-2 block">Topic</Label>
+            <Label htmlFor="topic" className="mb-2 block text-base font-semibold">Topic</Label>
             <Input
               id="topic"
               data-testid="topic_input"
@@ -247,55 +259,62 @@ export default function CreateCarouselPage() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               maxLength={500}
+              className="text-base py-6 px-4 border-2 transition-all duration-200 focus:border-primary focus:ring-4 focus:ring-primary/20"
             />
-            <p className="text-sm text-gray-500 mt-1">{topic.length}/500 characters</p>
+            <p className="text-sm text-gray-500 mt-2">{topic.length}/500 characters</p>
           </div>
         ) : (
           <div className="mb-6">
-            <Label htmlFor="text" className="mb-2 block">Text Content</Label>
+            <Label htmlFor="text" className="mb-2 block text-base font-semibold">Text Content</Label>
             <textarea
               id="text"
               data-testid="text_input"
-              className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full min-h-[200px] p-4 border-2 border-gray-300 rounded-md text-base transition-all duration-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20"
               placeholder="Paste your text, notes, or draft content here..."
               value={text}
               onChange={(e) => setText(e.target.value)}
               maxLength={10000}
             />
-            <p className="text-sm text-gray-500 mt-1">{text.length}/10,000 characters</p>
+            <p className="text-sm text-gray-500 mt-2">{text.length}/10,000 characters</p>
           </div>
         )}
 
         {/* Style Kit Selection */}
         <div className="mb-6">
-          <Label className="mb-3 block">Choose Style Kit</Label>
+          <Label className="mb-3 block text-base font-semibold">Choose Style Kit</Label>
           {styleKits.length === 0 ? (
-            <p className="text-sm text-gray-500">Loading style kits...</p>
+            <div className="flex items-center gap-2 p-4 bg-gray-50 rounded-lg">
+              <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-sm text-gray-500">Loading style kits...</p>
+            </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {availableStyleKits.map((kit) => (
                   <button
                     key={kit.id}
                     onClick={() => setSelectedStyleKit(kit.id)}
-                    className={`p-3 border-2 rounded-lg transition-all ${
+                    className={`group p-4 border-2 rounded-xl transition-all duration-200 hover:shadow-lg ${
                       selectedStyleKit === kit.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-primary bg-primary/5 shadow-md'
+                        : 'border-gray-200 hover:border-gray-400'
                     }`}
                   >
                     <div
-                      className="w-full h-16 rounded mb-2"
+                      className="w-full h-20 rounded-lg mb-3 shadow-sm overflow-hidden transition-transform duration-200 group-hover:scale-105"
                       style={{ backgroundColor: kit.colors.background }}
                     >
                       <div
-                        className="w-1/2 h-full rounded"
+                        className="w-1/2 h-full"
                         style={{ backgroundColor: kit.colors.accent }}
                       />
                     </div>
-                    <p className="text-sm font-medium text-gray-900">{kit.name}</p>
+                    <p className="text-sm font-semibold text-gray-900 mb-1">{kit.name}</p>
                     {kit.isPremium && (
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                      <span className="inline-block px-2 py-0.5 bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700 text-xs font-medium rounded-full">
                         PRO
                       </span>
                     )}
@@ -320,11 +339,11 @@ export default function CreateCarouselPage() {
         <div className="grid grid-cols-2 gap-4 mb-6">
           {/* Slide Count */}
           <div>
-            <Label htmlFor="slideCount" className="mb-2 block">Slide Count</Label>
+            <Label htmlFor="slideCount" className="mb-2 block text-base font-semibold">Slide Count</Label>
             <select
               id="slideCount"
               data-testid="slide_count"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border-2 border-gray-300 rounded-md text-base transition-all duration-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 bg-white hover:border-gray-400"
               value={slideCount}
               onChange={(e) => setSlideCount(Number(e.target.value))}
             >
@@ -334,18 +353,18 @@ export default function CreateCarouselPage() {
             </select>
             {subscription.tier !== 'PRO' && maxSlides < 20 && (
               <p className="text-xs text-gray-500 mt-1">
-                Your plan allows up to {maxSlides} slides. <Link href="/settings/billing" className="text-blue-600 hover:underline">Upgrade</Link> for more.
+                Your plan allows up to {maxSlides} slides. <Link href="/settings/billing" className="text-primary hover:underline font-medium">Upgrade</Link> for more.
               </p>
             )}
           </div>
 
           {/* Tone */}
           <div>
-            <Label htmlFor="tone" className="mb-2 block">Tone</Label>
+            <Label htmlFor="tone" className="mb-2 block text-base font-semibold">Tone</Label>
             <select
               id="tone"
               data-testid="tone_selector"
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border-2 border-gray-300 rounded-md text-base transition-all duration-200 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 bg-white hover:border-gray-400"
               value={tone}
               onChange={(e) => setTone(e.target.value as typeof tone)}
             >
@@ -358,10 +377,10 @@ export default function CreateCarouselPage() {
         </div>
 
         {/* Brand Kit Toggle */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-md">
+        <div className="mb-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <Label htmlFor="brand_kit_toggle" className="font-medium">Apply Brand Kit</Label>
+              <Label htmlFor="brand_kit_toggle" className="font-semibold text-base">Apply Brand Kit</Label>
               <p className="text-sm text-gray-600 mt-1">
                 Use your brand colors, fonts, logo, and handle
               </p>
@@ -375,7 +394,7 @@ export default function CreateCarouselPage() {
                 checked={applyBrandKit}
                 onChange={(e) => setApplyBrandKit(e.target.checked)}
               />
-              <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              <div className="w-14 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary shadow-inner"></div>
             </label>
           </div>
         </div>
@@ -390,20 +409,23 @@ export default function CreateCarouselPage() {
         {/* Generate Button */}
         <Button
           data-testid="generate_button"
-          className="w-full"
+          className="w-full py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleGenerate}
           disabled={!isValid || loading}
         >
           {loading ? (
-            <span data-testid="generation_loading" className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <span data-testid="generation_loading" className="flex items-center justify-center gap-3">
+              <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Generating...
+              <span className="animate-pulse">Generating your carousel...</span>
             </span>
           ) : (
-            'Generate Carousel'
+            <span className="flex items-center justify-center gap-2">
+              <span>✨</span>
+              Generate Carousel
+            </span>
           )}
         </Button>
       </Card>
