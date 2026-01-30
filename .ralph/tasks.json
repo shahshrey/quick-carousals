@@ -1417,7 +1417,7 @@
       ],
       "expected": "useAutoSave hook exists with 500ms debounce. save_indicator shows 3 states: 'Saving...' (during save), 'Saved' (after success), 'Error' (on failure). Unit tests pass covering debounce behavior and error handling."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-38",

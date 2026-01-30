@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector, ExportModal } from '~/components/editor';
 import type { SlideData, StyleKit, LayersBlueprint, ExportOptions } from '~/components/editor';
+import { useAutoSave } from '~/hooks/use-auto-save';
 
 // Sample style kit (Minimal Clean)
 const minimalCleanStyleKit = {
@@ -216,6 +217,30 @@ export default function EditorTestPage() {
   // Export modal state
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
+  // Mock project ID for testing (in real app, this would come from route params)
+  const mockProjectId = 'test-project-123';
+
+  // Auto-save hook with custom save function for test page
+  const { status: saveStatus, save, error: saveError } = useAutoSave({
+    projectId: mockProjectId,
+    debounceMs: 500,
+    enabled: true,
+    // Custom save function for test page (logs instead of calling API)
+    onSave: async (data) => {
+      console.log('Auto-save triggered:', data);
+      // In production, this would call PATCH /api/projects/:id
+      // For test page, we just simulate a successful save
+      await new Promise(resolve => setTimeout(resolve, 500));
+    },
+  });
+
+  // Trigger auto-save whenever slides change
+  useEffect(() => {
+    if (slides !== sampleSlides) { // Don't save initial state
+      save({ slides });
+    }
+  }, [slides]);
+
   // Handle content change for a specific slide
   const handleContentChange = (slideIndex: number, layerId: string, content: string | string[]) => {
     setSlides(prev => prev.map((slide, idx) => {
@@ -390,30 +415,65 @@ export default function EditorTestPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl p-8">
-        {/* Header with Export Button */}
+        {/* Header with Save Indicator and Export Button */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Editor Canvas Test - Theme Controls
+              Editor Canvas Test - Auto-Save
             </h1>
             <p className="mt-2 text-gray-600">
-              Choose a style kit and fine-tune colors, fonts, and spacing. Changes apply to canvas immediately.
+              Make changes to slides and watch the auto-save indicator. Changes are saved automatically after 500ms of inactivity.
             </p>
             <div className="mt-4 rounded-lg bg-blue-50 p-4">
               <p className="text-sm text-blue-900">
-                <strong>Feature 22:</strong> Theme controls panel with color palette editor, font pair selector, 
-                and spacing scale toggle (tight/normal/roomy).
+                <strong>Feature 37:</strong> Auto-save with 500ms debounce, save indicator showing saving/saved/error states.
               </p>
             </div>
           </div>
-          <button
-            data-testid="export_button"
-            onClick={() => setIsExportModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition-colors"
-          >
-            <span className="text-lg">📥</span>
-            <span className="font-medium">Export</span>
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Save Indicator */}
+            <div 
+              data-testid="save_indicator"
+              className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow-sm"
+            >
+              {saveStatus === 'saving' && (
+                <>
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                  <span className="text-sm text-gray-700">Saving...</span>
+                </>
+              )}
+              {saveStatus === 'saved' && (
+                <>
+                  <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-green-700">Saved</span>
+                </>
+              )}
+              {saveStatus === 'error' && (
+                <>
+                  <svg className="h-4 w-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm text-red-700">Error</span>
+                </>
+              )}
+              {saveStatus === 'idle' && (
+                <>
+                  <div className="h-3 w-3 rounded-full bg-gray-300"></div>
+                  <span className="text-sm text-gray-500">Not saved</span>
+                </>
+              )}
+            </div>
+            <button
+              data-testid="export_button"
+              onClick={() => setIsExportModalOpen(true)}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition-colors"
+            >
+              <span className="text-lg">📥</span>
+              <span className="font-medium">Export</span>
+            </button>
+          </div>
         </div>
 
         {/* Editor with thumbnail rail and controls */}
