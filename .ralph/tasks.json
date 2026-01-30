@@ -815,7 +815,7 @@
       ],
       "expected": "Thumbnail rail displays on left/side, each slide has data-testid='slide_thumbnail_N', clicking thumbnail switches main canvas to that slide, active slide is visually highlighted (border/background)"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-17",

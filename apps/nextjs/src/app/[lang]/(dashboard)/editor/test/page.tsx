@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorCanvas } from '~/components/editor';
+import { EditorCanvas, ThumbnailRail } from '~/components/editor';
 import type { SlideData } from '~/components/editor';
 
 // Sample style kit (Minimal Clean)
@@ -185,6 +185,9 @@ const sampleSlides: SlideData[] = [
 export default function EditorTestPage() {
   // Use state to manage editable slides
   const [slides, setSlides] = useState<SlideData[]>(sampleSlides);
+  
+  // Track active slide index
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
   // Handle content change for a specific slide
   const handleContentChange = (slideIndex: number, layerId: string, content: string | string[]) => {
@@ -203,50 +206,59 @@ export default function EditorTestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-7xl p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Editor Canvas Test - Text Editing
+            Editor Canvas Test - Slide Thumbnails
           </h1>
           <p className="mt-2 text-gray-600">
-            Click on any text to edit it. Press Escape or click outside to finish editing.
+            Click on thumbnails in the left rail to switch between slides. The active slide is highlighted.
           </p>
           <div className="mt-4 rounded-lg bg-blue-50 p-4">
             <p className="text-sm text-blue-900">
-              <strong>Feature 14:</strong> Text editing with inline editor overlay.
-              Click any text box to enter edit mode.
+              <strong>Feature 16:</strong> Slide thumbnail rail with mini canvas previews.
+              Click any thumbnail to switch the main canvas.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {slides.map((slide, index) => (
-            <div key={index} className="rounded-lg bg-white p-6 shadow-md">
-              <h2 className="mb-4 text-lg font-semibold text-gray-800">
-                Slide {index + 1}: {slide.layoutId}
-              </h2>
-              <div className="aspect-[1080/1350] w-full">
-                <EditorCanvas 
-                  slide={slide} 
-                  onContentChange={(layerId, content) => handleContentChange(index, layerId, content)}
-                />
-              </div>
-              <div className="mt-4 space-y-2 text-sm text-gray-600">
-                <p>
-                  <strong>Layout:</strong> {slide.layoutId}
-                </p>
-                <p>
-                  <strong>Layers:</strong> {slide.blueprint.layers.length} (
-                  {slide.blueprint.layers.map(l => l.type).join(', ')})
-                </p>
-                <p>
-                  <strong>Editable Text Boxes:</strong>{' '}
-                  {slide.blueprint.layers.filter(l => l.type === 'text_box').length}
-                </p>
-              </div>
-            </div>
-          ))}
+        {/* Editor with thumbnail rail */}
+        <div className="flex h-[800px] overflow-hidden rounded-lg bg-white shadow-lg">
+          {/* Thumbnail rail on the left */}
+          <ThumbnailRail
+            slides={slides}
+            activeSlideIndex={activeSlideIndex}
+            onSlideSelect={setActiveSlideIndex}
+          />
+
+          {/* Main canvas editor */}
+          <div className="flex-1">
+            <EditorCanvas 
+              slide={slides[activeSlideIndex]} 
+              onContentChange={(layerId, content) => handleContentChange(activeSlideIndex, layerId, content)}
+            />
+          </div>
+        </div>
+
+        {/* Slide info */}
+        <div className="mt-8 rounded-lg bg-white p-6 shadow-md">
+          <h2 className="mb-4 text-lg font-semibold text-gray-800">
+            Active Slide: {activeSlideIndex + 1} of {slides.length}
+          </h2>
+          <div className="space-y-2 text-sm text-gray-600">
+            <p>
+              <strong>Layout:</strong> {slides[activeSlideIndex].layoutId}
+            </p>
+            <p>
+              <strong>Layers:</strong> {slides[activeSlideIndex].blueprint.layers.length} (
+              {slides[activeSlideIndex].blueprint.layers.map(l => l.type).join(', ')})
+            </p>
+            <p>
+              <strong>Editable Text Boxes:</strong>{' '}
+              {slides[activeSlideIndex].blueprint.layers.filter(l => l.type === 'text_box').length}
+            </p>
+          </div>
         </div>
       </div>
     </div>
