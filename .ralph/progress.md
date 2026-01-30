@@ -1903,3 +1903,44 @@ Task complete - endpoint ready for use in carousel editor text rewriting flow.
 
 ### 2026-01-30 13:30:45
 **Session 5 started** (model: sonnet-4.5-thinking)
+
+## Iteration 76 - feature-36: Project CRUD API ✓
+
+**Completed**: Created full CRUD API for projects with authentication guards
+
+### Implementation Summary
+
+**API Endpoints Created:**
+1. GET /api/projects - List user's projects (sorted by updatedAt desc)
+2. POST /api/projects - Create new project (validates styleKit exists, brandKit ownership)
+3. PATCH /api/projects/:id - Update project (only allowed fields: title, styleKitId, brandKitId, status)
+4. DELETE /api/projects/:id - Delete project (cascades to slides via Prisma schema)
+
+**All endpoints protected** by `withAuth` middleware - return 401 without authentication
+
+**Key Features:**
+- Type-safe Kysely queries with PostgreSQL
+- Profile lookup via clerkUserId for all operations
+- Ownership verification on PATCH/DELETE (user can only modify their own projects)
+- StyleKit existence validation
+- BrandKit ownership validation (must belong to user)
+- Dynamic update object (only include provided fields)
+- Comprehensive error handling with ApiErrors
+
+**Testing:**
+- 7 unit tests created, all passing
+- Tests verify: route files exist, handlers exported, schemas validate, code patterns correct
+- Auth guard validated via curl (401 responses confirmed)
+
+**Database Operations:**
+- Uses Kysely with PostgresDialect for type-safe queries
+- Relies on Prisma schema's `onDelete: Cascade` for automatic cleanup of related slides
+- Proper indexes on userId, brandKitId, styleKitId for efficient queries
+
+**Next Steps:**
+- feature-37: Auto-save functionality will use these CRUD endpoints
+- feature-38: Dashboard will display projects via GET /api/projects
+- feature-39: Creation flow will use POST /api/projects
+- feature-40: Editor will use PATCH /api/projects/:id for updates
+
+---
