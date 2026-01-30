@@ -632,7 +632,7 @@
       ],
       "expected": "GET /api/style-kits returns [{id, name, colors, typography, spacingRules, isPremium}, ...] with 8 items"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-10",
