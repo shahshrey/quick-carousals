@@ -1,11 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@saasfly/ui/card';
 import { Button } from '@saasfly/ui/button';
 import { Input } from '@saasfly/ui/input';
 import { Label } from '@saasfly/ui/label';
+
+interface StyleKit {
+  id: string;
+  name: string;
+  colors: {
+    background: string;
+    foreground: string;
+    accent: string;
+  };
+  typography: {
+    headline_font: string;
+    headline_weight: number;
+    body_font: string;
+    body_weight: number;
+  };
+  isPremium: boolean;
+}
 
 export default function CreateCarouselPage() {
   const router = useRouter();
@@ -14,9 +31,27 @@ export default function CreateCarouselPage() {
   const [text, setText] = useState('');
   const [slideCount, setSlideCount] = useState(10);
   const [tone, setTone] = useState<'bold' | 'calm' | 'contrarian' | 'professional'>('professional');
+  const [selectedStyleKit, setSelectedStyleKit] = useState<string>('minimal_clean');
+  const [styleKits, setStyleKits] = useState<StyleKit[]>([]);
   const [applyBrandKit, setApplyBrandKit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch style kits on mount
+  useEffect(() => {
+    async function fetchStyleKits() {
+      try {
+        const response = await fetch('/api/style-kits');
+        if (response.ok) {
+          const kits = await response.json();
+          setStyleKits(kits);
+        }
+      } catch (err) {
+        console.error('Failed to fetch style kits:', err);
+      }
+    }
+    fetchStyleKits();
+  }, []);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -25,8 +60,8 @@ export default function CreateCarouselPage() {
     try {
       const endpoint = mode === 'topic' ? '/api/generate/topic' : '/api/generate/text';
       const body = mode === 'topic' 
-        ? { topic, slideCount, tone, applyBrandKit }
-        : { text, slideCount, tone, applyBrandKit };
+        ? { topic, slideCount, tone, applyBrandKit, styleKitId: selectedStyleKit }
+        : { text, slideCount, tone, applyBrandKit, styleKitId: selectedStyleKit };
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -71,12 +106,14 @@ export default function CreateCarouselPage() {
           <Label className="mb-3 block">Choose Mode</Label>
           <div className="flex gap-2">
             <Button
+              data-testid="mode_topic"
               variant={mode === 'topic' ? 'default' : 'outline'}
               onClick={() => setMode('topic')}
             >
               From Topic
             </Button>
             <Button
+              data-testid="mode_text"
               variant={mode === 'text' ? 'default' : 'outline'}
               onClick={() => setMode('text')}
             >
@@ -91,6 +128,7 @@ export default function CreateCarouselPage() {
             <Label htmlFor="topic" className="mb-2 block">Topic</Label>
             <Input
               id="topic"
+              data-testid="topic_input"
               placeholder="e.g., 5 ways to improve your LinkedIn engagement"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
@@ -103,6 +141,7 @@ export default function CreateCarouselPage() {
             <Label htmlFor="text" className="mb-2 block">Text Content</Label>
             <textarea
               id="text"
+              data-testid="text_input"
               className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Paste your text, notes, or draft content here..."
               value={text}
@@ -113,6 +152,44 @@ export default function CreateCarouselPage() {
           </div>
         )}
 
+        {/* Style Kit Selection */}
+        <div className="mb-6">
+          <Label className="mb-3 block">Choose Style Kit</Label>
+          {styleKits.length === 0 ? (
+            <p className="text-sm text-gray-500">Loading style kits...</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {styleKits.map((kit) => (
+                <button
+                  key={kit.id}
+                  onClick={() => setSelectedStyleKit(kit.id)}
+                  className={`p-3 border-2 rounded-lg transition-all ${
+                    selectedStyleKit === kit.id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div
+                    className="w-full h-16 rounded mb-2"
+                    style={{ backgroundColor: kit.colors.background }}
+                  >
+                    <div
+                      className="w-1/2 h-full rounded"
+                      style={{ backgroundColor: kit.colors.accent }}
+                    />
+                  </div>
+                  <p className="text-sm font-medium text-gray-900">{kit.name}</p>
+                  {kit.isPremium && (
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded">
+                      PRO
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Options */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           {/* Slide Count */}
@@ -120,6 +197,7 @@ export default function CreateCarouselPage() {
             <Label htmlFor="slideCount" className="mb-2 block">Slide Count</Label>
             <select
               id="slideCount"
+              data-testid="slide_count"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={slideCount}
               onChange={(e) => setSlideCount(Number(e.target.value))}
@@ -135,6 +213,7 @@ export default function CreateCarouselPage() {
             <Label htmlFor="tone" className="mb-2 block">Tone</Label>
             <select
               id="tone"
+              data-testid="tone_selector"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={tone}
               onChange={(e) => setTone(e.target.value as typeof tone)}
@@ -179,6 +258,7 @@ export default function CreateCarouselPage() {
 
         {/* Generate Button */}
         <Button
+          data-testid="generate_button"
           className="w-full"
           onClick={handleGenerate}
           disabled={!isValid || loading}
