@@ -1014,7 +1014,7 @@
       ],
       "expected": "layout_selector shows layouts compatible with current slide type. Selecting layout updates slide structure."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-24",

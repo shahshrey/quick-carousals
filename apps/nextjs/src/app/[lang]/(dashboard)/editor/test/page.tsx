@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls } from '~/components/editor';
-import type { SlideData, StyleKit } from '~/components/editor';
+import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls, LayoutVariantSelector } from '~/components/editor';
+import type { SlideData, StyleKit, LayersBlueprint } from '~/components/editor';
 
 // Sample style kit (Minimal Clean)
 const minimalCleanStyleKit = {
@@ -246,6 +246,36 @@ export default function EditorTestPage() {
     })));
   };
 
+  // Handle layout change for the active slide
+  const handleLayoutChange = (layoutId: string, blueprint: LayersBlueprint) => {
+    setSlides(prev => prev.map((slide, idx) => {
+      if (idx === activeSlideIndex) {
+        // Preserve existing content that matches layer IDs in the new blueprint
+        const newContent: { [key: string]: string | string[] } = {};
+        
+        blueprint.layers.forEach(layer => {
+          if (layer.type === 'text_box' && layer.id) {
+            // If the old slide has content for this layer ID, keep it
+            if (slide.content[layer.id]) {
+              newContent[layer.id] = slide.content[layer.id];
+            } else {
+              // Otherwise, provide placeholder content
+              newContent[layer.id] = 'Click to edit';
+            }
+          }
+        });
+
+        return {
+          ...slide,
+          layoutId,
+          blueprint,
+          content: newContent,
+        };
+      }
+      return slide;
+    }));
+  };
+
   // Add a new slide (copy of generic_single_focus layout)
   const handleAddSlide = () => {
     const newSlide: SlideData = {
@@ -391,6 +421,17 @@ export default function EditorTestPage() {
               <ThemeControls
                 styleKit={slides[activeSlideIndex].styleKit}
                 onStyleKitUpdate={handleStyleKitUpdate}
+              />
+            </div>
+
+            {/* Layout Variant Selector */}
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                Layout Variant
+              </h3>
+              <LayoutVariantSelector
+                currentSlide={slides[activeSlideIndex]}
+                onLayoutChange={handleLayoutChange}
               />
             </div>
 
