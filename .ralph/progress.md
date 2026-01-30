@@ -2136,3 +2136,35 @@ Task complete - endpoint ready for use in carousel editor text rewriting flow.
 
 ### 2026-01-30 14:39:12
 **Session 24 started** (model: sonnet-4.5-thinking)
+
+## Iteration 24 - integration-05 (COMPLETE)
+
+**Task**: Implement feature gating by tier
+
+**Implementation**:
+1. ✅ Created useSubscription hook with tier-based feature access
+2. ✅ Gated carousel count by tier (Free: 3, Creator: 30, Pro: unlimited)
+3. ✅ Gated style kit access by tier (Free: 3 free kits, Creator/Pro: all 8)
+4. ✅ Gated brand kit count by tier (Free: 0, Creator: 1, Pro: 5)
+5. ✅ Added watermark for free tier (frontend + backend)
+6. ✅ Added upgrade_prompt testid with upgrade CTAs
+
+**Key Features Implemented**:
+- useSubscription() hook returns {tier, canUse(feature), getLimit(feature), requiresUpgrade(feature)}
+- Carousel limit checking before project creation
+- Style kit filtering based on subscription tier
+- Slide count dropdown respects tier limits
+- Watermark rendering on canvas (Konva) and exports (@napi-rs/canvas, PDFKit)
+- Upgrade prompts in creation flow and style kit selector
+- Server-side tier checking in export worker
+
+**Validation**: All checks passed
+- ✅ Subscription logic exists throughout app
+- ✅ Watermark logic exists in frontend and backend
+- ✅ upgrade_prompt testid exists in multiple locations
+- ✅ Tier limits correctly configured
+
+**Files Modified**: 11 files (8 updated, 1 created)
+
+**Next Task**: styling-01 - Dashboard polish
+
