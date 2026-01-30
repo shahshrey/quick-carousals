@@ -32,7 +32,9 @@
     "id": "discovery-02",
     "category": "discovery",
     "description": "Analyze Topic Generation API and create test cases",
-    "depends_on": ["discovery-01"],
+    "depends_on": [
+      "discovery-01"
+    ],
     "module": "generation_topic",
     "priority": "critical",
     "files_to_analyze": [
@@ -42,7 +44,7 @@
     "steps": [
       "Read the generate/topic API route",
       "Read the OpenAI integration code",
-      "Understand the AI pipeline: topic → slide plan → slide copy → layout selection",
+      "Understand the AI pipeline: topic \u2192 slide plan \u2192 slide copy \u2192 layout selection",
       "Create test cases for: valid topic generation, invalid inputs, rate limits",
       "Create test cases for: AI response validation, slide count constraints",
       "Add test cases to tests.json",
@@ -58,7 +60,9 @@
     "id": "discovery-03",
     "category": "discovery",
     "description": "Analyze Text Generation API and create test cases",
-    "depends_on": ["discovery-02"],
+    "depends_on": [
+      "discovery-02"
+    ],
     "module": "generation_text",
     "priority": "critical",
     "files_to_analyze": [
@@ -78,13 +82,15 @@
       "_note": "Verify test cases cover text input variations",
       "expected": "At least 5 test cases covering short text, long text, edge cases, validation"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-04",
     "category": "discovery",
     "description": "Analyze Creation Flow UI and create test cases",
-    "depends_on": ["discovery-03"],
+    "depends_on": [
+      "discovery-03"
+    ],
     "module": "creation_flow",
     "priority": "critical",
     "files_to_analyze": [
@@ -103,13 +109,15 @@
       "_note": "Verify test cases cover the full creation UI flow",
       "expected": "At least 6 test cases covering UI interactions and form behavior"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-05",
     "category": "discovery",
     "description": "Analyze Editor Canvas Core and create test cases",
-    "depends_on": ["discovery-04"],
+    "depends_on": [
+      "discovery-04"
+    ],
     "module": "editor_canvas",
     "priority": "critical",
     "files_to_analyze": [
@@ -130,13 +138,15 @@
       "_note": "Verify test cases cover core canvas functionality",
       "expected": "At least 8 test cases covering canvas rendering, editing, and interactions"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-06",
     "category": "discovery",
     "description": "Analyze Editor Controls and create test cases",
-    "depends_on": ["discovery-05"],
+    "depends_on": [
+      "discovery-05"
+    ],
     "module": "editor_controls",
     "priority": "high",
     "files_to_analyze": [
@@ -159,13 +169,15 @@
       "_note": "Verify test cases cover all editor control interactions",
       "expected": "At least 10 test cases covering thumbnails, theme, layout, and style controls"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-07",
     "category": "discovery",
     "description": "Analyze Editor Page Integration and create test cases",
-    "depends_on": ["discovery-06"],
+    "depends_on": [
+      "discovery-06"
+    ],
     "module": "editor_page",
     "priority": "critical",
     "files_to_analyze": [
@@ -185,13 +197,15 @@
       "_note": "Verify test cases cover editor page integration",
       "expected": "At least 5 test cases covering page loading and integration"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-08",
     "category": "discovery",
     "description": "Analyze Export System and create test cases",
-    "depends_on": ["discovery-07"],
+    "depends_on": [
+      "discovery-07"
+    ],
     "module": "export_system",
     "priority": "critical",
     "files_to_analyze": [
@@ -205,7 +219,7 @@
     ],
     "steps": [
       "Read export API routes",
-      "Understand render pipeline: canvas → PNG → PDF",
+      "Understand render pipeline: canvas \u2192 PNG \u2192 PDF",
       "Understand queue-based processing",
       "Read ExportModal UI component",
       "Create test cases for: PDF export, PNG export, progress tracking",
@@ -217,13 +231,15 @@
       "_note": "Verify test cases cover the complete export pipeline",
       "expected": "At least 8 test cases covering PDF, PNG, queue, download"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-09",
     "category": "discovery",
     "description": "Analyze Project CRUD APIs and create test cases",
-    "depends_on": ["discovery-08"],
+    "depends_on": [
+      "discovery-08"
+    ],
     "module": "projects_crud",
     "priority": "high",
     "files_to_analyze": [
@@ -244,13 +260,15 @@
       "_note": "Verify test cases cover CRUD operations and security",
       "expected": "At least 8 test cases covering all CRUD operations and auth"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-10",
     "category": "discovery",
     "description": "Analyze Dashboard and create test cases",
-    "depends_on": ["discovery-09"],
+    "depends_on": [
+      "discovery-09"
+    ],
     "module": "dashboard",
     "priority": "high",
     "files_to_analyze": [
@@ -270,13 +288,15 @@
       "_note": "Verify test cases cover dashboard UI and navigation",
       "expected": "At least 5 test cases covering dashboard functionality"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-11",
     "category": "discovery",
     "description": "Analyze Brand Kit module and create test cases",
-    "depends_on": ["discovery-10"],
+    "depends_on": [
+      "discovery-10"
+    ],
     "module": "brand_kit",
     "priority": "high",
     "files_to_analyze": [
@@ -297,13 +317,15 @@
       "_note": "Verify test cases cover brand kit CRUD and UI",
       "expected": "At least 6 test cases covering brand kit functionality"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-12",
     "category": "discovery",
     "description": "Analyze Style Kits module and create test cases",
-    "depends_on": ["discovery-11"],
+    "depends_on": [
+      "discovery-11"
+    ],
     "module": "style_kits",
     "priority": "high",
     "files_to_analyze": [
@@ -324,13 +346,15 @@
       "_note": "Verify test cases cover style kit access and gating",
       "expected": "At least 5 test cases covering style kit functionality"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-13",
     "category": "discovery",
     "description": "Analyze Billing & Subscriptions and create test cases",
-    "depends_on": ["discovery-12"],
+    "depends_on": [
+      "discovery-12"
+    ],
     "module": "billing",
     "priority": "high",
     "files_to_analyze": [
@@ -353,13 +377,15 @@
       "_note": "Verify test cases cover Stripe integration",
       "expected": "At least 6 test cases covering billing functionality"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-14",
     "category": "discovery",
     "description": "Analyze Feature Gating and create test cases",
-    "depends_on": ["discovery-13"],
+    "depends_on": [
+      "discovery-13"
+    ],
     "module": "feature_gating",
     "priority": "high",
     "files_to_analyze": [
@@ -378,13 +404,15 @@
       "_note": "Verify test cases cover all tier-based restrictions",
       "expected": "At least 6 test cases covering feature gating"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-15",
     "category": "discovery",
     "description": "Analyze Rewrite API and create test cases",
-    "depends_on": ["discovery-14"],
+    "depends_on": [
+      "discovery-14"
+    ],
     "module": "rewrite",
     "priority": "medium",
     "files_to_analyze": [
@@ -402,13 +430,15 @@
       "_note": "Verify test cases cover all rewrite actions",
       "expected": "At least 5 test cases covering rewrite functionality"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-16",
     "category": "discovery",
     "description": "Analyze Auto-Save and create test cases",
-    "depends_on": ["discovery-15"],
+    "depends_on": [
+      "discovery-15"
+    ],
     "module": "auto_save",
     "priority": "high",
     "files_to_analyze": [
@@ -427,13 +457,15 @@
       "_note": "Verify test cases cover auto-save behavior",
       "expected": "At least 4 test cases covering auto-save"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-17",
     "category": "discovery",
     "description": "Analyze Text Measurement and create test cases",
-    "depends_on": ["discovery-16"],
+    "depends_on": [
+      "discovery-16"
+    ],
     "module": "text_measurement",
     "priority": "high",
     "files_to_analyze": [
@@ -452,13 +484,15 @@
       "_note": "Verify test cases cover text measurement logic",
       "expected": "At least 4 test cases covering text measurement"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-18",
     "category": "discovery",
     "description": "Analyze Database Schema and create test cases",
-    "depends_on": ["discovery-17"],
+    "depends_on": [
+      "discovery-17"
+    ],
     "module": "database",
     "priority": "high",
     "files_to_analyze": [
@@ -478,13 +512,15 @@
       "_note": "Verify test cases cover data integrity",
       "expected": "At least 6 test cases covering database schema"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-19",
     "category": "discovery",
     "description": "Analyze Marketing Pages and create test cases",
-    "depends_on": ["discovery-18"],
+    "depends_on": [
+      "discovery-18"
+    ],
     "module": "marketing",
     "priority": "medium",
     "files_to_analyze": [
@@ -504,13 +540,15 @@
       "_note": "Verify test cases cover marketing page functionality",
       "expected": "At least 4 test cases covering marketing pages"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-20",
     "category": "discovery",
     "description": "Analyze Infrastructure & Health and create test cases",
-    "depends_on": ["discovery-19"],
+    "depends_on": [
+      "discovery-19"
+    ],
     "module": "infrastructure",
     "priority": "medium",
     "files_to_analyze": [
@@ -532,20 +570,22 @@
       "_note": "Verify test cases cover infrastructure health",
       "expected": "At least 4 test cases covering infrastructure"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-21",
     "category": "discovery",
     "description": "Create User Journey test cases - New User Onboarding",
-    "depends_on": ["discovery-20"],
+    "depends_on": [
+      "discovery-20"
+    ],
     "module": "user_journeys",
     "priority": "critical",
     "journey": "new_user_onboarding",
     "files_to_analyze": [],
     "steps": [
       "Review all previously analyzed modules",
-      "Map the complete new user journey: landing → signup → dashboard → first carousel",
+      "Map the complete new user journey: landing \u2192 signup \u2192 dashboard \u2192 first carousel",
       "Create end-to-end test cases that span multiple modules",
       "Add test cases to tests.json",
       "Update journey status to analyzed"
@@ -554,20 +594,22 @@
       "_note": "Verify E2E test covers complete onboarding flow",
       "expected": "At least 2 comprehensive E2E test cases"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-22",
     "category": "discovery",
     "description": "Create User Journey test cases - Topic to Export",
-    "depends_on": ["discovery-21"],
+    "depends_on": [
+      "discovery-21"
+    ],
     "module": "user_journeys",
     "priority": "critical",
     "journey": "topic_to_export",
     "files_to_analyze": [],
     "steps": [
       "Map the complete topic-to-export journey",
-      "Create E2E test covering: create → generate → edit → export → download",
+      "Create E2E test covering: create \u2192 generate \u2192 edit \u2192 export \u2192 download",
       "Include both happy path and error scenarios",
       "Add test cases to tests.json",
       "Update journey status to analyzed"
@@ -582,7 +624,9 @@
     "id": "discovery-23",
     "category": "discovery",
     "description": "Create Security test cases",
-    "depends_on": ["discovery-22"],
+    "depends_on": [
+      "discovery-22"
+    ],
     "module": "security",
     "priority": "high",
     "files_to_analyze": [],
@@ -603,7 +647,9 @@
     "id": "discovery-24",
     "category": "discovery",
     "description": "Create Error Handling test cases",
-    "depends_on": ["discovery-23"],
+    "depends_on": [
+      "discovery-23"
+    ],
     "module": "error_handling",
     "priority": "high",
     "files_to_analyze": [],
@@ -623,7 +669,9 @@
     "id": "discovery-25",
     "category": "discovery",
     "description": "Final review and test coverage summary",
-    "depends_on": ["discovery-24"],
+    "depends_on": [
+      "discovery-24"
+    ],
     "module": "summary",
     "priority": "high",
     "files_to_analyze": [],

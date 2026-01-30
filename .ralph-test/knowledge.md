@@ -1267,3 +1267,360 @@
 - No middleware helper for tier checks - each API route must implement its own validation (opportunity for improvement)
 - Export worker is the only place that correctly enforces tier (fetches from database, not client state)
 ---
+
+---
+## Iteration 16 - Text Measurement Module
+
+**Files analyzed**:
+- apps/nextjs/src/lib/text-measure.ts (211 lines)
+- apps/nextjs/src/lib/text-measure.test.ts (190 lines) - Existing automated tests
+
+**Test cases created**: 6 (TC-TEXTMEAS-001 through TC-TEXTMEAS-006)
+
+**Key business logic discovered**:
+- **Singleton Canvas Pattern**: Single off-screen canvas context reused for all measurements (lines 23-44), efficient memory usage
+- **Binary Search Auto-Fit**: calculateOptimalFontSize() uses O(log n) binary search to find largest font that fits within maxWidth x maxHeight bounds
+- **Word-Boundary Wrapping**: breakTextIntoLines() splits on whitespace (\s+), measures each word, breaks lines when width exceeds maxWidth
+- **Line Height Calculation**: height = numLines * (fontSize * lineHeightMultiplier), default lineHeight is 1.2
+- **Array Input Support**: measureText() handles string[] for bullet points, breaks each array element into lines if needed
+- **Font String Format**: Canvas font format: `${weight} ${fontSize}px ${fontFamily}` (line 51)
+- **SSR Safety Check**: getContext() throws error if typeof window === 'undefined', prevents server-side crashes
+- **Overflow Detection**: doesTextFit() checks if measurement.height <= maxHeight AND measurement.width <= maxWidth
+- **Max Width Tracking**: For arrays, tracks maximum width across all lines (lines 82-86)
+- **Empty Input Handling**: breakTextIntoLines returns [''] for empty input (line 153), prevents empty array issues
+
+**Potential bugs noticed**:
+1. **No Font Load Detection**: Assumes fonts are already loaded before measurement. If custom font not loaded, measurements use fallback font with different dimensions causing overflow/underflow.
+2. **No Unicode/Emoji Width**: Simple per-character width estimation in tests (line 9). Real Canvas API handles Unicode correctly but edge cases with emojis or CJK characters might cause issues.
+3. **No Canvas Context Loss Handling**: If browser clears canvas context (memory pressure, GPU crash), measurementContext becomes invalid but no recovery mechanism exists.
+4. **Binary Search Precision Loss**: Uses Math.floor for mid calculation (line 181). For very large font ranges (e.g., 10-200), might not find absolute optimal size.
+5. **No Measurement Caching**: measureText is called repeatedly with same text/font during binary search. No memoization/caching of measurements.
+6. **Line Height Not Applied to Width**: maxWidth check doesn't account for line-height affecting horizontal spacing in some fonts.
+
+**Patterns for other modules**:
+- **Singleton Pattern**: measurementCanvas/Context reused globally - good for performance, prevents repeated canvas creation
+- **Binary Search Pattern**: O(log n) optimal font size calculation is elegant, efficient solution for constrained optimization
+- **Builder Function Pattern**: buildFontString() centralizes font string formatting, ensures consistency
+- **Throw on Invalid Environment**: Clear error when used in SSR context prevents silent failures
+- **Ref-Based Optimization**: Singleton canvas stored in module-level variable, not React state
+- **Array vs String Handling**: Unified interface handles both string and string[] inputs with conditional branching
+
+**Codebase patterns discovered**:
+- **Canvas 2D API**: measureText() returns TextMetrics with width property, actualBoundingBoxAscent/Descent for precise height
+- **typeof window Check**: Standard SSR guard pattern for browser-only APIs
+- **Math.max Spread**: `Math.max(...lines.map(...))` finds max value in array
+- **Regex Split**: /\s+/ splits on any whitespace (spaces, tabs, newlines)
+- **Ternary Default Return**: `lines.length > 0 ? lines : ['']` ensures non-empty return
+- **Required Field Validation**: Throws error if maxWidth missing when required (line 172, 204)
+- **Measurement Interface**: TextMeasurement type with width, height, lines[] provides structured return value
+
+**Additional insights**:
+- Text measurement is CRITICAL for editor - auto-fit and overflow detection depend on accurate measurements
+- Binary search typically converges in 5-7 iterations for font range 12-80px (log2(68) ≈ 6.09)
+- Canvas 2D API is browser-only - no equivalent in Node.js (export worker uses @napi-rs/canvas for server-side rendering)
+- Word-boundary wrapping is essential for professional typography - mid-word breaks are unacceptable
+- Line height multiplier (1.2, 1.5, 1.7) directly affects how much text fits - tighter spacing fits more content but reduces readability
+- Existing automated tests mock Canvas API with rough 10px-per-character approximation - good for unit testing logic but not accurate dimensions
+- measureText is called on every text change in editor (via auto-fit) - performance is critical
+- Overflow detection must be real-time and visual - red border provides immediate feedback
+- Empty text edge case is handled correctly (returns [''] not []) - prevents crashes in rendering logic
+---
+
+---
+## Iteration 18 - Database Schema & Data Integrity
+
+**Files analyzed**:
+- packages/db/prisma/schema.prisma (248 lines)
+- packages/db/prisma/seed.ts (490 lines)
+
+**Test cases created**: 12 (TC-DB-001 through TC-DB-012)
+
+**Key business logic discovered**:
+- **Database Technology**: PostgreSQL with Prisma ORM, Kysely for type-safe queries
+- **Schema Structure**: 13 models total - 7 QuickCarousals models (Profile, BrandKit, Project, StyleKit, TemplateLayout, Slide, Export), 6 legacy models (Customer, Account, Session, User, VerificationToken, K8sClusterConfig)
+- **Cascade Delete Chains**: 
+  - Profile → Project → Slide (3-level cascade)
+  - Profile → Project → Export (3-level cascade)
+  - Profile → BrandKit (2-level cascade)
+  - Project → Slide, Project → Export (2-level cascades)
+- **Optional Relationships**: BrandKit → Project is optional (brandKitId nullable), deletion sets NULL not cascade
+- **Required Fields**: Profile requires clerkUserId, email (NOT NULL). Project requires userId, styleKitId (NOT NULL). Slide requires projectId, layoutId (NOT NULL).
+- **Unique Constraints**: Profile.clerkUserId (UNIQUE), Profile.email (UNIQUE) - prevent duplicate accounts
+- **Foreign Key Constraints**: Project.styleKitId → StyleKit.id, Slide.layoutId → TemplateLayout.id enforce referential integrity
+- **Enums**: 5 enums defined - SubscriptionPlan (legacy: FREE/PRO/BUSINESS), SubscriptionTier (current: FREE/CREATOR/PRO), ProjectStatus (DRAFT/PUBLISHED/ARCHIVED), ExportType (PDF/PNG/THUMBNAIL), ExportStatus (PENDING/PROCESSING/COMPLETED/FAILED)
+- **JSON Columns**: Slide.layers, Slide.content, BrandKit.colors, BrandKit.fonts, StyleKit.typography, StyleKit.colors, StyleKit.spacingRules, TemplateLayout.layersBlueprint stored as JSONB
+- **Seed Data**: 8 StyleKits (4 free + 4 premium), 9 TemplateLayouts (hook, promise, 5 value layouts, recap, cta, generic)
+- **Idempotent Seeding**: Seed script checks for existing data before inserting, prevents duplicates on repeated runs
+- **Indexes**: Profile.clerkUserId, Profile.email, Project.userId, Project.styleKitId, Slide.projectId, Export.projectId, Export.status have indexes for query performance
+
+**Potential bugs noticed**:
+1. **Legacy Models Unused**: Customer, Account, Session, User, VerificationToken, K8sClusterConfig models defined in schema but not used by QuickCarousals - may confuse developers, increase migration complexity
+2. **Enum Confusion**: Two subscription enums (SubscriptionPlan vs SubscriptionTier) - only SubscriptionTier is used, SubscriptionPlan is legacy but still in schema
+3. **No Cascade to Storage**: Cascade deletes work in database but don't trigger cleanup of files in Supabase Storage (logos, exports) - orphaned files accumulate
+4. **Prisma relationMode='prisma'**: Foreign key constraints are emulated in application layer, not enforced at database level - could lead to orphaned records if data modified directly via SQL
+5. **No Database Migration History**: Using db:push (not migrate) means no migration history tracked, harder to rollback or understand schema evolution
+6. **Seed Script Sequential**: Seed script inserts records sequentially with await, could be slow for large seed datasets (though current 17 records is fine)
+
+**Patterns for other modules**:
+- **Cascade Delete Pattern**: onDelete: Cascade on all user-owned relationships (Profile → Project, Project → Slide) ensures automatic cleanup
+- **Optional Foreign Keys**: Use nullable foreign keys (brandKitId?) for optional relationships, avoids cascade delete issues
+- **UUID Primary Keys**: Use dbgenerated("gen_random_uuid()") for all IDs except legacy models - prevents enumeration attacks, better for distributed systems
+- **JSON for Flexibility**: Store complex/variable structures as JSON columns (layers, colors, fonts) - allows schema evolution without migrations
+- **Idempotent Seed Pattern**: Check for existing data before insert - safe for development workflow (repeated bun db:push)
+- **Enum for Status Fields**: Use enums for fixed value sets (status, exportType, subscriptionTier) - type safety + database validation
+- **Unique Constraint on External IDs**: clerkUserId UNIQUE ensures 1:1 mapping between Clerk and Profile - prevents duplicate accounts
+- **Index on Foreign Keys**: All foreign key columns have indexes - essential for query performance on joins and WHERE clauses
+
+**Codebase patterns discovered**:
+- **Prisma Schema Format**: Datasource db (PostgreSQL), generator client (prisma-kysely for types), models with @id/@default/@@index
+- **Prisma Kysely Types**: Generated types.ts and enums.ts from schema - used by Kysely queries for type safety
+- **relationMode='prisma'**: Prisma emulates foreign key constraints in app - required for some Postgres setups, but weaker than native constraints
+- **dbgenerated() for UUIDs**: gen_random_uuid() function generates UUIDs at database level, not application level
+- **@updatedAt Directive**: Automatic timestamp update on any record change - Prisma handles this transparently
+- **@@index Directive**: Multiple @@index([field]) directives create indexes - Prisma generates CREATE INDEX statements during migration
+- **Kysely Seed Script**: Uses Kysely query builder (not Prisma Client) for seeding - consistent with app's query layer
+- **Seed Script Structure**: Import Kysely types → define seed data arrays → check existence → insert if missing → log success
+
+**Additional insights**:
+- Database is running locally (PostgreSQL on localhost:5432) - verified with bun db:push
+- Seed data is present (8 StyleKits, 9 TemplateLayouts) - verified with seed script run
+- relationMode='prisma' means foreign keys are NOT enforced at database level - Prisma handles validation in app code
+- Legacy models (Customer, Account, Session, User) likely from original saasfly template - not used in QuickCarousals but still in schema
+- K8sClusterConfig is definitely legacy (from different product) - should be removed from schema
+- SubscriptionTier (FREE/CREATOR/PRO) is the CURRENT tier system, SubscriptionPlan (FREE/PRO/BUSINESS) is LEGACY - code only uses SubscriptionTier
+- CASCADE deletes work well for database records but don't trigger application cleanup logic (storage files, external APIs)
+- Indexes on foreign keys are CRITICAL for performance - without them, queries on user's projects or project's slides would be slow
+- JSON columns use PostgreSQL JSONB type - efficient binary format, supports indexing with GIN indexes if needed
+- Seed script uses "SELECT * FROM table" to check existence - could optimize with COUNT(*) query for large datasets
+- No database backups or point-in-time recovery configured in schema - should be handled by infrastructure layer
+
+**Test coverage considerations**:
+- Focus on data integrity: cascade deletes, foreign key constraints, unique constraints, required fields
+- Verify seed data correctness: StyleKit counts, TemplateLayout counts, JSON structure
+- Test JSON column validation: valid JSON accepted, invalid JSON rejected, complex structures preserved
+- Verify enum values match application constants: SubscriptionTier enum vs TIER_LIMITS constant
+- Performance testing: verify indexes are used, queries complete in reasonable time
+- Edge cases: optional relationships (BrandKit deletion), cascade chains (Profile → Project → Slide)
+
+---
+
+---
+## Iteration 19 - Marketing Pages
+
+**Files analyzed**:
+- apps/nextjs/src/app/[lang]/(marketing)/page.tsx (189 lines)
+- apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx (40 lines)
+- apps/nextjs/src/app/[lang]/(marketing)/layout.tsx (47 lines)
+- apps/nextjs/src/components/price/pricing-cards.tsx (199 lines)
+- apps/nextjs/src/components/price/pricing-faq.tsx (44 lines)
+- apps/nextjs/src/components/features-grid.tsx (65 lines)
+- apps/nextjs/src/config/price/price-data.ts (295 lines)
+
+**Test cases created**: 12 (TC-MARK-001 through TC-MARK-012)
+
+**Key business logic discovered**:
+- **Landing Page Structure**: Two-column grid (hero + right sidebar), responsive layout, BackgroundLines animation component
+- **Hero Section**: Primary CTA ('Start Creating Free' → /en/register), Secondary CTA ('View Pricing' → /en/pricing), both use Next.js Link
+- **Features Grid**: 4 hardcoded feature cards (AI-Powered, 8 Style Kits, Visual Editor, Export Ready) with purple icon backgrounds
+- **Social Proof**: 6 contributor avatars with AnimatedTooltip, "9 contributors" and "2000 developers" stats (internationalized)
+- **Sponsor Section**: 3 sponsor logos (Clerk, Twillot, Setupyourpay) with external links, donate button to OpenCollective
+- **Video Section**: VideoScroll component (not analyzed in detail)
+- **Comments Section**: Comments component for testimonials (not analyzed)
+- **Pricing Page Architecture**: Server Component that fetches user + subscriptionPlan, renders PricingCards (Client) + PricingFaq
+- **3 Subscription Tiers**: Displayed from priceDataMap['en']: starter (free), pro ($30/mo), business ($60/mo)
+- **Billing Toggle**: Monthly/Annual switch (Switch component), annual shows discounted monthly price (yearly / 12) with strikethrough
+- **Conditional CTAs**: Unauthenticated users see "Sign Up" (opens sign-in modal), authenticated users see tier-specific buttons
+  - Free tier: "Go to Dashboard" → /dashboard
+  - Paid tiers: BillingFormButton triggers Stripe checkout
+- **FAQ Section**: Accordion component (type='single', collapsible), questions/answers from priceFaqDataMap[lang]
+- **i18n Support**: 4 locales (en, zh, ja, ko) via getDictionary(lang), priceDataMap and priceFaqDataMap keyed by locale
+- **No Auth Requirement**: Marketing layout does NOT redirect on null user (unlike dashboard layout) - pages are public
+
+**Potential bugs noticed**:
+1. **CRITICAL - Pricing Data Mismatch**: priceDataMap uses tier IDs 'starter', 'pro', 'business' with features about "clusters" (from SaaS template). Actual QuickCarousals uses SubscriptionTier enum (FREE/CREATOR/PRO) with carousel/slide/style kit limits. Pricing page shows WRONG features - needs complete rewrite for QuickCarousals.
+2. **Tier Count Mismatch**: priceDataMap has 3 tiers (starter, pro, business) but app uses 3 different tiers (FREE, CREATOR, PRO). The pricing page doesn't show CREATOR tier at all!
+3. **Stripe Price ID Mismatch**: env vars reference NEXT_PUBLIC_STRIPE_PRO_* and NEXT_PUBLIC_STRIPE_BUSINESS_* but billing system uses NEXT_PUBLIC_STRIPE_CREATOR_PRICE_ID and NEXT_PUBLIC_STRIPE_PRO_PRICE_ID. Complete mismatch!
+4. **Features Not QuickCarousals-Specific**: FeaturesGrid is hardcoded with correct QuickCarousals features BUT pricing tiers mention "clusters per month" (Kubernetes feature from template) not carousel limits.
+5. **No Server-Side Tier Verification**: PricingCards receives subscriptionPlan from tRPC but doesn't verify it matches actual database tier - could show stale data.
+6. **Dark Mode Classes May Not Match Theme**: Dark mode classes hardcoded (dark:text-zinc-100, dark:bg-neutral-900/40) but theme provider might not set 'dark' class correctly.
+
+**Patterns for other modules**:
+- **Public Marketing Layout Pattern**: Server Component layout that fetches user but does NOT enforce auth - allows public access for SEO/conversions
+- **Two-CTA Hero Pattern**: Primary action (signup) + secondary action (pricing) side by side with clear visual hierarchy
+- **Social Proof Pattern**: Contributor avatars + stat numbers builds credibility for open-source product
+- **Billing Toggle Pattern**: Switch component controls state, prices recalculate on toggle, annual shows discount calculation
+- **Conditional CTA Pattern**: Check userId && subscriptionPlan to determine button type (signup vs upgrade vs dashboard)
+- **Feature Grid Pattern**: 4 cards in responsive flex layout, each with icon + title + description
+- **FAQ Accordion Pattern**: Single-open accordion (type='single') for common questions, reduces page clutter
+
+**Codebase patterns discovered**:
+- **Server Component Data Fetching**: await getCurrentUser() and await trpc.stripe.userPlans.query() in pricing page
+- **Client Component Billing Logic**: PricingCards is 'use client' for state management (isYearly toggle)
+- **Locale-Based Config Lookup**: priceDataMap[lang] and priceFaqDataMap[lang] for internationalization
+- **BackgroundLines Animation**: @saasfly/ui component for visual polish on hero section
+- **ColourfulText Effect**: @saasfly/ui component for multi-color gradient text (used on "LinkedIn-ready carousel" and "2000")
+- **AnimatedTooltip**: @saasfly/ui component for contributor hover effects
+- **External Image Loading**: Next.js Image component with external URLs (Twillot, Setupyourpay logos)
+- **Dictionary Loading**: async getDictionary(lang) returns dict.marketing and dict.price objects
+- **useSigninModal Hook**: Opens sign-in modal from pricing CTAs when user not authenticated
+
+**Additional insights**:
+- **Marketing pages are template code** - Most content is from original SaaS template (Saasfly), not customized for QuickCarousals
+- **Pricing tiers don't match product** - "clusters" feature is for Kubernetes management (template's original purpose), not carousel creation
+- **Features grid IS correct** - Only component that accurately describes QuickCarousals (AI generation, style kits, editor, export)
+- **i18n is comprehensive** - All 4 locales have full translations for marketing pages
+- **Social proof is template authors** - Contributors are Saasfly authors (tianzx, jackc3, etc.), not QuickCarousals contributors
+- **Sponsors are template sponsors** - Clerk, Twillot, Setupyourpay sponsor Saasfly, not necessarily QuickCarousals
+- **Layout structure is professional** - NavBar, main content, SiteFooter pattern works well
+- **Responsive design is excellent** - Grid layouts adapt smoothly from mobile to desktop
+- **Dark mode support is thorough** - Consistent dark: classes throughout all components
+- **No custom branding** - Marketing pages don't use QuickCarousals-specific colors, fonts, or imagery (opportunity for improvement)
+- **SEO-friendly** - Public access, Server Component rendering, proper meta tags (title: "Pricing")
+
+**Critical findings for product team**:
+1. **Pricing page MUST be rewritten** - Current page markets wrong product (Kubernetes clusters, not carousels)
+2. **Tier alignment needed** - Choose either starter/pro/business OR FREE/CREATOR/PRO consistently across marketing + billing
+3. **Feature messaging must match backend** - Pricing tiers should list: carousel limits, slide limits, watermark, style kits, brand kits (from TIER_LIMITS)
+4. **Stripe price IDs must be fixed** - env.mjs, billing webhook, and pricing page must all reference same price IDs
+5. **Social proof should be QuickCarousals-specific** - Replace template contributors with actual QuickCarousals users/testimonials
+6. **Landing page hero is good** - "Turn an idea into a LinkedIn-ready carousel in 3 minutes" is clear, compelling value prop
+---
+
+
+## 🔴 Potential Issues Noticed (Updated after Iteration 19)
+
+| Module | Issue Type | Description |
+|--------|-----------|-------------|
+| marketing | Critical | Pricing Data Completely Wrong - priceDataMap uses tier IDs 'starter/pro/business' with features about "clusters per month" (Kubernetes from SaaS template). QuickCarousals uses FREE/CREATOR/PRO tiers with carousel/slide limits. Pricing page markets WRONG PRODUCT. |
+| marketing | Critical | Tier Count Mismatch - priceDataMap has 3 tiers (starter, pro, business) but app has 3 different tiers (FREE, CREATOR, PRO). Pricing page doesn't show CREATOR tier, which exists in billing system. |
+| marketing | Critical | Stripe Price ID Mismatch - env vars reference NEXT_PUBLIC_STRIPE_PRO_* and NEXT_PUBLIC_STRIPE_BUSINESS_* but billing webhook uses NEXT_PUBLIC_STRIPE_CREATOR_PRICE_ID and NEXT_PUBLIC_STRIPE_PRO_PRICE_ID. Complete disconnect. |
+| marketing | High | Template Branding Not Customized - Social proof shows Saasfly contributors (tianzx, jackc3), sponsors are Saasfly sponsors (Clerk, Twillot), not QuickCarousals-specific. Damages authenticity. |
+| marketing | Medium | Features Grid Not i18n - Feature descriptions hardcoded in English (features-grid.tsx), not translated like rest of marketing pages. |
+| marketing | Low | Hero Subtext Inconsistent - Landing page says "It only takes 3 minutes!" but hero headline says "in 3 minutes" - should be consistent. |
+
+
+---
+## Iteration 20 - Infrastructure & Health
+
+**Files analyzed**:
+- apps/nextjs/src/app/api/health/route.ts
+- apps/nextjs/src/app/api/queues/render/status/route.ts
+- apps/nextjs/src/app/error.tsx
+- apps/nextjs/src/app/not-found.tsx
+
+**Test cases created**: 6 (TC-INFRA-001 through TC-INFRA-006)
+
+**Key business logic discovered**:
+- **Health Check Endpoint**: Simple /api/health endpoint returns JSON with status='ok', message, timestamp
+  - Uses edge runtime for fast response (export const runtime = 'edge')
+  - No authentication required (public for monitoring)
+  - No database or external service checks - only verifies API process is running
+  - Returns 200 OK with static JSON structure
+- **Queue Status Endpoint**: /api/queues/render/status provides render queue monitoring
+  - Returns stats: waiting, active, completed, failed job counts
+  - Calls getQueueStats() which uses Promise.all to fetch counts from BullMQ
+  - No authentication required (for monitoring tools)
+  - Error handling with ApiError.internal returns 500 on Redis failures
+- **Error Boundary Page**: Client Component error.tsx catches unhandled errors
+  - Shows user-friendly error page with gradient background
+  - Displays error.message if available (not stack trace)
+  - Provides two recovery options: "Try Again" button (calls reset()) and "Go to Dashboard" link
+  - Logs error to console.error via useEffect for debugging
+  - Reassures user: "your work has been saved"
+- **404 Not Found Page**: Server Component not-found.tsx for non-existent routes
+  - Large "404" text with decorative colored line
+  - Friendly explanation: "page might have been moved or deleted"
+  - Two navigation options: Dashboard and Home buttons
+  - Support link to /en/docs
+  - No error logging needed (404s are not errors)
+
+**Potential bugs noticed**:
+1. **No Database Health Check**: Health endpoint only verifies API process is running, doesn't check database connectivity or Redis availability - could return 200 while database is down
+2. **Queue Status Public Access**: No authentication on queue status endpoint - anyone can monitor queue stats (job counts). May expose operational info to competitors.
+3. **Error Page No Error Reporting**: Error boundary logs to console but doesn't send errors to external monitoring service (Sentry, DataDog, etc.) - production errors may go unnoticed
+4. **404 Page Hardcoded Locale**: Links use /en/ prefix (lines 23, 28, 36) instead of dynamic lang param - won't work correctly for other locales (ja, ko, zh)
+5. **No Queue Health Thresholds**: Queue status returns raw counts but doesn't flag issues - e.g., 1000 failed jobs or 500 waiting jobs might indicate problems but no alerting logic
+
+**Patterns for other modules**:
+- **Edge Runtime Pattern**: Use edge runtime for fast, simple endpoints (health checks, static data)
+- **Public Monitoring Endpoints**: Health/status endpoints typically don't require auth for monitoring tools
+- **Error Boundary Pattern**: Catch unhandled errors, log for debugging, show user-friendly message with recovery options
+- **Custom Error Pages**: Override Next.js defaults with branded error/404 pages for better UX
+- **Graceful Degradation**: Return 500 with error details when external services fail, don't crash server
+- **ApiError Format**: Use consistent ApiError structure (code, message, details) across all API error responses
+
+**Codebase patterns discovered**:
+- **Edge Runtime Declaration**: `export const runtime = 'edge'` at top of route for Vercel Edge Functions
+- **NextResponse.json()**: Return JSON responses with status codes in Next.js route handlers
+- **Client Component Error Boundary**: error.tsx is Client Component with error and reset props from Next.js
+- **Server Component 404**: not-found.tsx is Server Component (no 'use client'), faster rendering
+- **Promise.all for Stats**: Fetch multiple BullMQ counts in parallel for efficiency
+- **useEffect for Side Effects**: Log errors on mount in error boundary, no cleanup needed
+- **Gradient Backgrounds**: Use Tailwind gradients (from-red-50 to-gray-100) for visual polish
+- **Button Variants**: Primary button vs outline variant for different action priorities
+
+**Additional insights**:
+- Infrastructure monitoring is minimal - only API health and queue status, no database/Redis health checks
+- Health endpoint is optimized for speed (edge runtime, no I/O) - suitable for load balancer health checks
+- Queue status is useful for operations but could be improved with alerting thresholds
+- Error pages are well-designed with friendly messaging and clear recovery paths
+- No external error monitoring service integration (Sentry, Rollbar, etc.) - production errors only logged to console
+- 404 page is Server Component for faster rendering vs error boundary which must be Client Component
+- Queue stats come from BullMQ's built-in count methods (getWaitingCount, getActiveCount, etc.)
+- All infrastructure endpoints are intentionally simple with no complex business logic
+---
+
+---
+## Iteration 21 - New User Onboarding Journey
+
+**Files analyzed**: 
+- Previously analyzed modules: marketing, auth, dashboard, creation_flow, generation_topic, projects_crud, editor_page, export_system
+- Synthesized complete E2E journey from 8 module analyses
+
+**Test cases created**: 3 comprehensive E2E test cases (TC-JOURNEY-001, TC-JOURNEY-002, TC-JOURNEY-003)
+
+**Key business logic discovered**:
+- **Complete Onboarding Flow**: Landing → Register → Dashboard (empty state) → Create → Generate → Editor → Export → Download
+- **Three Journey Variants**:
+  1. **Comprehensive Flow** (TC-JOURNEY-001): 30 steps covering EVERY aspect of onboarding from first page view to PDF download, validates database state, file storage, UI states, navigation transitions
+  2. **Speed Test** (TC-JOURNEY-002): 10 steps focused on FASTEST path, validates "3 minutes" marketing promise, measures total time from landing to download
+  3. **Realistic Exploration** (TC-JOURNEY-003): 40 steps with user exploration, validates discoverability, learnability, customization persistence, UX patterns
+- **Critical Dependencies**:
+  - Clerk webhook MUST succeed to create Profile (if fails, entire journey breaks)
+  - AI generation (20-45s) and export rendering (10-30s) are system bottlenecks
+  - Auto-save debounce (500ms) must work transparently
+  - All page transitions must be fast (<2s each)
+- **FREE Tier Enforcement Points**: 3 style kits visible, watermark on exports, 8 slide limit in dropdown, 0 brand kits
+- **Quality Gates**: Zero console errors, all API calls 2xx, database constraints satisfied, PDF output correct dimensions (1080x1350), watermark present
+
+**Potential bugs noticed**:
+1. **Clerk Webhook Failure = Complete Onboarding Failure**: If Clerk's webhook to create Profile fails (network glitch, Supabase down), user authenticates but cannot access any features. No retry mechanism, no error message to user (they just see broken state).
+2. **Pricing Page Wrong Features**: Step 2 of TC-JOURNEY-003 reveals user clicks "View Pricing" and sees Kubernetes cluster features (from SaaS template) instead of carousel limits. May confuse user about what they're signing up for.
+3. **3-Minute Promise Validity**: TC-JOURNEY-002 tests this. Best case: 50s (fast systems), worst case: 105s (slow AI + export). Both under 3 min IF systems are responsive. If AI takes 60s (possible) + export 45s (rare but possible), we exceed promise.
+4. **No Onboarding Tutorial**: New users land on empty dashboard with just a button. No tour, no tooltips, no "what to do next" guidance. Users must discover features by exploring (TC-JOURNEY-003 tests this).
+5. **Brand Kit Toggle Behavior Unclear**: In TC-JOURNEY-003 step 17, user tries to enable brand kit toggle but has 0 kits (FREE tier default). Behavior unclear - should show message "Upgrade to Creator to use brand kits" or "Create a brand kit in Settings first"?
+
+**Patterns for other modules**:
+- **E2E Test Structure**: E2E tests need 20-40 steps (not 5-10 like unit tests), must validate end state (database, files, UI), should include timing expectations
+- **Journey Variants Pattern**: Create 3 variants of critical journeys: comprehensive (validates everything), speed-focused (validates performance), realistic (validates UX)
+- **Acceptance Criteria Completeness**: E2E tests need acceptance criteria for: speed/performance, database state, file storage, UI state, navigation flow, error absence, visual quality
+- **Preconditions Matter**: E2E tests must explicitly state user state (new vs returning), data state (empty vs seeded), service availability
+- **Business Context Critical**: E2E tests represent business outcomes (conversion, activation, retention) not just technical correctness
+
+**Codebase patterns discovered**:
+- **No patterns discovered** - This iteration synthesized existing module knowledge into E2E flows, no new code analyzed
+
+**Additional insights**:
+- **New User Onboarding is THE CRITICAL journey** - If this fails, business fails. All other features are irrelevant if users can't get to first success.
+- **Time budget matters**: Marketing promises "3 minutes". Users will forgive 5 minutes, but not 10. Speed is a competitive advantage.
+- **Empty state is first impression**: Dashboard empty state with "It only takes 3 minutes!" is encouraging and actionable. Good UX.
+- **No hand-holding after dashboard**: After empty state CTA, user is on their own. Create page has no onboarding, editor has no tutorial. Works for savvy users, may lose casual users.
+- **Watermark is subtle but present**: FREE tier watermark "QuickCarousals.com" at bottom of every slide is light gray, doesn't obstruct content. Good balance between branding and usability.
+- **Export is the "aha moment"**: User doesn't feel successful until they download PDF. Export must work flawlessly.
+- **Cross-module dependencies**: Onboarding touches 8+ modules. A bug in any one breaks entire flow. Integration testing is critical.
+- **Realistic user behavior differs from power user**: TC-JOURNEY-003 (40 steps with exploration) reveals users WILL click around, try options, read tooltips. UI must support this without breaking.
+- **Total test case count**: 237 test cases across all modules, 3 for new_user_onboarding journey, 1 journey analyzed (5 remaining)
+
+**Module analysis complete**: ✅ new_user_onboarding journey status updated to "analyzed" in tests.json
+---
+

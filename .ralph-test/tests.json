@@ -2,31 +2,33 @@
   "metadata": {
     "version": "1.0",
     "created_at": "2026-01-30T16:53:00Z",
-    "last_updated": 1769806091.411099,
+    "last_updated": 1769809551.531191,
     "description": "Manual test cases for QuickCarousals - created by Ralph Test Discovery agent",
     "coverage_summary": {
-      "total_tests": 176,
+      "total_tests": 237,
       "by_priority": {
-        "critical": 71,
-        "high": 93,
-        "medium": 11,
-        "low": 1
+        "critical": 83,
+        "high": 118,
+        "medium": 20,
+        "low": 2
       },
       "by_category": {
-        "api": 56,
-        "frontend": 63,
-        "database": 2,
-        "integration": 48,
-        "e2e": 4,
+        "api": 59,
+        "frontend": 81,
+        "database": 14,
+        "integration": 59,
+        "e2e": 7,
         "security": 4,
-        "performance": 0
+        "performance": 1
       },
-      "modules_analyzed": 15,
+      "modules_analyzed": 20,
       "modules_total": 20,
-      "journeys_analyzed": 0,
+      "journeys_analyzed": 1,
       "journeys_total": 6,
-      "total_test_cases": 190
-    }
+      "total_test_cases": 237
+    },
+    "total_tests": 237,
+    "modules_analyzed": 20
   },
   "modules": {
     "auth": {
@@ -105,24 +107,24 @@
       "test_count": 13
     },
     "auto_save": {
-      "name": "Auto-Save",
-      "status": "pending_analysis",
-      "test_count": 0
+      "name": "Auto-Save Hook",
+      "status": "analyzed",
+      "test_count": 8
     },
     "text_measurement": {
       "name": "Text Measurement & Auto-Fit",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 6
     },
     "database": {
       "name": "Database & Data Integrity",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 12
     },
     "marketing": {
       "name": "Marketing Pages",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 12
     },
     "infrastructure": {
       "name": "Infrastructure & Health",
@@ -134,8 +136,8 @@
     "new_user_onboarding": {
       "name": "New User Onboarding",
       "description": "Landing page \u2192 Sign up \u2192 Dashboard \u2192 First carousel",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 3
     },
     "topic_to_export": {
       "name": "Topic \u2192 Export (Happy Path)",
@@ -12091,6 +12093,3178 @@
         "deployment"
       ],
       "notes": "Edge runtime export: line 173. All dependencies must be Edge-compatible. OpenAI lib works on Edge. Faster cold starts and lower latency globally."
+    },
+    {
+      "id": "TC-AUTOSAVE-001",
+      "name": "Auto-save triggers after user stops editing",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that auto-save kicks in after user stops making changes for 500ms (debounce period)",
+      "business_context": "Users expect their work to be saved automatically without clicking Save button. This prevents data loss and improves UX.",
+      "preconditions": [
+        "User is logged in",
+        "User is editing a project in the editor",
+        "Project has a valid projectId"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Make a change to slide content (e.g., edit text in a text box)",
+          "expected": "Content updates in the editor canvas, no save indicator yet"
+        },
+        {
+          "step": 2,
+          "action": "Stop making changes and wait 500ms",
+          "expected": "Save indicator changes to 'Saving...' status"
+        },
+        {
+          "step": 3,
+          "action": "Wait for save to complete",
+          "expected": "Save indicator changes to 'Saved' status after successful API call"
+        },
+        {
+          "step": 4,
+          "action": "Refresh the page",
+          "expected": "Changes persist - edited content is still present"
+        }
+      ],
+      "acceptance_criteria": [
+        "Auto-save triggers exactly 500ms after last change",
+        "Save status indicator displays 'Saving...' during save",
+        "Save status indicator displays 'Saved' after successful save",
+        "Changes persist after page refresh",
+        "API call is made to PUT /api/projects/:id/slides with updated data"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx"
+      ],
+      "tags": [
+        "auto-save",
+        "editor",
+        "data-persistence"
+      ],
+      "notes": "This is the core auto-save behavior that prevents data loss"
+    },
+    {
+      "id": "TC-AUTOSAVE-002",
+      "name": "Multiple rapid changes only trigger one save (debounce)",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that rapid consecutive changes are debounced - only the final state is saved, reducing API calls",
+      "business_context": "Prevents excessive API calls when user types continuously. Saves server resources and improves performance.",
+      "preconditions": [
+        "User is logged in",
+        "User is editing a project in the editor",
+        "Auto-save is enabled"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Type continuously in a text box for 2 seconds without pausing",
+          "expected": "Text updates in real-time in the editor"
+        },
+        {
+          "step": 2,
+          "action": "Stop typing and wait 500ms",
+          "expected": "Single save operation triggers with final text"
+        },
+        {
+          "step": 3,
+          "action": "Check network requests in browser DevTools",
+          "expected": "Only ONE API request to /api/projects/:id/slides during the entire editing session"
+        }
+      ],
+      "acceptance_criteria": [
+        "No save triggers during continuous editing (< 500ms between changes)",
+        "Only ONE API call made after user stops editing",
+        "Final state (not intermediate states) is sent to API",
+        "Save status shows 'Saving...' only once",
+        "Previous pending saves are cancelled if new changes occur"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts"
+      ],
+      "tags": [
+        "auto-save",
+        "debounce",
+        "performance"
+      ],
+      "notes": "Debouncing is critical for performance - prevents save-on-every-keystroke behavior"
+    },
+    {
+      "id": "TC-AUTOSAVE-003",
+      "name": "Save error displays user-friendly message",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that save failures are communicated clearly to the user with actionable error messages",
+      "business_context": "Users need to know when their work isn't saved and what to do about it. Silent failures lead to data loss frustration.",
+      "preconditions": [
+        "User is logged in",
+        "User is editing a project",
+        "Simulate API failure (network error or 500 response)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Make a change to slide content",
+          "expected": "Content updates in editor"
+        },
+        {
+          "step": 2,
+          "action": "Wait 500ms for auto-save to trigger",
+          "expected": "Save status shows 'Saving...'"
+        },
+        {
+          "step": 3,
+          "action": "API returns error (simulate network failure or 500 error)",
+          "expected": "Save status changes to 'Error' with red indicator"
+        },
+        {
+          "step": 4,
+          "action": "Hover or click on error indicator",
+          "expected": "Error message displayed: 'Failed to save changes' or specific error from API"
+        }
+      ],
+      "acceptance_criteria": [
+        "Error state is visually distinct (red color, error icon)",
+        "Error message is user-friendly, not technical API error",
+        "User can retry save (by making another change or clicking retry button)",
+        "Error state persists until next successful save",
+        "Error is logged to console for debugging"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx"
+      ],
+      "tags": [
+        "auto-save",
+        "error-handling",
+        "ux"
+      ],
+      "notes": "Error handling must be visible and actionable - silent failures are unacceptable"
+    },
+    {
+      "id": "TC-AUTOSAVE-004",
+      "name": "Auto-save disabled when enabled=false",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that auto-save can be disabled via the enabled flag, useful for test/demo modes",
+      "business_context": "Some scenarios require disabling auto-save (e.g., demo mode, offline editing). Hook must respect this flag.",
+      "preconditions": [
+        "User is in a context where auto-save is disabled",
+        "useAutoSave hook is called with enabled=false"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Make changes to slide content",
+          "expected": "Content updates in editor UI"
+        },
+        {
+          "step": 2,
+          "action": "Wait 500ms (normal debounce period)",
+          "expected": "No save operation triggers, status remains 'idle'"
+        },
+        {
+          "step": 3,
+          "action": "Check network tab in browser DevTools",
+          "expected": "No API calls to /api/projects/:id/slides"
+        },
+        {
+          "step": 4,
+          "action": "Refresh the page",
+          "expected": "Changes are lost (not saved)"
+        }
+      ],
+      "acceptance_criteria": [
+        "No save operations occur when enabled=false",
+        "Save function returns early without making API calls",
+        "Status remains 'idle' indefinitely",
+        "No network requests to save endpoint",
+        "Changes are not persisted"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx"
+      ],
+      "tags": [
+        "auto-save",
+        "configuration",
+        "edge-case"
+      ],
+      "notes": "Test page (/editor/test) likely uses enabled=false to prevent saving demo data"
+    },
+    {
+      "id": "TC-AUTOSAVE-005",
+      "name": "Auto-save skipped when projectId is missing",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that auto-save safely handles missing projectId without crashing or making invalid API calls",
+      "business_context": "During project creation or edge cases, projectId might not be available yet. Hook must handle this gracefully.",
+      "preconditions": [
+        "User is in a state where projectId is undefined or null",
+        "useAutoSave hook is initialized without projectId"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Trigger save function with data",
+          "expected": "No crash or error thrown"
+        },
+        {
+          "step": 2,
+          "action": "Wait 500ms for debounce",
+          "expected": "No API call made, status remains 'idle'"
+        },
+        {
+          "step": 3,
+          "action": "Check browser console",
+          "expected": "No errors logged"
+        },
+        {
+          "step": 4,
+          "action": "Check network tab",
+          "expected": "No API requests to /api/projects/undefined"
+        }
+      ],
+      "acceptance_criteria": [
+        "Hook doesn't crash when projectId is missing",
+        "performSave returns early if projectId is undefined",
+        "No API calls made to invalid endpoints",
+        "Status remains 'idle', not 'error'",
+        "No console errors or warnings"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts"
+      ],
+      "tags": [
+        "auto-save",
+        "error-handling",
+        "edge-case"
+      ],
+      "notes": "Line 57 checks '!projectId' before API call - this test validates that guard"
+    },
+    {
+      "id": "TC-AUTOSAVE-006",
+      "name": "Custom onSave function overrides default API call",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that useAutoSave supports custom save logic via onSave callback, useful for bulk slide updates",
+      "business_context": "Editor page uses custom onSave to save all slides in bulk (PUT /api/projects/:id/slides) instead of default PATCH. Hook must support this flexibility.",
+      "preconditions": [
+        "User is editing slides in editor",
+        "useAutoSave initialized with custom onSave function that calls bulk slide update API"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Make changes to slide content",
+          "expected": "Content updates in editor"
+        },
+        {
+          "step": 2,
+          "action": "Wait 500ms for auto-save",
+          "expected": "Custom onSave function is called with slide data"
+        },
+        {
+          "step": 3,
+          "action": "Check network requests",
+          "expected": "API call to PUT /api/projects/:id/slides (not PATCH /api/projects/:id)"
+        },
+        {
+          "step": 4,
+          "action": "Verify save status",
+          "expected": "Status shows 'Saved' after custom save completes"
+        }
+      ],
+      "acceptance_criteria": [
+        "Custom onSave function is called instead of default PATCH",
+        "Hook passes correct data to onSave callback",
+        "Status transitions correctly (idle \u2192 saving \u2192 saved)",
+        "Default API call (PATCH /api/projects/:id) is NOT made",
+        "Error handling works with custom onSave (sets error state if promise rejects)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx"
+      ],
+      "tags": [
+        "auto-save",
+        "customization",
+        "editor"
+      ],
+      "notes": "Editor page uses this pattern - see lines 55-60 in editor page where useAutoSave is initialized with custom save function"
+    },
+    {
+      "id": "TC-AUTOSAVE-007",
+      "name": "Pending save cancelled on component unmount",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that pending saves are properly cleaned up when user navigates away, preventing memory leaks",
+      "business_context": "If user navigates away during debounce window (before save triggers), timeout must be cleared to prevent orphaned API calls and memory leaks.",
+      "preconditions": [
+        "User is editing a project",
+        "User makes a change (triggers save debounce)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Make a change to slide content",
+          "expected": "Debounce timer starts (500ms countdown)"
+        },
+        {
+          "step": 2,
+          "action": "Within 500ms (before save triggers), click 'Back to Dashboard' or close browser tab",
+          "expected": "User navigates away from editor page"
+        },
+        {
+          "step": 3,
+          "action": "Check browser console and network tab",
+          "expected": "No API call made after navigation (pending save was cancelled)"
+        },
+        {
+          "step": 4,
+          "action": "Check browser memory profiler (if accessible)",
+          "expected": "No orphaned timers or memory leaks"
+        }
+      ],
+      "acceptance_criteria": [
+        "useEffect cleanup function runs on unmount",
+        "clearTimeout called to cancel pending save",
+        "No API calls made after component unmounts",
+        "No memory leaks from orphaned timers",
+        "User's last change is lost (not saved) if navigation happens within debounce window"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts"
+      ],
+      "tags": [
+        "auto-save",
+        "cleanup",
+        "memory-management"
+      ],
+      "notes": "Lines 92-98 implement cleanup - this test validates that cleanup runs correctly"
+    },
+    {
+      "id": "TC-AUTOSAVE-008",
+      "name": "Status indicator reflects real-time save state",
+      "module": "auto_save",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that save status indicator accurately shows idle \u2192 saving \u2192 saved \u2192 idle transitions",
+      "business_context": "Users need visual feedback about save state. Status indicator builds trust that work is being saved.",
+      "preconditions": [
+        "User is editing a project",
+        "Save status indicator is visible in UI (typically in header)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Observe initial save status",
+          "expected": "Status shows 'idle' or no indicator (no recent saves)"
+        },
+        {
+          "step": 2,
+          "action": "Make a change to slide content",
+          "expected": "Status remains 'idle' during debounce (first 500ms)"
+        },
+        {
+          "step": 3,
+          "action": "Wait 500ms for save to trigger",
+          "expected": "Status changes to 'Saving...' with loading spinner"
+        },
+        {
+          "step": 4,
+          "action": "Wait for API call to complete (typically 200-500ms)",
+          "expected": "Status changes to 'Saved' with checkmark icon"
+        },
+        {
+          "step": 5,
+          "action": "Wait a few seconds without making changes",
+          "expected": "Status fades to 'idle' or 'Saved' persists until next change"
+        }
+      ],
+      "acceptance_criteria": [
+        "Status accurately reflects hook's internal state",
+        "Transitions are smooth and visually clear",
+        "Loading spinner appears during 'Saving...' state",
+        "Checkmark or success icon appears for 'Saved' state",
+        "Status indicator is always visible and easy to find",
+        "No flashing or rapid state changes (debouncing works)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx"
+      ],
+      "tags": [
+        "auto-save",
+        "ui",
+        "feedback"
+      ],
+      "notes": "Status is returned from hook (line 100-104) - parent component must render it appropriately"
+    },
+    {
+      "id": "TC-TEXTMEAS-001",
+      "name": "Text auto-fits to textbox bounds on slide",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that text automatically scales to the largest font size that fits within textbox dimensions",
+      "business_context": "Users expect text to fill available space optimally without overflowing. This creates professional-looking slides and prevents cut-off text in exports.",
+      "preconditions": [
+        "User is editing a slide in the editor",
+        "Slide has a textbox layer with defined width and height bounds"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enter short text like '5 Tips' in a textbox",
+          "expected": "Text renders at large font size, fills most of available height"
+        },
+        {
+          "step": 2,
+          "action": "Enter longer text like 'Here are five productivity tips for remote workers'",
+          "expected": "Text automatically scales down to smaller font size to fit all text within bounds"
+        },
+        {
+          "step": 3,
+          "action": "Observe final rendering",
+          "expected": "All text is visible, no overflow beyond textbox borders, font is as large as possible while fitting"
+        }
+      ],
+      "acceptance_criteria": [
+        "Auto-fit uses binary search algorithm (efficient O(log n) time)",
+        "Final font size is largest that keeps text within maxWidth and maxHeight",
+        "Text wraps to multiple lines if needed to maximize font size",
+        "No text is cut off or hidden",
+        "Auto-fit calculation completes within 100ms"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx"
+      ],
+      "tags": [
+        "text-measurement",
+        "auto-fit",
+        "editor"
+      ],
+      "notes": "This is the core auto-fit feature - calculateOptimalFontSize() with binary search (lines 165-195)"
+    },
+    {
+      "id": "TC-TEXTMEAS-002",
+      "name": "Text overflow detected and flagged with red border",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that text too long to fit even at minimum font size is visually flagged for user correction",
+      "business_context": "Overflow text would be cut off in exports, creating unprofessional carousels. Users must be alerted to fix overflow before exporting.",
+      "preconditions": [
+        "User is editing a slide",
+        "User enters very long text in a textbox"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enter extremely long text (e.g., 10 sentences) in a small textbox",
+          "expected": "Text renders at minimum font size (e.g., 12px)"
+        },
+        {
+          "step": 2,
+          "action": "Observe textbox borders",
+          "expected": "Red border appears around textbox indicating overflow"
+        },
+        {
+          "step": 3,
+          "action": "Observe 'Fix with AI' button",
+          "expected": "Button appears near textbox offering to condense text automatically"
+        },
+        {
+          "step": 4,
+          "action": "Hover over red border or overflow indicator",
+          "expected": "Tooltip explains: 'Text is too long to fit. Click Fix with AI or edit manually.'"
+        }
+      ],
+      "acceptance_criteria": [
+        "Overflow detected when measureText height > maxHeight at minimum font size",
+        "Red border (#ef4444 or similar) appears immediately on overflow",
+        "Fix with AI button is prominently displayed",
+        "User cannot export with overflow (validation error)",
+        "Overflow state updates in real-time as user edits text"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx"
+      ],
+      "tags": [
+        "text-measurement",
+        "overflow",
+        "validation"
+      ],
+      "notes": "doesTextFit() function (lines 200-210) is used for overflow detection"
+    },
+    {
+      "id": "TC-TEXTMEAS-003",
+      "name": "Multi-line text wraps correctly at word boundaries",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that text breaks into multiple lines at word boundaries, not mid-word, for readable typography",
+      "business_context": "Professional typographic standards require word-boundary wrapping. Mid-word breaks look amateurish and hurt readability.",
+      "preconditions": [
+        "User is editing a textbox with maxWidth constraint",
+        "Text is longer than one line width"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enter text: 'The quick brown fox jumps over the lazy dog'",
+          "expected": "Text wraps to 2-3 lines depending on font size and box width"
+        },
+        {
+          "step": 2,
+          "action": "Observe line breaks",
+          "expected": "Lines break between words: 'The quick brown fox' / 'jumps over the lazy dog'"
+        },
+        {
+          "step": 3,
+          "action": "Verify no mid-word breaks",
+          "expected": "No words are split across lines (no 'ju-mps' or 'la-zy')"
+        },
+        {
+          "step": 4,
+          "action": "Change textbox width (resize)",
+          "expected": "Line breaks adjust automatically, still respecting word boundaries"
+        }
+      ],
+      "acceptance_criteria": [
+        "breakTextIntoLines() splits on \\s+ regex (whitespace)",
+        "No words hyphenated or split mid-character",
+        "Line width never exceeds maxWidth",
+        "Lines are balanced (no single word on last line if avoidable)",
+        "Works correctly for multi-space and tab characters"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts"
+      ],
+      "tags": [
+        "text-measurement",
+        "line-breaking",
+        "typography"
+      ],
+      "notes": "breakTextIntoLines() function (lines 126-154) handles word-boundary wrapping"
+    },
+    {
+      "id": "TC-TEXTMEAS-004",
+      "name": "Bullet point arrays measured correctly with line height",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that bullet lists (string arrays) are measured with proper line height spacing between items",
+      "business_context": "Bullet slides are common carousel type. Each bullet must have adequate spacing for readability, and total height must fit in slide bounds.",
+      "preconditions": [
+        "User is editing a 'value_bullets' slide",
+        "Content is array of 3-5 bullet points"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Observe bullet slide with array content like ['Tip 1', 'Tip 2', 'Tip 3']",
+          "expected": "Each bullet renders on separate line with proper spacing"
+        },
+        {
+          "step": 2,
+          "action": "Check line height between bullets",
+          "expected": "Line height is fontSize * lineHeightMultiplier (e.g., 24px * 1.5 = 36px)"
+        },
+        {
+          "step": 3,
+          "action": "Calculate total height",
+          "expected": "Total height = numBullets * lineHeightPx (e.g., 3 bullets * 36px = 108px)"
+        },
+        {
+          "step": 4,
+          "action": "Verify auto-fit considers bullet spacing",
+          "expected": "Font size is optimized for all bullets to fit within slide height"
+        }
+      ],
+      "acceptance_criteria": [
+        "measureText() handles string[] input (lines 73-98)",
+        "Line height multiplier applied correctly (default 1.2)",
+        "Total height = numLines * (fontSize * lineHeight)",
+        "Max width tracks widest bullet text",
+        "Bullet prefixes (\u2022, 1., 2.) accounted for in width calculation"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx"
+      ],
+      "tags": [
+        "text-measurement",
+        "bullets",
+        "line-height"
+      ],
+      "notes": "Array handling in measureText (lines 73-98) - each array element becomes one or more lines"
+    },
+    {
+      "id": "TC-TEXTMEAS-005",
+      "name": "Empty text or whitespace-only text handled gracefully",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that empty strings, null, or whitespace-only text don't crash measurement or render incorrectly",
+      "business_context": "Users might accidentally leave textboxes empty or with only spaces. System must handle this gracefully without errors.",
+      "preconditions": [
+        "User is editing a slide",
+        "User deletes all text or enters only spaces/newlines"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Clear all text from a textbox (empty string)",
+          "expected": "No crash, textbox shows placeholder or remains blank"
+        },
+        {
+          "step": 2,
+          "action": "Enter only spaces '     ' in textbox",
+          "expected": "Text measurement treats as empty, no visible content rendered"
+        },
+        {
+          "step": 3,
+          "action": "Check auto-fit behavior with empty text",
+          "expected": "Auto-fit returns maxFontSize (no text to constrain sizing)"
+        },
+        {
+          "step": 4,
+          "action": "Check overflow detection with empty text",
+          "expected": "No overflow flagged (empty text always fits)"
+        }
+      ],
+      "acceptance_criteria": [
+        "measureText('', options) returns { width: 0, height: lineHeightPx, lines: [''] }",
+        "No console errors or exceptions thrown",
+        "breakTextIntoLines returns [''] for empty input (line 153)",
+        "calculateOptimalFontSize with empty text returns maxFontSize",
+        "doesTextFit returns true for empty text"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts"
+      ],
+      "tags": [
+        "text-measurement",
+        "edge-case",
+        "empty-input"
+      ],
+      "notes": "Line 153 ensures breakTextIntoLines returns at least [''] - prevents empty array issues"
+    },
+    {
+      "id": "TC-TEXTMEAS-006",
+      "name": "Text measurement requires browser environment (SSR safe)",
+      "module": "text_measurement",
+      "user_journey": null,
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that text measurement gracefully fails or skips during server-side rendering without crashing",
+      "business_context": "Next.js renders pages on server before hydration. Text measurement requires Canvas API which only exists in browser. Must handle SSR correctly.",
+      "preconditions": [
+        "Page is being server-side rendered (initial page load)",
+        "EditorCanvas component attempts to call measureText()"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /editor/:id directly (SSR)",
+          "expected": "Page loads without crashing"
+        },
+        {
+          "step": 2,
+          "action": "Check server logs for errors",
+          "expected": "No 'Text measurement requires browser environment' errors in server logs"
+        },
+        {
+          "step": 3,
+          "action": "Wait for client-side hydration",
+          "expected": "Text measurement runs successfully after hydration completes"
+        },
+        {
+          "step": 4,
+          "action": "Verify text renders correctly after hydration",
+          "expected": "Auto-fit and overflow detection work normally"
+        }
+      ],
+      "acceptance_criteria": [
+        "getContext() throws clear error if typeof window === 'undefined' (line 30-32)",
+        "Components check for browser environment before calling measureText",
+        "SSR renders placeholder or static layout without text measurement",
+        "Client-side hydration triggers text measurement recalculation",
+        "No hydration mismatches between server and client renders"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/text-measure.ts",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx"
+      ],
+      "tags": [
+        "text-measurement",
+        "ssr",
+        "browser-only"
+      ],
+      "notes": "Line 30 guards against SSR - EditorCanvas likely has useEffect or client-only checks"
+    },
+    {
+      "id": "TC-DB-001",
+      "name": "Verify StyleKit seed data is present with correct counts",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that all 8 StyleKits are seeded correctly with proper free/premium distribution",
+      "business_context": "StyleKits are the foundation of visual customization. Without properly seeded StyleKits, users cannot create or edit carousels. This is reference data that must exist before any user interactions.",
+      "preconditions": [
+        "Database schema is applied (bun db:push)",
+        "Seed script has been run (bun run packages/db/prisma/seed.ts)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Query StyleKit table for all records",
+          "expected": "Returns exactly 8 StyleKit records"
+        },
+        {
+          "step": 2,
+          "action": "Filter StyleKits by isPremium = false",
+          "expected": "Returns exactly 4 free kits: minimal_clean, high_contrast_punch, marker_highlight, sticky_note"
+        },
+        {
+          "step": 3,
+          "action": "Filter StyleKits by isPremium = true",
+          "expected": "Returns exactly 4 premium kits: corporate_pro, gradient_modern, dark_mode_punch, soft_pastel"
+        },
+        {
+          "step": 4,
+          "action": "Verify each StyleKit has required fields: id, name, typography (JSON), colors (JSON), spacingRules (JSON)",
+          "expected": "All 8 StyleKits have complete data, no null values in required fields"
+        }
+      ],
+      "acceptance_criteria": [
+        "Total StyleKit count is exactly 8",
+        "Free kit count is 4, premium kit count is 4",
+        "All StyleKit IDs match expected values from seed.ts",
+        "All JSON fields are valid JSON objects (not strings or null)",
+        "Typography contains headline_font, headline_weight, body_font, body_weight",
+        "Colors contains background, foreground, accent (and optionally marker)",
+        "SpacingRules contains padding and line_height"
+      ],
+      "related_files": [
+        "packages/db/prisma/seed.ts",
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "seed-data",
+        "style-kits",
+        "data-integrity"
+      ],
+      "notes": "StyleKit seed data must remain consistent across environments (dev, staging, prod). Any changes to seed.ts should be carefully reviewed as they affect all users."
+    },
+    {
+      "id": "TC-DB-002",
+      "name": "Verify TemplateLayout seed data is present with correct slide types",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that all 9 TemplateLayouts are seeded with proper categories and layersBlueprint structure",
+      "business_context": "TemplateLayouts define how slides are structured. AI generation and editor rendering depend on these layouts. Missing or corrupted layouts would break carousel creation.",
+      "preconditions": [
+        "Database schema is applied",
+        "Seed script has been run"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Query TemplateLayout table for all records",
+          "expected": "Returns exactly 9 TemplateLayout records"
+        },
+        {
+          "step": 2,
+          "action": "Group TemplateLayouts by category",
+          "expected": "Categories: hook (1), promise (1), value (5), recap (1), cta (1), generic (1)"
+        },
+        {
+          "step": 3,
+          "action": "Verify each TemplateLayout has layersBlueprint JSON with 'layers' array",
+          "expected": "All 9 layouts have valid JSON with at least one background layer and one text_box layer"
+        },
+        {
+          "step": 4,
+          "action": "Check that slideType matches category for each layout",
+          "expected": "slideType values align with expected slide types (hook, promise, list, steps, text_visual, quote, recap, cta, generic)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Total TemplateLayout count is exactly 9",
+        "Layout IDs match seed.ts: hook_big_headline, promise_two_column, value_bullets, value_numbered_steps, value_text_left_visual_right, value_centered_quote, recap_grid, cta_centered, generic_single_focus",
+        "layersBlueprint is valid JSON with 'layers' array property",
+        "Each layer in layersBlueprint has 'type' property",
+        "Text box layers have position, constraints, and id properties",
+        "No layouts have null or empty layersBlueprint"
+      ],
+      "related_files": [
+        "packages/db/prisma/seed.ts",
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "seed-data",
+        "template-layouts",
+        "data-integrity"
+      ],
+      "notes": "TemplateLayouts are immutable reference data. Changes should be rare and carefully coordinated with AI generation logic in openai.ts."
+    },
+    {
+      "id": "TC-DB-003",
+      "name": "Verify CASCADE delete on Profile \u2192 Project \u2192 Slide relationship",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that deleting a Profile automatically cascades to delete all Projects and Slides owned by that user",
+      "business_context": "When a user deletes their account (via Clerk webhook or admin action), all their data must be cleaned up automatically to comply with data retention policies and prevent orphaned records.",
+      "preconditions": [
+        "Database schema is applied with CASCADE constraints",
+        "Test user Profile exists with clerkUserId='test-user-cascade'",
+        "Test user has at least 1 Project with 3+ Slides"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create test Profile with clerkUserId='test-user-cascade'",
+          "expected": "Profile created with generated UUID id"
+        },
+        {
+          "step": 2,
+          "action": "Create test Project linked to Profile.id with 3 Slides",
+          "expected": "Project and Slides created successfully"
+        },
+        {
+          "step": 3,
+          "action": "Query Slide table for slides belonging to test Project",
+          "expected": "Returns 3 Slide records"
+        },
+        {
+          "step": 4,
+          "action": "Delete the Profile record by id",
+          "expected": "Profile deleted successfully"
+        },
+        {
+          "step": 5,
+          "action": "Query Project table for projects where userId = deleted Profile.id",
+          "expected": "Returns 0 records (project was cascade deleted)"
+        },
+        {
+          "step": 6,
+          "action": "Query Slide table for slides where projectId = deleted Project.id",
+          "expected": "Returns 0 records (slides were cascade deleted)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Deleting Profile does not throw foreign key constraint errors",
+        "All Projects owned by deleted Profile are automatically removed",
+        "All Slides belonging to deleted Projects are automatically removed",
+        "No orphaned Slide records remain in database",
+        "Cascade operation completes in less than 2 seconds for 10 projects with 100 total slides"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "cascade-delete",
+        "data-integrity",
+        "relationship"
+      ],
+      "notes": "This tests Prisma's onDelete: Cascade setting. Real user deletion happens via Clerk webhook calling Profile deletion endpoint."
+    },
+    {
+      "id": "TC-DB-004",
+      "name": "Verify CASCADE delete on Project \u2192 Export relationship",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that deleting a Project automatically cascades to delete all Export records associated with that project",
+      "business_context": "When users delete a carousel project, all associated export jobs and their metadata must be cleaned up. Export files in Supabase Storage should be cleaned separately, but database records must cascade automatically.",
+      "preconditions": [
+        "Database schema is applied with CASCADE constraints",
+        "Test Project exists with id='test-project-export-cascade'",
+        "Test Project has 2+ Export records (one COMPLETED with fileUrl, one FAILED)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create test Project with valid userId, styleKitId",
+          "expected": "Project created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Create 2 Export records: one PDF export status=COMPLETED, one PNG export status=FAILED",
+          "expected": "Both Export records created with projectId = test Project.id"
+        },
+        {
+          "step": 3,
+          "action": "Query Export table where projectId = test Project.id",
+          "expected": "Returns 2 Export records"
+        },
+        {
+          "step": 4,
+          "action": "Delete the Project record by id using DELETE FROM Project WHERE id = test Project.id",
+          "expected": "Project deleted successfully, 1 row affected"
+        },
+        {
+          "step": 5,
+          "action": "Query Export table where projectId = deleted Project.id",
+          "expected": "Returns 0 records (both exports cascade deleted)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Deleting Project does not throw foreign key constraint errors",
+        "All Export records for deleted Project are automatically removed",
+        "No orphaned Export records remain in database",
+        "Cascade delete completes immediately (< 500ms)",
+        "Export.fileUrl (storage path) is logged before deletion for cleanup purposes"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/projects/[id]/route.ts"
+      ],
+      "tags": [
+        "cascade-delete",
+        "data-integrity",
+        "exports"
+      ],
+      "notes": "Storage file cleanup (Supabase Storage) is NOT automatic. Backend should implement cleanup logic before deleting Project to avoid orphaned files in storage."
+    },
+    {
+      "id": "TC-DB-005",
+      "name": "Verify BrandKit deletion does NOT cascade to Projects (optional relationship)",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that deleting a BrandKit does NOT cascade delete Projects that reference it, but sets Project.brandKitId to null",
+      "business_context": "BrandKits are optional personalization. If a user deletes their brand kit, their existing projects should remain intact but lose the brand kit reference. This prevents accidental data loss.",
+      "preconditions": [
+        "Database schema is applied",
+        "Test Profile exists with id='test-user-brandkit'",
+        "Test BrandKit exists with userId='test-user-brandkit' and isDefault=true",
+        "Test Project exists with brandKitId = test BrandKit.id"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Create test BrandKit with userId='test-user-brandkit'",
+          "expected": "BrandKit created with generated UUID id"
+        },
+        {
+          "step": 2,
+          "action": "Create test Project with brandKitId = test BrandKit.id",
+          "expected": "Project created and references BrandKit"
+        },
+        {
+          "step": 3,
+          "action": "Query Project where id = test Project.id",
+          "expected": "Project.brandKitId equals test BrandKit.id (not null)"
+        },
+        {
+          "step": 4,
+          "action": "Delete the BrandKit record by id",
+          "expected": "BrandKit deleted successfully"
+        },
+        {
+          "step": 5,
+          "action": "Query Project where id = test Project.id",
+          "expected": "Project still exists (not cascade deleted), but brandKitId is null"
+        },
+        {
+          "step": 6,
+          "action": "Verify Project has styleKitId, userId, slides intact",
+          "expected": "All other Project fields are unchanged, only brandKitId is null"
+        }
+      ],
+      "acceptance_criteria": [
+        "Deleting BrandKit does not delete Projects that reference it",
+        "Project.brandKitId is set to null after BrandKit deletion",
+        "All other Project data remains intact (slides, styleKitId, title, status)",
+        "No foreign key constraint errors occur",
+        "Project can be loaded and edited normally after BrandKit deletion"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/brand-kits/[id]/route.ts"
+      ],
+      "tags": [
+        "optional-relationship",
+        "data-integrity",
+        "brand-kit"
+      ],
+      "notes": "Prisma schema uses optional relation (brandKit BrandKit? @relation...) with no onDelete directive, so Prisma sets NULL by default. Backend should notify users before deleting brand kit if it's in use."
+    },
+    {
+      "id": "TC-DB-006",
+      "name": "Verify required fields prevent null values in Profile model",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that Profile model enforces required fields and rejects records with missing clerkUserId or email",
+      "business_context": "Profile is the core user identity model. clerkUserId and email are required for auth integration and user management. Null values would break authentication and API authorization.",
+      "preconditions": [
+        "Database schema is applied with NOT NULL constraints",
+        "No existing Profile with clerkUserId='test-invalid-profile'"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Attempt to insert Profile with clerkUserId=null, email='test@example.com'",
+          "expected": "Database rejects insert with NOT NULL constraint violation error"
+        },
+        {
+          "step": 2,
+          "action": "Attempt to insert Profile with clerkUserId='test-clerk-id', email=null",
+          "expected": "Database rejects insert with NOT NULL constraint violation error"
+        },
+        {
+          "step": 3,
+          "action": "Attempt to insert Profile with all required fields: clerkUserId='test-valid', email='valid@example.com'",
+          "expected": "Profile created successfully with generated id, subscriptionTier defaults to FREE, createdAt/updatedAt set automatically"
+        },
+        {
+          "step": 4,
+          "action": "Query Profile where clerkUserId='test-valid'",
+          "expected": "Returns 1 record with subscriptionTier='FREE', name=null, avatarUrl=null (optional fields can be null)"
+        }
+      ],
+      "acceptance_criteria": [
+        "INSERT with null clerkUserId throws error with message containing 'NOT NULL constraint'",
+        "INSERT with null email throws error with message containing 'NOT NULL constraint'",
+        "Valid Profile INSERT succeeds and returns generated UUID id",
+        "subscriptionTier defaults to 'FREE' when not specified",
+        "createdAt and updatedAt are automatically set to current timestamp",
+        "Optional fields (name, avatarUrl) can be null without error"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "validation",
+        "required-fields",
+        "error-handling"
+      ],
+      "notes": "Profile creation happens via Clerk webhook after user registration. Backend API should validate required fields before database insert for better error messages."
+    },
+    {
+      "id": "TC-DB-007",
+      "name": "Verify unique constraint on Profile.clerkUserId prevents duplicates",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that Profile model enforces unique constraint on clerkUserId to prevent duplicate user records",
+      "business_context": "Each Clerk user must map to exactly one Profile record. Duplicate clerkUserId values would break authentication, cause data integrity issues, and allow users to bypass subscription limits.",
+      "preconditions": [
+        "Database schema is applied with UNIQUE constraint on clerkUserId",
+        "Test Profile exists with clerkUserId='test-unique-clerk-id'"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Insert first Profile with clerkUserId='test-unique-clerk-id', email='user1@example.com'",
+          "expected": "Profile created successfully with unique clerkUserId"
+        },
+        {
+          "step": 2,
+          "action": "Attempt to insert second Profile with same clerkUserId='test-unique-clerk-id', different email='user2@example.com'",
+          "expected": "Database rejects insert with UNIQUE constraint violation error"
+        },
+        {
+          "step": 3,
+          "action": "Query Profile where clerkUserId='test-unique-clerk-id'",
+          "expected": "Returns exactly 1 record (first Profile), not 2"
+        },
+        {
+          "step": 4,
+          "action": "Verify error message contains 'unique constraint' and mentions 'clerkUserId' column",
+          "expected": "Error clearly indicates which constraint was violated"
+        }
+      ],
+      "acceptance_criteria": [
+        "Second INSERT with duplicate clerkUserId fails immediately",
+        "Error message contains 'unique constraint' or 'duplicate key'",
+        "Database contains exactly 1 Profile with the clerkUserId",
+        "First Profile data is unchanged after failed duplicate insert",
+        "Unique constraint is enforced at database level (not just API validation)"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/webhooks/clerk/route.ts"
+      ],
+      "tags": [
+        "unique-constraint",
+        "data-integrity",
+        "auth"
+      ],
+      "notes": "Clerk webhook handler must use INSERT ON CONFLICT DO NOTHING or upsert logic to handle duplicate webhook deliveries gracefully."
+    },
+    {
+      "id": "TC-DB-008",
+      "name": "Verify unique constraint on Profile.email prevents duplicates",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that Profile model enforces unique constraint on email to prevent multiple accounts with same email",
+      "business_context": "Email addresses should be unique across the platform. Duplicate emails could indicate account compromise, spam, or data integrity issues. Clerk enforces this at auth layer, database should enforce as backup.",
+      "preconditions": [
+        "Database schema is applied with UNIQUE constraint on email",
+        "Test Profile exists with email='test-unique@example.com'"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Insert first Profile with email='test-unique@example.com', clerkUserId='clerk1'",
+          "expected": "Profile created successfully"
+        },
+        {
+          "step": 2,
+          "action": "Attempt to insert second Profile with same email='test-unique@example.com', different clerkUserId='clerk2'",
+          "expected": "Database rejects insert with UNIQUE constraint violation on email column"
+        },
+        {
+          "step": 3,
+          "action": "Query Profile where email='test-unique@example.com'",
+          "expected": "Returns exactly 1 record (first Profile)"
+        },
+        {
+          "step": 4,
+          "action": "Verify error message identifies email as the conflicting field",
+          "expected": "Error message mentions 'email' column in constraint violation"
+        }
+      ],
+      "acceptance_criteria": [
+        "Duplicate email insert fails with UNIQUE constraint error",
+        "Only one Profile exists with the email address",
+        "Error message clearly indicates email is the duplicate field",
+        "Case sensitivity matches Clerk's email handling (case-insensitive)",
+        "Constraint is enforced at database level, not just application level"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "unique-constraint",
+        "data-integrity",
+        "email"
+      ],
+      "notes": "Email uniqueness is primarily enforced by Clerk at registration. Database constraint is defensive layer in case of data import, manual SQL operations, or Clerk misconfiguration."
+    },
+    {
+      "id": "TC-DB-009",
+      "name": "Verify foreign key constraint prevents Project with invalid styleKitId",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that Project model enforces foreign key constraint on styleKitId, preventing projects from referencing non-existent StyleKits",
+      "business_context": "Every Project must have a valid StyleKit for rendering. Invalid styleKitId would cause editor and export failures. Foreign key constraint ensures referential integrity.",
+      "preconditions": [
+        "Database schema is applied with foreign key on Project.styleKitId \u2192 StyleKit.id",
+        "StyleKit with id='minimal_clean' exists (from seed data)",
+        "StyleKit with id='invalid-nonexistent-kit' does NOT exist"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Attempt to insert Project with styleKitId='invalid-nonexistent-kit' (doesn't exist in StyleKit table)",
+          "expected": "Database rejects insert with foreign key constraint violation error"
+        },
+        {
+          "step": 2,
+          "action": "Insert Project with styleKitId='minimal_clean' (valid StyleKit from seed data)",
+          "expected": "Project created successfully"
+        },
+        {
+          "step": 3,
+          "action": "Query Project table to verify only valid Project was created",
+          "expected": "No Projects exist with invalid styleKitId values"
+        },
+        {
+          "step": 4,
+          "action": "Verify error message mentions 'foreign key constraint' and 'styleKitId'",
+          "expected": "Error clearly indicates which foreign key was violated"
+        }
+      ],
+      "acceptance_criteria": [
+        "INSERT with invalid styleKitId fails immediately",
+        "Error message contains 'foreign key constraint' or 'violates'",
+        "INSERT with valid styleKitId succeeds",
+        "No Projects exist in database with styleKitId that doesn't match a StyleKit.id",
+        "Constraint is enforced at database level regardless of API validation"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/projects/route.ts"
+      ],
+      "tags": [
+        "foreign-key",
+        "data-integrity",
+        "validation"
+      ],
+      "notes": "Backend API validates styleKitId exists before project creation (lines 89-97 in projects/route.ts), but database constraint is critical backup. Prisma relationMode='prisma' emulates foreign keys in application layer."
+    },
+    {
+      "id": "TC-DB-010",
+      "name": "Verify Slide.layers and Slide.content JSON fields accept valid JSON and reject invalid JSON",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that Slide model's JSON columns correctly store and retrieve complex JSON structures while rejecting malformed JSON",
+      "business_context": "Slide layers and content are stored as JSON for flexibility. Invalid JSON would break editor rendering and export. Database must validate JSON structure on insert/update.",
+      "preconditions": [
+        "Database schema is applied with Json type on layers and content columns",
+        "Test Project exists with valid styleKitId and userId"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Insert Slide with valid layers JSON: [{\"type\": \"background\"}, {\"type\": \"text_box\", \"id\": \"headline\"}]",
+          "expected": "Slide created successfully, JSON stored as JSONB in PostgreSQL"
+        },
+        {
+          "step": 2,
+          "action": "Insert Slide with valid content JSON: {\"headline\": \"Test Title\", \"body\": [\"Bullet 1\", \"Bullet 2\"]}",
+          "expected": "Slide created successfully, nested objects and arrays preserved"
+        },
+        {
+          "step": 3,
+          "action": "Query Slide and parse layers and content back to JavaScript objects",
+          "expected": "JSON is returned as object, not string. Array structure is preserved. No data corruption."
+        },
+        {
+          "step": 4,
+          "action": "Attempt to insert Slide with invalid JSON string (malformed: '{invalid: json}')",
+          "expected": "Database rejects insert with JSON parsing error (if database validates JSON, otherwise Prisma rejects)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Valid JSON objects and arrays are stored correctly",
+        "Retrieved JSON matches inserted JSON (no data loss or corruption)",
+        "Complex nested structures (objects in arrays, arrays in objects) are preserved",
+        "JSON is stored as JSONB type (efficient, indexable)",
+        "Invalid JSON strings are rejected with clear error message",
+        "Empty JSON defaults ({} for content, [] for layers) work correctly"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/app/api/projects/[id]/slides/route.ts"
+      ],
+      "tags": [
+        "json-validation",
+        "data-types",
+        "slide-data"
+      ],
+      "notes": "Prisma's Json type maps to PostgreSQL JSONB. Backend always uses JSON.stringify() when writing and expects objects when reading. Default values in schema: layers @default('[]'), content @default('{}')"
+    },
+    {
+      "id": "TC-DB-011",
+      "name": "Verify database indexes improve query performance for common operations",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "happy_path",
+      "priority": "medium",
+      "description": "Validates that database indexes on Profile.clerkUserId, Project.userId, and Slide.projectId exist and improve query performance",
+      "business_context": "Common queries (get projects by user, get slides by project) must be fast for good UX. Indexes on foreign keys and frequently queried fields ensure sub-100ms query times even with large datasets.",
+      "preconditions": [
+        "Database schema is applied with @@index directives",
+        "Test dataset: 1 Profile with 50 Projects, each with 10 Slides (500 slides total)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Query Profile by clerkUserId (indexed): SELECT * FROM Profile WHERE clerkUserId = 'test-user'",
+          "expected": "Query completes in < 10ms using index scan (EXPLAIN shows 'Index Scan using Profile_clerkUserId_idx')"
+        },
+        {
+          "step": 2,
+          "action": "Query Projects by userId (indexed): SELECT * FROM Project WHERE userId = 'profile-uuid'",
+          "expected": "Query completes in < 50ms even with 50 projects, using index scan"
+        },
+        {
+          "step": 3,
+          "action": "Query Slides by projectId (indexed): SELECT * FROM Slide WHERE projectId = 'project-uuid'",
+          "expected": "Query completes in < 20ms even with 10 slides per project, using index scan"
+        },
+        {
+          "step": 4,
+          "action": "Run EXPLAIN on each query to verify index usage",
+          "expected": "EXPLAIN output shows 'Index Scan' not 'Seq Scan', confirms index is being used"
+        }
+      ],
+      "acceptance_criteria": [
+        "Profile.clerkUserId has index and is used in queries",
+        "Profile.email has index and is used in queries",
+        "Project.userId has index and is used in queries",
+        "Project.styleKitId has index and is used in queries",
+        "Slide.projectId has index and is used in queries",
+        "Queries using indexed columns complete in < 100ms with realistic data volumes",
+        "EXPLAIN ANALYZE confirms index scans, not sequential scans"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma"
+      ],
+      "tags": [
+        "performance",
+        "indexes",
+        "query-optimization"
+      ],
+      "notes": "Prisma generates indexes from @@index directives in schema. Production database should monitor index usage with pg_stat_user_indexes view. Add indexes if slow query logs show frequent seq scans."
+    },
+    {
+      "id": "TC-DB-012",
+      "name": "Verify SubscriptionTier enum values match application tier logic",
+      "module": "database",
+      "user_journey": null,
+      "category": "database",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that SubscriptionTier enum in database matches the tier values used in application code and Stripe integration",
+      "business_context": "Subscription tier determines feature access and limits. Mismatch between database enum and application constants would cause subscription failures, incorrect feature gating, or billing errors.",
+      "preconditions": [
+        "Database schema is applied with SubscriptionTier enum",
+        "Application code defines TIER_LIMITS constant in use-subscription.ts"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Query database for SubscriptionTier enum values",
+          "expected": "Returns enum values: FREE, CREATOR, PRO (exactly these 3, no others)"
+        },
+        {
+          "step": 2,
+          "action": "Check TIER_LIMITS constant in use-subscription.ts",
+          "expected": "TIER_LIMITS keys are: FREE, CREATOR, PRO (matching database enum)"
+        },
+        {
+          "step": 3,
+          "action": "Check getSubscriptionPlan function in packages/stripe/src/plans.ts",
+          "expected": "Function returns 'FREE', 'CREATOR', or 'PRO' (matching database enum)"
+        },
+        {
+          "step": 4,
+          "action": "Insert test Profile with subscriptionTier='FREE', then update to 'CREATOR', then 'PRO'",
+          "expected": "All three tier values are accepted by database, no enum constraint errors"
+        },
+        {
+          "step": 5,
+          "action": "Attempt to insert Profile with subscriptionTier='INVALID'",
+          "expected": "Database rejects with enum constraint error"
+        }
+      ],
+      "acceptance_criteria": [
+        "Database SubscriptionTier enum has exactly 3 values: FREE, CREATOR, PRO",
+        "Application TIER_LIMITS has exactly 3 keys matching enum values",
+        "Stripe webhook handler maps priceIds to these 3 tier values",
+        "Profile.subscriptionTier defaults to 'FREE' on creation",
+        "Invalid tier values are rejected by database with clear error message",
+        "No code references old tier names (BUSINESS, PRO from legacy SubscriptionPlan enum)"
+      ],
+      "related_files": [
+        "packages/db/prisma/schema.prisma",
+        "apps/nextjs/src/hooks/use-subscription.ts",
+        "packages/stripe/src/plans.ts"
+      ],
+      "tags": [
+        "enum-validation",
+        "subscription-tiers",
+        "data-integrity"
+      ],
+      "notes": "Schema has TWO subscription enums: SubscriptionPlan (legacy: FREE, PRO, BUSINESS) and SubscriptionTier (current: FREE, CREATOR, PRO). Only SubscriptionTier is used in Profile model. SubscriptionPlan is for legacy Customer model (not used)."
+    },
+    {
+      "id": "TC-MARK-001",
+      "name": "Landing page loads successfully for all locales",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that the landing page loads correctly for all supported locales (en, zh, ja, ko) and displays proper internationalized content",
+      "business_context": "Landing page is the first impression for visitors and must work flawlessly across all languages to maximize conversions and accessibility",
+      "preconditions": [
+        "User is not logged in",
+        "Application is running",
+        "Browser supports internationalization"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en (English landing page)",
+          "expected": "Page loads within 3 seconds, shows English content"
+        },
+        {
+          "step": 2,
+          "action": "Verify hero headline displays 'Turn an idea into a LinkedIn-ready carousel in 3 minutes'",
+          "expected": "Headline visible with ColourfulText effect on 'LinkedIn-ready carousel'"
+        },
+        {
+          "step": 3,
+          "action": "Navigate to /zh, /ja, /ko landing pages",
+          "expected": "Each locale loads with appropriate language content from dictionaries"
+        },
+        {
+          "step": 4,
+          "action": "Check that BackgroundLines animation renders",
+          "expected": "Animated background lines visible on hero section"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 4 locales load successfully (en, zh, ja, ko)",
+        "Hero headline (data-testid='hero_headline') is visible",
+        "Page loads in under 3 seconds",
+        "No console errors",
+        "Responsive grid layout works on mobile and desktop",
+        "Dictionary translations load correctly for each locale"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(marketing)/layout.tsx",
+        "apps/nextjs/src/config/dictionaries/en.json"
+      ],
+      "tags": [
+        "marketing",
+        "landing-page",
+        "i18n",
+        "core"
+      ],
+      "notes": "Landing page uses async getDictionary(lang) from line 67. Hero section is two-column grid (xl:grid-cols-2) with BackgroundLines component. Hero headline has data-testid='hero_headline' for testing."
+    },
+    {
+      "id": "TC-MARK-002",
+      "name": "CTA buttons on landing page navigate correctly",
+      "module": "marketing",
+      "user_journey": "new_user_onboarding",
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that primary and secondary CTAs on landing page navigate to correct destinations and are clearly visible",
+      "business_context": "CTAs are the primary conversion points - they must work perfectly to drive signups and pricing page visits",
+      "preconditions": [
+        "User is on landing page at /en"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Locate the 'Start Creating Free' button (blue, rounded-full)",
+          "expected": "Button is visible in hero section with blue background and white text"
+        },
+        {
+          "step": 2,
+          "action": "Click 'Start Creating Free' button",
+          "expected": "Navigates to /en/register (registration page)"
+        },
+        {
+          "step": 3,
+          "action": "Go back to landing page and locate 'View Pricing' button (outline variant)",
+          "expected": "Button visible next to primary CTA with outline styling"
+        },
+        {
+          "step": 4,
+          "action": "Click 'View Pricing' button",
+          "expected": "Navigates to /en/pricing"
+        }
+      ],
+      "acceptance_criteria": [
+        "Both CTA buttons are visible and clickable",
+        "'Start Creating Free' has bg-blue-600 styling with ArrowRight icon",
+        "'View Pricing' has outline variant styling",
+        "Buttons are responsive (flex-col on mobile, flex-row on sm+)",
+        "Navigation occurs without page reload (Next.js Link)",
+        "Hover states work correctly",
+        "CTAs are positioned correctly below hero headline and subtext"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx"
+      ],
+      "tags": [
+        "marketing",
+        "cta",
+        "navigation",
+        "conversion"
+      ],
+      "notes": "CTAs are at lines 92-107 in page.tsx. 'Start Creating Free' links to /en/register, 'View Pricing' links to /en/pricing. Both use Next.js Link for client-side navigation."
+    },
+    {
+      "id": "TC-MARK-003",
+      "name": "Features grid displays all 4 key features",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that the features grid section displays all 4 core features with icons, titles, and descriptions",
+      "business_context": "Features grid communicates product value proposition - must clearly showcase the 4 key benefits to convert visitors",
+      "preconditions": [
+        "User is on landing page",
+        "FeaturesGrid component renders"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Scroll to features grid section (below hero)",
+          "expected": "4 feature cards visible in responsive grid"
+        },
+        {
+          "step": 2,
+          "action": "Verify 'AI-Powered Generation' card with Sparkles icon",
+          "expected": "Card shows purple icon background, title, and description about AI"
+        },
+        {
+          "step": 3,
+          "action": "Verify '8 Style Kits' card with Palette icon",
+          "expected": "Card shows style kits messaging"
+        },
+        {
+          "step": 4,
+          "action": "Verify 'Visual Editor' card with Edit icon",
+          "expected": "Card mentions click-to-edit and auto-fit text"
+        },
+        {
+          "step": 5,
+          "action": "Verify 'Export Ready' card with Download icon",
+          "expected": "Card describes PDF/PNG export for LinkedIn"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 4 feature cards render correctly",
+        "Each card has: purple icon (w-12 h-12), title (text-lg font-semibold), description",
+        "Cards use Card component with rounded-3xl styling",
+        "Grid is responsive: 1 column mobile, 4 columns (sm:flex-row) on tablet+",
+        "Dark mode borders (dark:border-neutral-800) render correctly",
+        "Icons from @saasfly/ui/icons display correctly"
+      ],
+      "related_files": [
+        "apps/nextjs/src/components/features-grid.tsx",
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx"
+      ],
+      "tags": [
+        "marketing",
+        "features",
+        "value-proposition"
+      ],
+      "notes": "FeaturesGrid component (features-grid.tsx) is imported at line 7 and rendered at line 140 in page.tsx. Features are hardcoded (not i18n) with specific messaging about AI, style kits, editor, and export."
+    },
+    {
+      "id": "TC-MARK-004",
+      "name": "Contributors and social proof section displays correctly",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "medium",
+      "description": "Validates that the contributors section with AnimatedTooltip and social proof numbers render correctly",
+      "business_context": "Social proof (9 contributors, 2000+ developers) builds credibility and trust with visitors",
+      "preconditions": [
+        "User is on landing page",
+        "AnimatedTooltip component works"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Locate contributors section below CTAs",
+          "expected": "Section shows 6 contributor avatars with hover tooltips"
+        },
+        {
+          "step": 2,
+          "action": "Hover over contributor avatars",
+          "expected": "AnimatedTooltip shows name, designation, and GitHub link"
+        },
+        {
+          "step": 3,
+          "action": "Verify '9 contributors' text displays",
+          "expected": "Text shows '9' in bold with 'contributors_desc' from dictionary"
+        },
+        {
+          "step": 4,
+          "action": "Verify '2000 developers' text displays with ColourfulText",
+          "expected": "'2000' rendered with colorful effect, surrounded by i18n text"
+        }
+      ],
+      "acceptance_criteria": [
+        "6 contributor avatars render (tianzx, jackc3, imesong, ziveen, Zenuncl, Innei)",
+        "AnimatedTooltip works on hover",
+        "Social proof numbers are visible and accurate",
+        "ColourfulText effect applies to '2000' number",
+        "Section is responsive (flex-col on mobile, xl:flex-row on desktop)",
+        "GitHub profile images load correctly"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx"
+      ],
+      "tags": [
+        "marketing",
+        "social-proof",
+        "contributors"
+      ],
+      "notes": "Contributors array defined at lines 19-58 with 6 people. AnimatedTooltip at line 111, social proof numbers at lines 113-125. Uses dictionary for translations."
+    },
+    {
+      "id": "TC-MARK-005",
+      "name": "Sponsor section displays correctly with all logos",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "low",
+      "description": "Validates that the sponsor section displays all sponsor logos and donate button",
+      "business_context": "Sponsor visibility provides recognition and encourages donations to support the open-source project",
+      "preconditions": [
+        "User is on landing page",
+        "Sponsor images can load from external URLs"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Scroll to sponsor section (below features grid)",
+          "expected": "Section with 'Sponsor' title visible"
+        },
+        {
+          "step": 2,
+          "action": "Verify Clerk logo displays",
+          "expected": "Clerk logo (48x48) links to go.clerk.com/uKDp7Au"
+        },
+        {
+          "step": 3,
+          "action": "Verify Twillot and Setupyourpay logos display",
+          "expected": "Both logos visible and link to respective websites"
+        },
+        {
+          "step": 4,
+          "action": "Verify 'Become a Sponsor' button with heart icon",
+          "expected": "Button with pink heart icon and dashed border links to OpenCollective"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 3 sponsor logos render (Clerk, Twillot, Setupyourpay)",
+        "Images are 48x48 pixels with proper alt text",
+        "All links open in new tab (target='_blank')",
+        "Donate button has heart icon (fill-pink-600) and proper styling",
+        "Links use correct URLs from lines 147-161",
+        "Section is centered with gap-4 spacing"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx"
+      ],
+      "tags": [
+        "marketing",
+        "sponsors",
+        "monetization"
+      ],
+      "notes": "Sponsor section at lines 143-164. Uses Image component from next/image for optimized loading. Clerk logo from /images/clerk.png, others from external URLs."
+    },
+    {
+      "id": "TC-MARK-006",
+      "name": "Pricing page loads with correct tier cards",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that the pricing page displays all 3 subscription tiers (Starter, Pro, Business) with correct pricing and features",
+      "business_context": "Pricing page is critical for conversions - users must clearly understand tier options and make informed purchase decisions",
+      "preconditions": [
+        "User navigates to /en/pricing",
+        "PricingCards component renders",
+        "priceDataMap has English pricing data"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/pricing",
+          "expected": "Page loads with 'Pricing' title and 3 tier cards in grid"
+        },
+        {
+          "step": 2,
+          "action": "Verify Starter (Free) tier card displays",
+          "expected": "Card shows '$0/mo', benefits list, and 'Go to Dashboard' button (if logged in) or 'Sign Up' (if not)"
+        },
+        {
+          "step": 3,
+          "action": "Verify Pro tier card displays",
+          "expected": "Card shows '$30/mo' monthly or '$24/mo' yearly, benefits with checkmarks, limitations with X icons, upgrade button"
+        },
+        {
+          "step": 4,
+          "action": "Verify Business tier card displays",
+          "expected": "Card shows '$60/mo' or '$50/mo' yearly, all benefits, no limitations"
+        },
+        {
+          "step": 5,
+          "action": "Toggle between Monthly and Annual billing",
+          "expected": "Prices update correctly, annual shows discount (yearly price / 12)"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 3 tier cards render in md:grid-cols-3 layout",
+        "Monthly/Annual toggle (Switch component) works",
+        "Annual billing shows discounted monthly price with strikethrough on original",
+        "Free tier shows '$0' with no billing info",
+        "Paid tiers show monthly price and annual total (e.g., '$288 billed annually')",
+        "Benefits list uses Icons.Check, limitations use Icons.Close",
+        "CTAs change based on auth state (user logged in vs not)",
+        "Tier IDs match priceDataMap: 'starter', 'pro', 'business'"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx",
+        "apps/nextjs/src/components/price/pricing-cards.tsx",
+        "apps/nextjs/src/config/price/price-data.ts"
+      ],
+      "tags": [
+        "marketing",
+        "pricing",
+        "conversion",
+        "subscription"
+      ],
+      "notes": "PricingPage (pricing/page.tsx) is Server Component that fetches user and subscriptionPlan. PricingCards (pricing-cards.tsx) is Client Component handling billing toggle and rendering. priceDataMap has hardcoded features (not QuickCarousals-specific - mentions 'clusters' from template)."
+    },
+    {
+      "id": "TC-MARK-007",
+      "name": "Pricing page CTA buttons work correctly for authenticated vs unauthenticated users",
+      "module": "marketing",
+      "user_journey": "new_user_onboarding",
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that pricing page CTAs behave differently based on user authentication state",
+      "business_context": "CTAs must guide users correctly - unauthenticated users need to sign up, authenticated users can upgrade or go to dashboard",
+      "preconditions": [
+        "User is on /en/pricing"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Visit pricing page while logged OUT",
+          "expected": "All tier cards show 'Sign Up' button"
+        },
+        {
+          "step": 2,
+          "action": "Click 'Sign Up' button on any tier",
+          "expected": "Sign-in modal opens (useSigninModal.onOpen called)"
+        },
+        {
+          "step": 3,
+          "action": "Log in to the application",
+          "expected": "User successfully authenticated"
+        },
+        {
+          "step": 4,
+          "action": "Return to pricing page while logged IN",
+          "expected": "Starter tier shows 'Go to Dashboard', paid tiers show 'Upgrade' or subscription status"
+        },
+        {
+          "step": 5,
+          "action": "Click 'Go to Dashboard' on Starter tier",
+          "expected": "Navigates to /dashboard"
+        },
+        {
+          "step": 6,
+          "action": "Click upgrade button on Pro/Business tier",
+          "expected": "BillingFormButton triggers Stripe checkout flow"
+        }
+      ],
+      "acceptance_criteria": [
+        "Unauthenticated: All tiers show 'Sign Up' button that opens sign-in modal",
+        "Authenticated + Free tier: Starter shows 'Go to Dashboard', paid tiers show upgrade buttons",
+        "Authenticated + Paid tier: Current tier shows subscription status, other tiers show upgrade/change options",
+        "userId and subscriptionPlan props correctly passed to PricingCards",
+        "BillingFormButton receives correct offer, year, subscriptionPlan, dict props",
+        "Navigation and modal state changes work smoothly"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx",
+        "apps/nextjs/src/components/price/pricing-cards.tsx",
+        "apps/nextjs/src/components/price/billing-form-button.tsx",
+        "apps/nextjs/src/hooks/use-signin-modal.ts"
+      ],
+      "tags": [
+        "marketing",
+        "pricing",
+        "auth",
+        "conversion"
+      ],
+      "notes": "Auth state logic at lines 154-175 in pricing-cards.tsx. Conditional rendering: if (userId && subscriptionPlan) checks auth, then offer.id === 'starter' determines button type."
+    },
+    {
+      "id": "TC-MARK-008",
+      "name": "Pricing FAQ section displays and is interactive",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "happy_path",
+      "priority": "medium",
+      "description": "Validates that the pricing FAQ accordion displays correctly and FAQs can be expanded/collapsed",
+      "business_context": "FAQ section answers common objections and questions, reducing friction in the purchase decision process",
+      "preconditions": [
+        "User is on /en/pricing",
+        "PricingFaq component renders",
+        "priceFaqDataMap has FAQ data for locale"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Scroll down to FAQ section below pricing cards",
+          "expected": "Section with FAQ heading and accordion visible"
+        },
+        {
+          "step": 2,
+          "action": "Verify FAQ heading displays from dict.price.faq",
+          "expected": "Heading text shows translated FAQ title"
+        },
+        {
+          "step": 3,
+          "action": "Click on first FAQ accordion item",
+          "expected": "Accordion expands to show answer"
+        },
+        {
+          "step": 4,
+          "action": "Click on another FAQ item",
+          "expected": "Previous item collapses (type='single'), new item expands"
+        },
+        {
+          "step": 5,
+          "action": "Verify all FAQ items from priceFaqDataMap render",
+          "expected": "Each FAQ has question trigger and answer content"
+        }
+      ],
+      "acceptance_criteria": [
+        "FAQ section is below pricing cards with horizontal rule separator",
+        "Accordion component works (shadcn/ui)",
+        "Only one FAQ can be open at a time (type='single', collapsible)",
+        "All FAQs from priceFaqDataMap[lang] render",
+        "Each FAQ has unique ID, question, and answer",
+        "FAQ section is centered with max-w-3xl container",
+        "Subheading (dict.price.faq_detail) displays above accordion"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx",
+        "apps/nextjs/src/components/price/pricing-faq.tsx",
+        "apps/nextjs/src/config/price/price-faq-data.ts"
+      ],
+      "tags": [
+        "marketing",
+        "pricing",
+        "faq",
+        "conversion"
+      ],
+      "notes": "PricingFaq component at pricing-faq.tsx uses Accordion from @saasfly/ui. Rendered at line 36 in pricing/page.tsx. FAQ data from priceFaqDataMap keyed by locale."
+    },
+    {
+      "id": "TC-MARK-009",
+      "name": "Marketing pages are accessible without authentication",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates that all marketing pages (landing, pricing, docs, etc.) load without requiring login",
+      "business_context": "Public pages must be accessible to drive organic traffic and conversions - auth requirements would kill SEO and block visitors",
+      "preconditions": [
+        "User is not logged in",
+        "Browser has no active session"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en (landing page) in incognito/private mode",
+          "expected": "Page loads successfully without redirect to login"
+        },
+        {
+          "step": 2,
+          "action": "Navigate to /en/pricing in incognito mode",
+          "expected": "Pricing page loads successfully, shows 'Sign Up' CTAs"
+        },
+        {
+          "step": 3,
+          "action": "Navigate to /en/docs (if exists) in incognito mode",
+          "expected": "Docs page loads without auth requirement"
+        },
+        {
+          "step": 4,
+          "action": "Verify no auth redirect occurs on marketing routes",
+          "expected": "No redirect to /login-clerk, pages load directly"
+        }
+      ],
+      "acceptance_criteria": [
+        "Landing page (/) is publicly accessible",
+        "Pricing page (/pricing) is publicly accessible",
+        "Docs pages (/docs/*) are publicly accessible",
+        "No authentication redirect occurs on (marketing) routes",
+        "isPublicRoute matcher in middleware excludes (marketing) routes",
+        "Marketing layout does NOT call auth protection",
+        "User menu shows 'Sign In' option instead of user details"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/layout.tsx",
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/middleware.ts"
+      ],
+      "tags": [
+        "marketing",
+        "auth",
+        "public-access",
+        "seo"
+      ],
+      "notes": "Marketing layout (layout.tsx) calls getCurrentUser() but does NOT redirect if null (unlike dashboard layout). Clerk middleware's isPublicRoute matcher should exclude (marketing) routes. This is critical for SEO and conversion."
+    },
+    {
+      "id": "TC-MARK-010",
+      "name": "Marketing pages render correctly in dark mode",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "edge_case",
+      "priority": "medium",
+      "description": "Validates that landing and pricing pages render correctly with dark mode theme, including proper contrast and visibility",
+      "business_context": "Many users prefer dark mode - pages must look professional and readable in both light and dark themes",
+      "preconditions": [
+        "User is on landing or pricing page",
+        "Browser/OS supports dark mode"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enable dark mode via theme toggle in navigation",
+          "expected": "Page theme switches to dark"
+        },
+        {
+          "step": 2,
+          "action": "Verify hero section text is readable (dark:text-zinc-100)",
+          "expected": "Headline and body text have sufficient contrast on dark background"
+        },
+        {
+          "step": 3,
+          "action": "Verify feature cards have dark borders (dark:border-neutral-800)",
+          "expected": "Cards visible with appropriate borders and backgrounds"
+        },
+        {
+          "step": 4,
+          "action": "Verify pricing cards render correctly in dark mode",
+          "expected": "Card backgrounds, text, and borders are visible"
+        },
+        {
+          "step": 5,
+          "action": "Verify CTA buttons maintain proper contrast",
+          "expected": "Blue primary button and outline secondary button are readable"
+        }
+      ],
+      "acceptance_criteria": [
+        "All text has sufficient contrast (WCAG AA minimum)",
+        "Feature cards use dark:border-neutral-800 and dark:bg-neutral-900/40",
+        "Hero headline uses dark:text-zinc-100",
+        "Muted text uses dark:text-neutral-400",
+        "BackgroundLines component works in dark mode",
+        "No elements become invisible or unreadable",
+        "Theme toggle in navigation works smoothly"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/components/features-grid.tsx",
+        "apps/nextjs/src/components/price/pricing-cards.tsx"
+      ],
+      "tags": [
+        "marketing",
+        "dark-mode",
+        "accessibility",
+        "theme"
+      ],
+      "notes": "Dark mode classes throughout: dark:text-zinc-100 (headlines), dark:text-neutral-400 (muted), dark:border-neutral-800 (borders), dark:bg-neutral-900/40 (cards). Theme provider in layout handles dark mode toggle."
+    },
+    {
+      "id": "TC-MARK-011",
+      "name": "Marketing pages load internationalized content correctly",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "integration",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that marketing pages load correct translations from dictionaries for all supported locales",
+      "business_context": "Multi-language support is critical for global reach - translations must be accurate and complete",
+      "preconditions": [
+        "Dictionary files exist for all locales (en, zh, ja, ko)",
+        "getDictionary function works"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en landing page",
+          "expected": "English content loads from en.json dictionary"
+        },
+        {
+          "step": 2,
+          "action": "Navigate to /zh landing page",
+          "expected": "Chinese content loads, UI text displays in Chinese"
+        },
+        {
+          "step": 3,
+          "action": "Navigate to /ja pricing page",
+          "expected": "Japanese tier names and descriptions display"
+        },
+        {
+          "step": 4,
+          "action": "Navigate to /ko pricing page",
+          "expected": "Korean tier names and descriptions display"
+        },
+        {
+          "step": 5,
+          "action": "Verify priceDataMap has data for all 4 locales",
+          "expected": "All locales have 3 tiers (starter, pro, business) with translations"
+        }
+      ],
+      "acceptance_criteria": [
+        "getDictionary(lang) successfully loads for all locales",
+        "Marketing page uses dict.marketing object for translations",
+        "Pricing page uses dict.price object for translations",
+        "priceDataMap[lang] returns correct tier data",
+        "No hardcoded English strings in UI (except feature descriptions)",
+        "Contributors descriptions use dict.marketing.contributors",
+        "FAQ questions/answers load from priceFaqDataMap[lang]",
+        "No missing translation errors in console"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx",
+        "apps/nextjs/src/lib/get-dictionary.ts",
+        "apps/nextjs/src/config/dictionaries/en.json",
+        "apps/nextjs/src/config/price/price-data.ts"
+      ],
+      "tags": [
+        "marketing",
+        "i18n",
+        "localization",
+        "global"
+      ],
+      "notes": "getDictionary is async function called in Server Components. priceDataMap and priceFaqDataMap are keyed by locale ('en', 'zh', 'ja', 'ko'). Features grid is NOT translated (hardcoded English)."
+    },
+    {
+      "id": "TC-MARK-012",
+      "name": "Pricing data consistency check",
+      "module": "marketing",
+      "user_journey": null,
+      "category": "integration",
+      "type": "edge_case",
+      "priority": "high",
+      "description": "Validates that pricing data in priceDataMap is consistent with actual Stripe price IDs and matches feature gating in use-subscription.ts",
+      "business_context": "Inconsistent pricing data would cause billing errors, confusion, and revenue loss - must match backend reality",
+      "preconditions": [
+        "Access to priceDataMap configuration",
+        "Access to environment variables with Stripe price IDs",
+        "Access to TIER_LIMITS in use-subscription.ts"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Review priceDataMap tier IDs ('starter', 'pro', 'business')",
+          "expected": "Tier IDs match database SubscriptionTier enum"
+        },
+        {
+          "step": 2,
+          "action": "Verify Starter tier has prices.monthly = 0, stripeIds = null",
+          "expected": "Free tier correctly configured with no Stripe IDs"
+        },
+        {
+          "step": 3,
+          "action": "Verify Pro tier stripeIds match env vars NEXT_PUBLIC_STRIPE_PRO_*",
+          "expected": "Monthly and yearly Stripe price IDs are set from environment"
+        },
+        {
+          "step": 4,
+          "action": "Verify Business tier stripeIds match env vars NEXT_PUBLIC_STRIPE_BUSINESS_*",
+          "expected": "Monthly and yearly Stripe price IDs are set from environment"
+        },
+        {
+          "step": 5,
+          "action": "Compare priceDataMap benefits with TIER_LIMITS",
+          "expected": "Marketed features match actual feature limits (carousels, slides, style kits, brand kits)"
+        }
+      ],
+      "acceptance_criteria": [
+        "priceDataMap tier IDs align with SubscriptionTier enum (FREE/CREATOR/PRO, not starter/pro/business)",
+        "Stripe price IDs are loaded from environment, not hardcoded",
+        "Pricing amounts match Stripe dashboard configuration",
+        "Annual pricing shows correct discount calculation (yearly / 12)",
+        "Benefits listed match features in TIER_LIMITS",
+        "No orphaned Stripe price IDs (IDs that don't exist in Stripe)",
+        "Tier names in pricing page match billing page tier names"
+      ],
+      "related_files": [
+        "apps/nextjs/src/config/price/price-data.ts",
+        "apps/nextjs/src/hooks/use-subscription.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx",
+        "apps/nextjs/src/env.mjs"
+      ],
+      "tags": [
+        "marketing",
+        "pricing",
+        "configuration",
+        "data-consistency",
+        "billing"
+      ],
+      "notes": "CRITICAL ISSUE DISCOVERED: priceDataMap uses tier IDs 'starter', 'pro', 'business' with features about 'clusters' (from SaaS template). Actual app uses SubscriptionTier enum (FREE/CREATOR/PRO) with carousel/slide limits. Pricing page shows incorrect features! This is likely template code not customized for QuickCarousals."
+    },
+    {
+      "id": "TC-INFRA-001",
+      "name": "Health endpoint returns correct status",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "api",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that the /api/health endpoint returns a successful health check response",
+      "business_context": "Health check endpoint is critical for monitoring, load balancers, and deployment systems to verify the API is running correctly",
+      "preconditions": [
+        "Application is running",
+        "API server is accessible"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send GET request to /api/health",
+          "expected": "Request completes successfully without timeout"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Returns 200 OK status"
+        },
+        {
+          "step": 3,
+          "action": "Verify response body structure",
+          "expected": "JSON object with status, message, timestamp fields"
+        },
+        {
+          "step": 4,
+          "action": "Verify status field value",
+          "expected": "status === 'ok'"
+        },
+        {
+          "step": 5,
+          "action": "Verify message field",
+          "expected": "message === 'QuickCarousals API is running'"
+        },
+        {
+          "step": 6,
+          "action": "Verify timestamp format",
+          "expected": "timestamp is valid ISO 8601 string (e.g., '2026-01-31T10:30:00.000Z')"
+        }
+      ],
+      "acceptance_criteria": [
+        "Endpoint returns 200 status code",
+        "Response is valid JSON",
+        "status field is 'ok'",
+        "message field contains 'QuickCarousals API is running'",
+        "timestamp field is present and valid ISO 8601 format",
+        "Response time is under 100ms",
+        "No authentication required (public endpoint)",
+        "Works on edge runtime (export const runtime = 'edge')"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/health/route.ts"
+      ],
+      "tags": [
+        "infrastructure",
+        "monitoring",
+        "health-check",
+        "api"
+      ],
+      "notes": "Simple health check endpoint at lines 5-14. Uses edge runtime for fast response. No database or external service checks - only verifies API process is running."
+    },
+    {
+      "id": "TC-INFRA-002",
+      "name": "Queue status endpoint returns render queue statistics",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "api",
+      "type": "happy_path",
+      "priority": "medium",
+      "description": "Validates that /api/queues/render/status returns accurate job counts for the render queue",
+      "business_context": "Queue monitoring is essential for operations - need to track job backlog, processing capacity, and failure rates for export system health",
+      "preconditions": [
+        "Application is running",
+        "BullMQ render queue is initialized",
+        "Redis connection is available"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send GET request to /api/queues/render/status",
+          "expected": "Request completes successfully"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Returns 200 OK"
+        },
+        {
+          "step": 3,
+          "action": "Verify response body structure",
+          "expected": "JSON with success=true, queue='render', stats object, timestamp"
+        },
+        {
+          "step": 4,
+          "action": "Verify stats object fields",
+          "expected": "stats contains waiting, active, completed, failed counts (all numbers)"
+        },
+        {
+          "step": 5,
+          "action": "Check count values are non-negative",
+          "expected": "All counts >= 0 (waiting >= 0, active >= 0, completed >= 0, failed >= 0)"
+        },
+        {
+          "step": 6,
+          "action": "Verify timestamp is recent",
+          "expected": "timestamp is current ISO 8601 string"
+        }
+      ],
+      "acceptance_criteria": [
+        "Endpoint returns 200 status code on success",
+        "Response includes success=true field",
+        "queue field equals 'render'",
+        "stats.waiting is a number >= 0",
+        "stats.active is a number >= 0",
+        "stats.completed is a number >= 0",
+        "stats.failed is a number >= 0",
+        "timestamp is valid ISO 8601 string",
+        "Response time is under 500ms",
+        "No authentication required (for monitoring tools)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/queues/render/status/route.ts",
+        "apps/nextjs/src/lib/queues/render-queue.ts"
+      ],
+      "tags": [
+        "infrastructure",
+        "monitoring",
+        "queue",
+        "background-jobs"
+      ],
+      "notes": "Queue status endpoint at lines 17-38. Calls getQueueStats() from render-queue.ts (lines 147-163) which uses Promise.all to fetch counts from BullMQ queue. Returns aggregated statistics."
+    },
+    {
+      "id": "TC-INFRA-003",
+      "name": "Queue status endpoint handles Redis connection failure gracefully",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "api",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that queue status endpoint returns proper error response when Redis is unavailable",
+      "business_context": "Queue status endpoint should fail gracefully without crashing when Redis is down - monitoring tools need clear error signals",
+      "preconditions": [
+        "Application is running",
+        "Redis connection is unavailable or failing"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Simulate Redis connection failure (e.g., stop Redis service or use invalid connection string)",
+          "expected": "getQueueStats() throws error when trying to connect to Redis"
+        },
+        {
+          "step": 2,
+          "action": "Send GET request to /api/queues/render/status",
+          "expected": "Request completes without server crash"
+        },
+        {
+          "step": 3,
+          "action": "Check response status code",
+          "expected": "Returns 500 Internal Server Error"
+        },
+        {
+          "step": 4,
+          "action": "Verify error response structure",
+          "expected": "JSON with ApiError format: code, message, details fields"
+        },
+        {
+          "step": 5,
+          "action": "Check error message",
+          "expected": "message === 'Failed to retrieve queue statistics'"
+        },
+        {
+          "step": 6,
+          "action": "Verify error details",
+          "expected": "details.error contains actual error message from Redis connection attempt"
+        },
+        {
+          "step": 7,
+          "action": "Check console for error log",
+          "expected": "console.error logs 'Failed to get queue stats:' with full error"
+        }
+      ],
+      "acceptance_criteria": [
+        "Returns 500 status code (not 200)",
+        "Response follows ApiError format",
+        "Error message is user-friendly",
+        "details.error contains technical error info",
+        "Server does not crash or hang",
+        "Error is logged to console for debugging",
+        "No sensitive Redis credentials exposed in response",
+        "Monitoring tools can detect failure via 500 status"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/queues/render/status/route.ts",
+        "apps/nextjs/src/lib/api-error.ts"
+      ],
+      "tags": [
+        "infrastructure",
+        "error-handling",
+        "redis",
+        "resilience"
+      ],
+      "notes": "Error handling at lines 27-36. Catches any error from getQueueStats(), logs it, and returns ApiError.internal with 500 status. This prevents server crashes when Redis is unavailable."
+    },
+    {
+      "id": "TC-INFRA-004",
+      "name": "Error page displays correctly when application error occurs",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that the global error boundary displays a user-friendly error page when unhandled errors occur",
+      "business_context": "When unexpected errors crash a page, users need clear messaging and recovery options rather than a blank screen or technical stack trace",
+      "preconditions": [
+        "Application is running",
+        "An unhandled error occurs in a page component"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Trigger an unhandled error in a page component (e.g., throw new Error('Test error'))",
+          "expected": "Next.js error boundary catches the error"
+        },
+        {
+          "step": 2,
+          "action": "Verify error page loads",
+          "expected": "Custom error.tsx page renders instead of default Next.js error"
+        },
+        {
+          "step": 3,
+          "action": "Check visual design",
+          "expected": "Page has gradient background (from-red-50 to-gray-100), centered layout, max-width-md container"
+        },
+        {
+          "step": 4,
+          "action": "Verify error icon",
+          "expected": "Red circular icon with alert triangle SVG (w-24 h-24 bg-red-100 rounded-full)"
+        },
+        {
+          "step": 5,
+          "action": "Check heading",
+          "expected": "Heading displays 'Something Went Wrong' (text-3xl font-bold)"
+        },
+        {
+          "step": 6,
+          "action": "Check error message display",
+          "expected": "If error.message exists, shows in red box (bg-red-50 border-red-200) with 'Error Details:' label"
+        },
+        {
+          "step": 7,
+          "action": "Verify 'Try Again' button",
+          "expected": "Button calls reset() function to attempt recovery"
+        },
+        {
+          "step": 8,
+          "action": "Verify 'Go to Dashboard' link",
+          "expected": "Link to /en/dashboard with outline button variant"
+        },
+        {
+          "step": 9,
+          "action": "Check support link",
+          "expected": "Footer text with link to /en/docs for support"
+        },
+        {
+          "step": 10,
+          "action": "Verify error logging",
+          "expected": "useEffect logs error to console.error on mount (line 16)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Error page renders instead of blank screen",
+        "Design is user-friendly, not technical",
+        "Error message displayed if available (not stack trace)",
+        "Two action buttons provided: Try Again and Go to Dashboard",
+        "Support link is visible and clickable",
+        "Error is logged to console for debugging",
+        "Message reassures user: 'your work has been saved'",
+        "Page is responsive on mobile and desktop",
+        "No sensitive data exposed in error message"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/error.tsx"
+      ],
+      "tags": [
+        "infrastructure",
+        "error-handling",
+        "ux",
+        "error-boundary"
+      ],
+      "notes": "Client Component error boundary at lines 1-70. Uses useEffect (lines 14-17) to log errors. Shows error.message in red box (lines 46-51). Provides reset() and dashboard link recovery options (lines 53-62)."
+    },
+    {
+      "id": "TC-INFRA-005",
+      "name": "404 page displays correctly for non-existent routes",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "medium",
+      "description": "Validates that the custom 404 page displays when users navigate to non-existent URLs",
+      "business_context": "Users often mistype URLs or follow broken links - a helpful 404 page reduces bounce rate and guides users back to the app",
+      "preconditions": [
+        "Application is running"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to a non-existent route (e.g., /en/non-existent-page)",
+          "expected": "Next.js detects route doesn't exist"
+        },
+        {
+          "step": 2,
+          "action": "Verify 404 page loads",
+          "expected": "Custom not-found.tsx page renders"
+        },
+        {
+          "step": 3,
+          "action": "Check visual design",
+          "expected": "Page has gradient background (from-gray-50 to-gray-100), centered layout"
+        },
+        {
+          "step": 4,
+          "action": "Verify large '404' heading",
+          "expected": "Text '404' displays in large font (text-9xl font-bold)"
+        },
+        {
+          "step": 5,
+          "action": "Check decorative line",
+          "expected": "Colored line below 404 (h-1 w-24 bg-primary rounded-full)"
+        },
+        {
+          "step": 6,
+          "action": "Verify 'Page Not Found' heading",
+          "expected": "Heading displays 'Page Not Found' (text-3xl font-bold)"
+        },
+        {
+          "step": 7,
+          "action": "Check explanation text",
+          "expected": "Text explains 'page might have been moved or deleted'"
+        },
+        {
+          "step": 8,
+          "action": "Verify 'Go to Dashboard' button",
+          "expected": "Primary button links to /en/dashboard"
+        },
+        {
+          "step": 9,
+          "action": "Verify 'Back to Home' button",
+          "expected": "Outline button links to /en (landing page)"
+        },
+        {
+          "step": 10,
+          "action": "Check support link",
+          "expected": "Footer has 'Contact Support' link to /en/docs"
+        }
+      ],
+      "acceptance_criteria": [
+        "404 page renders for non-existent routes",
+        "Large '404' text is prominent and readable",
+        "Design is friendly, not intimidating",
+        "Two navigation options provided: Dashboard and Home",
+        "Support link is visible",
+        "Page is responsive on mobile and desktop",
+        "No technical jargon or error codes shown",
+        "Buttons use correct Link components for client-side navigation",
+        "Color scheme matches app theme (uses bg-primary)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/not-found.tsx"
+      ],
+      "tags": [
+        "infrastructure",
+        "404",
+        "ux",
+        "navigation"
+      ],
+      "notes": "Server Component at lines 1-41. Simple layout with large 404 number (line 9), explanation text (lines 17-20), and two navigation buttons (lines 22-32). No error logging needed as 404s are not errors."
+    },
+    {
+      "id": "TC-INFRA-006",
+      "name": "Health endpoint responds quickly for load balancer checks",
+      "module": "infrastructure",
+      "user_journey": null,
+      "category": "api",
+      "type": "performance",
+      "priority": "medium",
+      "description": "Validates that health endpoint responds within acceptable time limits for load balancer health checks",
+      "business_context": "Load balancers and orchestration systems poll health endpoints frequently - slow responses can cause false positives and unnecessary failovers",
+      "preconditions": [
+        "Application is running",
+        "API server is under normal load"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send GET request to /api/health with timing measurement",
+          "expected": "Request completes successfully"
+        },
+        {
+          "step": 2,
+          "action": "Measure response time from request start to response received",
+          "expected": "Response time is recorded"
+        },
+        {
+          "step": 3,
+          "action": "Verify response time is under 100ms",
+          "expected": "Response time <= 100ms under normal conditions"
+        },
+        {
+          "step": 4,
+          "action": "Test under moderate load (10 concurrent requests)",
+          "expected": "Average response time still under 200ms"
+        },
+        {
+          "step": 5,
+          "action": "Verify edge runtime optimization",
+          "expected": "Edge runtime (line 3) provides faster response than Node.js runtime"
+        }
+      ],
+      "acceptance_criteria": [
+        "Single request response time < 100ms (p95)",
+        "10 concurrent requests average < 200ms",
+        "No database queries or external API calls",
+        "Uses edge runtime for optimal performance",
+        "No blocking operations (I/O, CPU-intensive work)",
+        "Response is consistently fast across regions",
+        "Works with standard load balancer health check intervals (5-10s)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/health/route.ts"
+      ],
+      "tags": [
+        "infrastructure",
+        "performance",
+        "monitoring",
+        "load-balancer"
+      ],
+      "notes": "Uses edge runtime (line 3) for fast response. No database or external service checks - only returns static JSON with current timestamp. This ensures consistent sub-100ms performance."
+    },
+    {
+      "id": "TC-JOURNEY-001",
+      "name": "New User - Complete Onboarding Journey (Landing to First Carousel)",
+      "module": "user_journeys",
+      "user_journey": "new_user_onboarding",
+      "category": "e2e",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates the complete new user onboarding experience from landing page discovery through account creation to first successful carousel generation and export",
+      "business_context": "The new user onboarding flow is the CRITICAL first impression of QuickCarousals. A smooth, friction-free experience from landing page to first carousel determines conversion, activation, and retention. This journey must feel fast (<5 min total), simple (minimal clicks), and rewarding (tangible output).",
+      "preconditions": [
+        "User has no existing QuickCarousals account",
+        "Application is running with all services available (PostgreSQL, Clerk, OpenAI)",
+        "Database is seeded with StyleKits and TemplateLayouts",
+        "Browser cookies/local storage are cleared"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to landing page at http://localhost:3000/en",
+          "expected": "Landing page loads with hero section: 'Turn an idea into a LinkedIn-ready carousel in 3 minutes', 'Start Creating Free' CTA button, 'View Pricing' secondary CTA"
+        },
+        {
+          "step": 2,
+          "action": "Read the value proposition and features (AI-Powered, 8 Style Kits, Visual Editor, Export Ready)",
+          "expected": "Features grid displays 4 feature cards with purple icons and clear descriptions. Social proof shows contributor avatars and '2000 developers' stat."
+        },
+        {
+          "step": 3,
+          "action": "Click 'Start Creating Free' button",
+          "expected": "Browser navigates to /en/register (Clerk sign-up page)"
+        },
+        {
+          "step": 4,
+          "action": "Enter email address in registration form",
+          "expected": "Email field accepts input, no validation errors for valid email format"
+        },
+        {
+          "step": 5,
+          "action": "Enter password in registration form",
+          "expected": "Password field accepts input (masked), password strength indicator shows if weak/strong"
+        },
+        {
+          "step": 6,
+          "action": "Click Sign Up button",
+          "expected": "Clerk processes registration, creates user account, triggers webhook to create Profile record. Loading state shows briefly."
+        },
+        {
+          "step": 7,
+          "action": "Wait for Clerk webhook to complete Profile creation",
+          "expected": "Profile record created in database with: clerkUserId, email, subscriptionTier='FREE', createdAt timestamp"
+        },
+        {
+          "step": 8,
+          "action": "Verify automatic redirect after successful signup",
+          "expected": "Browser automatically redirects to /en/dashboard. URL changes to /en/dashboard, dashboard page loads."
+        },
+        {
+          "step": 9,
+          "action": "Observe dashboard empty state",
+          "expected": "Dashboard shows empty state component: sparkles icon in gradient circle, 'No carousels yet' heading, 'It only takes 3 minutes!' encouragement text, 'Create Your First Carousel' CTA button"
+        },
+        {
+          "step": 10,
+          "action": "Click 'Create Your First Carousel' button in empty state",
+          "expected": "Browser navigates to /en/create. URL changes to /en/create, create page loads."
+        },
+        {
+          "step": 11,
+          "action": "Verify create page loads with default state",
+          "expected": "Create page displays: Topic mode selected by default (blue highlight), topic input field visible, slide count dropdown showing '10', tone selector showing 'Professional', 'Generate Carousel' button disabled (no input yet)"
+        },
+        {
+          "step": 12,
+          "action": "Enter topic in input field: '5 time management tips for busy professionals'",
+          "expected": "Text appears in topic input field, character count updates to '48/500', Generate button becomes enabled (blue, clickable)"
+        },
+        {
+          "step": 13,
+          "action": "Click 'Generate Carousel' button",
+          "expected": "Button becomes disabled, loading spinner appears, loading text shows 'Creating your carousel...'. User cannot click generate again during processing."
+        },
+        {
+          "step": 14,
+          "action": "Wait for AI generation to complete (20-45 seconds)",
+          "expected": "Three sequential API calls execute: POST /api/generate/topic (AI pipeline: generateSlidePlan \u2192 generateSlideCopy \u2192 selectLayoutsForSlides), returns 10 slides with layoutIds"
+        },
+        {
+          "step": 15,
+          "action": "Verify project creation API call",
+          "expected": "POST /api/projects executes with: {title: 'Carousel - [timestamp]', styleKitId: 'minimal_clean' (default free style kit), status: 'DRAFT'}. Returns projectId."
+        },
+        {
+          "step": 16,
+          "action": "Verify slides creation API calls (bulk)",
+          "expected": "Multiple POST /api/slides calls execute in parallel (one per slide), each creating a Slide record with: projectId, layoutId, orderIndex, content JSON, layers JSON"
+        },
+        {
+          "step": 17,
+          "action": "Verify automatic navigation to editor",
+          "expected": "Browser navigates to /en/editor/[projectId]. URL changes to editor route with actual project ID, editor page begins loading."
+        },
+        {
+          "step": 18,
+          "action": "Wait for editor page to load project data",
+          "expected": "Editor loads in sequence: GET /api/projects/[id] (project metadata), GET /api/projects/[id]/slides (all slides), GET /api/style-kits/[styleKitId] (style kit details), GET /api/layouts (all layouts). Loading spinner shows during fetch."
+        },
+        {
+          "step": 19,
+          "action": "Observe editor interface after load completes",
+          "expected": "Editor displays: left sidebar with 10 slide thumbnails (numbered 1-10), center canvas showing first slide (active, blue border on thumbnail), right sidebar with theme controls. Canvas renders at 1080x1350 with text layers visible. Watermark 'QuickCarousals.com' visible at bottom (FREE tier)."
+        },
+        {
+          "step": 20,
+          "action": "Verify first slide content on canvas",
+          "expected": "First slide displays: headline text (hook slide, 8-12 words), body text (3-5 bullet points), background color from styleKit, correct font rendering, auto-fit text sizing applied"
+        },
+        {
+          "step": 21,
+          "action": "Scroll thumbnail rail to view all slides",
+          "expected": "All 10 slides visible in thumbnail rail, each showing mini preview at 10% scale (108x135px). Thumbnails render actual slide content (not placeholders)."
+        },
+        {
+          "step": 22,
+          "action": "Click on slide 5 thumbnail",
+          "expected": "Slide 5 becomes active (blue border/background on thumbnail), center canvas updates to show slide 5 content, right sidebar updates to show slide 5's layout options"
+        },
+        {
+          "step": 23,
+          "action": "Click back to slide 1 thumbnail to prepare for export",
+          "expected": "Slide 1 becomes active again, canvas shows slide 1 content"
+        },
+        {
+          "step": 24,
+          "action": "Click 'Export' button in header",
+          "expected": "ExportModal opens as overlay. Modal shows: format selection (PDF/PNG buttons, PDF selected by default), filename input (pre-filled with project title), 'Export as cover thumbnail' checkbox (unchecked), 'Start Export' button (enabled)"
+        },
+        {
+          "step": 25,
+          "action": "Keep default settings (PDF format) and click 'Start Export'",
+          "expected": "Modal transitions to progress screen. POST /api/exports executes, creates Export record with status='PENDING', queues BullMQ render job. Progress bar shows 'Queued...' (25% progress)."
+        },
+        {
+          "step": 26,
+          "action": "Wait for export processing (10-30 seconds)",
+          "expected": "Modal polls GET /api/exports/[id] every 2 seconds. Status changes: PENDING \u2192 PROCESSING (75% progress, 'Rendering slides...') \u2192 COMPLETED (100%, 'Export ready!'). Background worker renders each slide to PNG using @napi-rs/canvas, combines into PDF using PDFKit, uploads to Supabase Storage 'exports' bucket."
+        },
+        {
+          "step": 27,
+          "action": "Verify export completion UI",
+          "expected": "Modal shows success state: green checkmark icon, 'Your carousel is ready!' message, 'Download PDF' button (enabled, blue), 'Close' button"
+        },
+        {
+          "step": 28,
+          "action": "Click 'Download PDF' button",
+          "expected": "Browser triggers file download. PDF file downloads to user's Downloads folder with filename matching input (e.g., 'Carousel_20260131.pdf'). File size is reasonable (200-800KB for 10 slides)."
+        },
+        {
+          "step": 29,
+          "action": "Open downloaded PDF file",
+          "expected": "PDF opens in default PDF viewer. Contains 10 pages (one per slide), each page is 1080x1350 dimensions. All text is rendered clearly, colors match preview, watermark 'QuickCarousals.com' visible at bottom of each slide in gray (FREE tier enforcement)."
+        },
+        {
+          "step": 30,
+          "action": "Close ExportModal and return to dashboard",
+          "expected": "Click 'Close' in modal, modal disappears. Click 'Dashboard' link in header, browser navigates to /en/dashboard. Dashboard now shows 1 project card with: title 'Carousel - [timestamp]', status badge 'DRAFT' (yellow), last updated date (today), thumbnail preview (if cover export was selected)."
+        }
+      ],
+      "acceptance_criteria": [
+        "SPEED: Complete journey from landing to first download takes under 5 minutes for user (excluding AI generation wait time)",
+        "FRICTIONLESS: Zero errors, no failed API calls, no page crashes, no confusing error messages",
+        "DATABASE: Profile record exists with correct clerkUserId, email, subscriptionTier='FREE'",
+        "DATABASE: Project record exists with userId=Profile.id, styleKitId, status='DRAFT'",
+        "DATABASE: 10 Slide records exist linked to project, each with valid layoutId, orderIndex 0-9, content JSON, layers JSON",
+        "DATABASE: 1 Export record exists with projectId, exportType='PDF', status='COMPLETED', fileUrl (Supabase Storage URL)",
+        "FILE STORAGE: PDF file exists in Supabase Storage at path: {userId}/{filename}",
+        "PDF CONTENT: Downloaded PDF has 10 pages, each 1080x1350, all text rendered, watermark present on all pages",
+        "UI STATE: Dashboard shows 1 project card, editor shows correct project data, export modal shows completed state",
+        "NAVIGATION: All page transitions work (landing\u2192register\u2192dashboard\u2192create\u2192editor\u2192dashboard)",
+        "TIER ENFORCEMENT: FREE tier limits respected (3 style kits visible, watermark present, 8 slide limit shown in dropdown)",
+        "NO ERRORS: Browser console has zero errors, API responses all 2xx, no database constraint violations",
+        "RESPONSIVE: All pages render correctly at desktop resolution (1920x1080 tested)",
+        "VISUAL QUALITY: Canvas renders correctly (no broken images, no text overflow, correct colors/fonts)",
+        "REAL-TIME: Auto-save works after export (no explicit save needed), polling updates export status in real-time"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(auth)/register/page.tsx",
+        "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx",
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/app/api/projects/route.ts",
+        "apps/nextjs/src/app/api/projects/[id]/slides/route.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
+        "apps/nextjs/src/app/api/exports/route.ts",
+        "apps/nextjs/src/lib/queues/render-worker.ts",
+        "apps/nextjs/src/components/editor/ExportModal.tsx"
+      ],
+      "tags": [
+        "e2e",
+        "onboarding",
+        "critical",
+        "new-user",
+        "full-journey",
+        "conversion",
+        "activation"
+      ],
+      "notes": "This is THE MOST CRITICAL test case for QuickCarousals. It represents the complete happy path for a new user from discovery to tangible output. Every step must work flawlessly. Total time budget: <5 minutes for user actions (AI generation 20-45s, export 10-30s are system time). If this journey fails at any point, the user is lost and conversion fails. Current known issues that may affect this journey: 1) Pricing page shows wrong features (Kubernetes clusters instead of carousels) - but onboarding skips pricing page so not blocking. 2) No backend tier enforcement - but new user starts as FREE so limits apply correctly on first use. 3) Webhook dependency for Profile creation - if Clerk webhook fails, entire journey breaks (CRITICAL). This test should be executed FIRST in any test suite."
+    },
+    {
+      "id": "TC-JOURNEY-002",
+      "name": "New User - Onboarding Journey with Immediate Export (Speed Test)",
+      "module": "user_journeys",
+      "user_journey": "new_user_onboarding",
+      "category": "e2e",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates the FASTEST possible path from landing page to download for a new user who accepts all defaults and doesn't customize anything. This tests the '3 minutes' promise from marketing.",
+      "business_context": "QuickCarousals promises 'Turn an idea into a LinkedIn-ready carousel in 3 minutes'. This is the core value proposition on the landing page. If a power user who clicks through quickly can't get a PDF in 3 minutes, the promise is false and trust is lost.",
+      "preconditions": [
+        "User has no existing QuickCarousals account",
+        "Application is running with all services available and responsive",
+        "Database is seeded",
+        "User is experienced with web apps (clicks quickly, no reading time)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Start timer. Navigate to http://localhost:3000/en",
+          "expected": "Landing page loads in under 2 seconds"
+        },
+        {
+          "step": 2,
+          "action": "Click 'Start Creating Free' immediately",
+          "expected": "Redirect to /en/register in under 1 second"
+        },
+        {
+          "step": 3,
+          "action": "Enter email and password, click Sign Up (10 seconds)",
+          "expected": "Registration completes, redirects to dashboard in under 5 seconds total (including webhook)"
+        },
+        {
+          "step": 4,
+          "action": "Click 'Create Your First Carousel' button immediately",
+          "expected": "Redirect to /en/create in under 1 second"
+        },
+        {
+          "step": 5,
+          "action": "Type topic '5 productivity tips' and click Generate (5 seconds)",
+          "expected": "Generation starts immediately, no validation delay"
+        },
+        {
+          "step": 6,
+          "action": "Wait for AI generation",
+          "expected": "Generation completes in 20-45 seconds, redirects to editor"
+        },
+        {
+          "step": 7,
+          "action": "In editor, immediately click Export button",
+          "expected": "ExportModal opens in under 500ms"
+        },
+        {
+          "step": 8,
+          "action": "Click 'Start Export' with defaults (no changes to filename or format)",
+          "expected": "Export job queues in under 1 second"
+        },
+        {
+          "step": 9,
+          "action": "Wait for export processing",
+          "expected": "Export completes in 10-30 seconds, download button appears"
+        },
+        {
+          "step": 10,
+          "action": "Click 'Download PDF' button. Stop timer.",
+          "expected": "PDF download starts immediately. Total elapsed time is under 180 seconds (3 minutes)."
+        }
+      ],
+      "acceptance_criteria": [
+        "TOTAL TIME: From landing page load to PDF download trigger is under 180 seconds (3 minutes)",
+        "BREAKDOWN: User actions (typing, clicking) = ~20 seconds, Page loads/transitions = ~10 seconds, AI generation = 20-45 seconds, Export processing = 10-30 seconds, Total budget: ~60-105 seconds (well under 3 min if systems fast)",
+        "NO DELAYS: No artificial loading delays, no unnecessary confirmation dialogs, no multi-step forms",
+        "DEFAULTS WORK: Default topic mode, default 10 slides, default Professional tone, default PDF format, default filename all work without customization",
+        "SYSTEM PERFORMANCE: API response times <1s for CRUD, <45s for AI generation, <30s for export",
+        "NETWORK EFFICIENCY: No redundant API calls, no polling during generation (just loading state), efficient polling during export (2s interval)",
+        "UI RESPONSIVENESS: All buttons respond immediately to clicks, no lag between action and visual feedback",
+        "PDF QUALITY: Despite speed focus, PDF quality is not compromised (all slides rendered, watermark present, correct dimensions)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(auth)/register/page.tsx",
+        "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx",
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
+        "apps/nextjs/src/app/api/exports/route.ts"
+      ],
+      "tags": [
+        "e2e",
+        "onboarding",
+        "critical",
+        "performance",
+        "speed-test",
+        "marketing-promise",
+        "3-minute-challenge"
+      ],
+      "notes": "This test validates the '3 minutes' marketing promise. It's the SPEED-FOCUSED variant of TC-JOURNEY-001. If this test fails (time exceeds 3 minutes), the marketing copy must be updated or system performance must be improved. Key performance bottlenecks: 1) AI generation (20-45s, can't optimize much), 2) Export rendering (10-30s, can optimize with better canvas code or parallel processing), 3) Clerk webhook delay (1-5s, can't control). Best-case total: 50s, worst-case total: 105s, both well under 3 minutes IF systems are fast. If AI is slow (45s) AND export is slow (30s), we're at 75s + 30s overhead = 105s = 1:45, still under promise. This test should be run regularly to ensure performance doesn't degrade."
+    },
+    {
+      "id": "TC-JOURNEY-003",
+      "name": "New User - Onboarding with Exploration (Realistic User Behavior)",
+      "module": "user_journeys",
+      "user_journey": "new_user_onboarding",
+      "category": "e2e",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates onboarding journey for a REALISTIC new user who explores features, reads tooltips, previews styles, and customizes settings before generating. This tests discoverability and learnability of the UI.",
+      "business_context": "Not all users are power users. Most new users will explore the interface, hover over tooltips, try different options, and preview changes before committing. This realistic behavior must be supported without breaking the flow or causing confusion.",
+      "preconditions": [
+        "User has no existing QuickCarousals account",
+        "Application is running",
+        "User is cautious and curious (reads before clicking)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to landing page, scroll down to read Features Grid (AI-Powered, 8 Style Kits, Visual Editor, Export Ready)",
+          "expected": "Page scrolls smoothly, all feature cards visible with icons and descriptions"
+        },
+        {
+          "step": 2,
+          "action": "Click 'View Pricing' secondary CTA to understand pricing before signing up",
+          "expected": "Navigate to /en/pricing. Pricing page loads showing 3 tiers (FREE/CREATOR/PRO) with features and prices. NOTE: Current pricing shows WRONG features (Kubernetes clusters), but user may not notice."
+        },
+        {
+          "step": 3,
+          "action": "Click browser back button to return to landing page",
+          "expected": "Browser navigates back to /en, landing page loads again"
+        },
+        {
+          "step": 4,
+          "action": "Click 'Start Creating Free' to begin signup",
+          "expected": "Navigate to /en/register"
+        },
+        {
+          "step": 5,
+          "action": "Complete registration and land on dashboard empty state",
+          "expected": "Dashboard shows empty state with 'Create Your First Carousel' CTA"
+        },
+        {
+          "step": 6,
+          "action": "Read the empty state message ('No carousels yet', 'It only takes 3 minutes!')",
+          "expected": "User sees encouragement text, builds confidence to proceed"
+        },
+        {
+          "step": 7,
+          "action": "Click 'Create Your First Carousel' button",
+          "expected": "Navigate to /en/create"
+        },
+        {
+          "step": 8,
+          "action": "On create page, hover over 'Text' mode tab to see what it does",
+          "expected": "Cursor changes to pointer, tab highlights slightly on hover (visual feedback)"
+        },
+        {
+          "step": 9,
+          "action": "Click 'Text' mode tab to switch modes",
+          "expected": "Text mode becomes active (blue highlight), topic input disappears, text textarea appears with placeholder 'Paste your text here... (10-10,000 characters)', character count shows '0/10,000'"
+        },
+        {
+          "step": 10,
+          "action": "Click back to 'Topic' mode tab",
+          "expected": "Topic mode becomes active, text textarea disappears, topic input appears"
+        },
+        {
+          "step": 11,
+          "action": "Click slide count dropdown to see options",
+          "expected": "Dropdown expands showing options: 8, 9, 10, 11, 12 (FREE tier only sees 8). Current value '10' is highlighted."
+        },
+        {
+          "step": 12,
+          "action": "Hover over slide count '8' without selecting",
+          "expected": "Option highlights on hover (visual feedback)"
+        },
+        {
+          "step": 13,
+          "action": "Click slide count '8'",
+          "expected": "Dropdown closes, selected value changes to '8', UI updates to show '8 slides'"
+        },
+        {
+          "step": 14,
+          "action": "Click tone selector dropdown to see options",
+          "expected": "Dropdown shows: Professional (selected), Bold, Calm, Contrarian"
+        },
+        {
+          "step": 15,
+          "action": "Select 'Bold' tone",
+          "expected": "Dropdown closes, tone changes to 'Bold', UI updates"
+        },
+        {
+          "step": 16,
+          "action": "Notice 'Apply Brand Kit' toggle, hover to see tooltip (if present)",
+          "expected": "Toggle is OFF by default. Tooltip explains brand kit feature (if tooltip implemented)."
+        },
+        {
+          "step": 17,
+          "action": "Try to toggle 'Apply Brand Kit' ON",
+          "expected": "If user has 0 brand kits (FREE tier default), toggle either stays OFF or shows message 'No brand kits available. Create one in Settings.'"
+        },
+        {
+          "step": 18,
+          "action": "Scroll down to see style kit preview (if visible on create page)",
+          "expected": "If style kit selector is on create page, user sees preview of minimal_clean (default). If not on create page, this step is skipped."
+        },
+        {
+          "step": 19,
+          "action": "Enter topic in input field: '7 tips for better sleep hygiene'",
+          "expected": "Text appears, character count updates to '37/500', Generate button enables"
+        },
+        {
+          "step": 20,
+          "action": "Read the Generate button text carefully before clicking",
+          "expected": "Button says 'Generate Carousel', clear call to action"
+        },
+        {
+          "step": 21,
+          "action": "Click 'Generate Carousel' button",
+          "expected": "Loading state starts, button disables, spinner appears"
+        },
+        {
+          "step": 22,
+          "action": "Wait for generation with customized settings (8 slides, Bold tone)",
+          "expected": "AI generates 8 slides instead of default 10, with Bold tone copy (shorter, punchier headlines)"
+        },
+        {
+          "step": 23,
+          "action": "After redirect to editor, hover over thumbnail rail slide thumbnails to see preview",
+          "expected": "Thumbnails show mini preview of each slide (108x135px), hovering shows gray background (visual feedback)"
+        },
+        {
+          "step": 24,
+          "action": "Click each slide thumbnail sequentially (1\u21922\u21923\u21924\u21925\u21926\u21927\u21928) to preview all slides",
+          "expected": "Canvas updates to show each slide's content. Total of 8 slides (not 10), all rendered correctly."
+        },
+        {
+          "step": 25,
+          "action": "On slide 3, click on headline text in canvas to edit",
+          "expected": "Textarea overlay appears at exact position of text on canvas, current headline text is pre-filled, cursor focuses in textarea"
+        },
+        {
+          "step": 26,
+          "action": "Edit headline: change 'Tip 3' to 'Pro Tip 3'",
+          "expected": "Text updates in textarea, character count updates"
+        },
+        {
+          "step": 27,
+          "action": "Click outside textarea to close editor",
+          "expected": "Textarea disappears, canvas updates with new text 'Pro Tip 3', auto-fit algorithm recalculates font size"
+        },
+        {
+          "step": 28,
+          "action": "Wait 500ms for auto-save debounce",
+          "expected": "After 500ms, PUT /api/projects/[id]/slides executes automatically, saves all slides including edited slide 3"
+        },
+        {
+          "step": 29,
+          "action": "Open theme controls (right sidebar) and click color picker for background",
+          "expected": "Color picker dropdown opens, shows current background color selected"
+        },
+        {
+          "step": 30,
+          "action": "Select a different background color (e.g., light blue #e0f2ff)",
+          "expected": "Canvas immediately updates with new background color on current slide (no save required), color applies to styleKit"
+        },
+        {
+          "step": 31,
+          "action": "Click through other slides to see if color applied globally",
+          "expected": "Background color change applies to ALL slides (styleKit update affects entire project)"
+        },
+        {
+          "step": 32,
+          "action": "Click 'Export' button in header",
+          "expected": "ExportModal opens"
+        },
+        {
+          "step": 33,
+          "action": "In ExportModal, hover over 'PNG' format button to see difference",
+          "expected": "PNG button highlights on hover, shows it's clickable"
+        },
+        {
+          "step": 34,
+          "action": "Click 'PNG' format button",
+          "expected": "PNG becomes selected (active state), PDF becomes unselected"
+        },
+        {
+          "step": 35,
+          "action": "Click back to 'PDF' format",
+          "expected": "PDF becomes selected again"
+        },
+        {
+          "step": 36,
+          "action": "Check 'Export as cover thumbnail' checkbox",
+          "expected": "Checkbox becomes checked (visual checkmark appears)"
+        },
+        {
+          "step": 37,
+          "action": "Edit filename field from default to 'SleepTips_LinkedIn'",
+          "expected": "Text field accepts input, filename updates"
+        },
+        {
+          "step": 38,
+          "action": "Click 'Start Export' button",
+          "expected": "Export starts, creates 2 exports (PDF + thumbnail PNG), modal shows progress"
+        },
+        {
+          "step": 39,
+          "action": "Wait for export to complete",
+          "expected": "Both exports complete, modal shows 'Download PDF' button"
+        },
+        {
+          "step": 40,
+          "action": "Click 'Download PDF', verify 8 pages (not 10)",
+          "expected": "PDF downloads with 8 pages, includes edited 'Pro Tip 3' text, light blue background on all slides, watermark present"
+        }
+      ],
+      "acceptance_criteria": [
+        "USER FLOW: All exploration actions work correctly (mode switching, dropdown selections, toggles, color pickers)",
+        "VISUAL FEEDBACK: All interactive elements provide hover states, active states, loading states",
+        "CUSTOMIZATION: User's choices persist through the journey (8 slides, Bold tone, edited text, changed color all present in final PDF)",
+        "NO CONFUSION: No broken UI states, no elements that appear clickable but don't work, no tooltips that say 'coming soon'",
+        "REAL-TIME UPDATES: Canvas updates immediately on color change, auto-save works after text edit, thumbnail rail updates on slide changes",
+        "THUMBNAIL ACCURACY: Slide thumbnails match actual slide content (not generic placeholders)",
+        "EXPORT OPTIONS: Checkbox for cover thumbnail works, filename customization works, format switching works",
+        "FINAL OUTPUT: PDF has 8 pages (not default 10), includes custom edits, shows bold tone copy, shows custom background color",
+        "AUTO-SAVE: After text edit, wait confirms PUT /api/projects/[id]/slides executes automatically without explicit save button",
+        "NO ERRORS: Browser console has zero errors despite extensive clicking/hovering/exploring"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(marketing)/page.tsx",
+        "apps/nextjs/src/app/[lang]/(marketing)/pricing/page.tsx",
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx",
+        "apps/nextjs/src/components/editor/ThemeControls.tsx",
+        "apps/nextjs/src/components/editor/ExportModal.tsx",
+        "apps/nextjs/src/hooks/use-auto-save.ts"
+      ],
+      "tags": [
+        "e2e",
+        "onboarding",
+        "high",
+        "realistic-behavior",
+        "exploration",
+        "customization",
+        "ux-validation",
+        "learnability"
+      ],
+      "notes": "This test represents REALISTIC new user behavior - not rushing, but exploring and learning the interface. Key insights: 1) Users will try different options before committing, 2) Hover states and visual feedback are critical for confidence, 3) Customizations must persist through the entire flow (no loss of settings), 4) Auto-save must work transparently (no explicit save button needed). This test is longer (40 steps) because it includes exploration actions. If this test reveals confusion points (e.g., toggle doesn't work, color doesn't apply), those are UX bugs that harm onboarding success. Current known gaps: pricing page shows wrong features (may confuse user in step 2), brand kit toggle behavior unclear (step 17). Time budget for this user: 10-15 minutes (includes reading and exploring)."
     }
   ],
   "known_issues": [
