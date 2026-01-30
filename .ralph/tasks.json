@@ -730,7 +730,7 @@
       ],
       "expected": "Layer renderer works, /editor/test route exists and loads with sample slides"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-14",

@@ -3,16 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Stage, Layer } from 'react-konva';
 import type Konva from 'konva';
+import { LayerRenderer } from './LayerRenderer';
+import type { SlideData } from './types';
 
 interface EditorCanvasProps {
   className?: string;
+  slide?: SlideData;
 }
 
 // Fixed canvas dimensions (LinkedIn portrait format)
 const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 1350;
 
-export function EditorCanvas({ className }: EditorCanvasProps) {
+export function EditorCanvas({ className, slide }: EditorCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [stageSize, setStageSize] = useState({ width: CANVAS_WIDTH, height: CANVAS_HEIGHT });
@@ -69,8 +72,13 @@ export function EditorCanvas({ className }: EditorCanvasProps) {
         }}
       >
         <Layer>
-          {/* Canvas content will be rendered here */}
-          {/* Placeholder for slide layers */}
+          {slide && (
+            <LayerRenderer
+              layers={slide.blueprint.layers}
+              content={slide.content}
+              styleKit={slide.styleKit}
+            />
+          )}
         </Layer>
       </Stage>
     </div>
