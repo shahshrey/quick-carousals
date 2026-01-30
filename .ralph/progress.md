@@ -588,3 +588,34 @@
 
 ### 2026-01-30 05:46:58
 **Session 21 started** (model: sonnet-4.5-thinking)
+
+## Iteration 21 - infra-04 (COMPLETE)
+
+**Task**: Set up BullMQ render queue
+
+**Implementation**:
+- ✅ Created render queue with BullMQ (`src/lib/queues/render-queue.ts`)
+- ✅ Installed bullmq and ioredis dependencies
+- ✅ Created `/api/queues/render/status` endpoint
+- ✅ Added job retry configuration (3 attempts, exponential backoff)
+- ✅ Implemented queue statistics functions
+- ✅ Documented in lib/README.md
+
+**Validation**:
+- Queue status endpoint returns proper stats: `{waiting: 0, active: 0, completed: 0, failed: 0}`
+- All validation checks pass:
+  - Status route exists: ✓
+  - Queue configured: ✓
+  - Retry configuration present: ✓
+
+**Key Features**:
+- Native Redis connection via ioredis (BullMQ requirement)
+- Fallback construction from REST URL if native URL not set
+- 3 retry attempts with exponential backoff (5s → 10s → 20s)
+- Completed jobs kept for 24 hours (max 1000)
+- Failed jobs kept for 7 days (max 5000)
+- Job ID uses exportId for idempotency
+- Support for job priority (for Pro tier)
+
+**Next Up**: feature-01 (OpenAI service setup)
+
