@@ -867,7 +867,7 @@
       ],
       "expected": "measureText(text, font, maxWidth) returns {width, height, lines[]} for text fitting"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-19",
