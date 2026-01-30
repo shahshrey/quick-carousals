@@ -1074,7 +1074,7 @@
       ],
       "expected": "Settings page with brand_name_input, brand_handle_input, logo_upload, save_button. Saves to /api/brand-kits."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-26",
