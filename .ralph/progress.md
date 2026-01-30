@@ -730,3 +730,27 @@
 
 ### 2026-01-30 07:20:35
 **Session 9 started** (model: sonnet-4.5-thinking)
+
+## Iteration 24 - feature-04 (COMPLETE)
+**Task**: Implement layout selection logic (AI Step 3)
+
+**Completed**:
+- ✅ Created `selectLayout()` function that maps slide_type to layout_id
+- ✅ Text length consideration: short content gets specialized layouts, long content gets fallback layouts
+- ✅ Added `selectLayoutsForSlides()` helper for batch processing
+- ✅ Comprehensive test coverage: 15 new tests (48 total passing)
+- ✅ All layout IDs validated against TemplateLayout database table
+- ✅ Handles all slide types with appropriate fallbacks
+
+**Key Implementation**:
+- Layout mapping table with optional maxTextLength constraints
+- Text length calculated as headline + all body text
+- Graceful fallback to generic_single_focus for unknown types
+- TypeScript-safe with optional chaining
+
+**Files Modified**:
+- apps/nextjs/src/lib/openai.ts (added layout selection logic)
+- apps/nextjs/src/lib/openai.test.ts (added 15 tests)
+- .ralph/tasks.json (marked complete)
+
+**Next Task**: feature-05 - Create /api/generate/topic endpoint
