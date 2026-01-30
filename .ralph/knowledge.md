@@ -2653,3 +2653,35 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `echo "$json" | jq -e '.field1 and .field2'` - Validate JSON structure
     - `mkdir -p "$LOG_DIR/validation/api"` - Create validation artifact directories
   - **Next task dependency**: All API contracts validated - ready for remaining validation tasks
+
+---
+## Iteration 62 - validation-11
+- **What was done**: Database integrity validation - verified Prisma schema, model existence, type generation, connection, and seed data
+- **Files changed**: 
+  - .ralph/tasks.json (marked validation-11 complete)
+  - .ralph/logs/validation/db_integrity_report.txt (comprehensive validation report)
+  - .ralph/logs/validation/db_validate.txt (Prisma validation output)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Environment variables critical for Prisma**: Must use `bun with-env` wrapper to load env vars from ../../.env.local when running Prisma commands in packages/db
+  - **Prisma validation command**: `cd packages/db && bun with-env prisma validate` - loads env vars and validates schema
+  - **Schema validation warnings acceptable**: relationMode="prisma" warnings about manual indexes are expected and don't fail validation
+  - **All 7 QuickCarousals models present**: Profile, StyleKit, TemplateLayout, BrandKit, Project, Slide, Export - all created and seeded
+  - **Database connection healthy**: PostgreSQL Docker container running, db:push confirms schema is in sync
+  - **Seed data working correctly**: 8 StyleKits and 9 TemplateLayouts seeded with idempotency checks
+  - **Kysely types generated**: prisma/types.ts exists and is up to date
+  - **Legacy Saasfly tables coexist**: Account, Customer, K8sClusterConfig, Session, User, VerificationToken tables still present (expected, not used by QuickCarousals)
+  - **Database queries perform well**: All test queries execute in < 1 second
+  - **Validation workflow for database tasks**:
+    - `bun with-env prisma validate` - check schema validity
+    - `grep -q "model X" prisma/schema.prisma` - verify models exist
+    - `test -f prisma/types.ts` - verify type generation
+    - `bun db:push` - test connection and sync
+    - `bun db:seed` - test seed data loading
+    - `docker exec ... psql ... -c "QUERY"` - verify data in database
+  - **Working commands for this task**:
+    - `cd packages/db && bun with-env prisma validate` - validate schema
+    - `bun db:push` - sync schema to database
+    - `bun db:seed` - load seed data
+    - `docker exec quickcarousals-postgres psql -U quickcarousals -d quickcarousals -c "SELECT COUNT(*) FROM \"TableName\";"` - query data
+  - **Next task dependency**: Database validated and ready - all 87 tasks complete (100%)
