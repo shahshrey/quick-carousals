@@ -1166,3 +1166,33 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -q 'onSlideAdd={handleAddSlide}' apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx` - verify wiring
   - **Next feature dependency**: feature-18 will add text measurement utilities for auto-fit, building on this editor foundation
 ---
+
+---
+## Iteration 41 - feature-18
+- **What was done**: Implemented text measurement utility using Canvas 2D API
+- **Files changed**: 
+  - apps/nextjs/src/lib/text-measure.ts (created)
+  - apps/nextjs/src/lib/text-measure.test.ts (created)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS - All 11 tests passing
+- **Learnings for future iterations**:
+  - **Canvas 2D API for text measurement**: Use singleton canvas context to avoid creating multiple canvas elements
+  - **measureText function signature**: `measureText(text: string | string[], options: MeasureTextOptions): TextMeasurement`
+  - **Return structure**: `{ width: number, height: number, lines: string[] }` - provides all data needed for auto-fit
+  - **Line breaking algorithm**: Split text by words, iteratively build lines until width exceeds maxWidth, then start new line
+  - **Array input handling**: When text is array (bullet points), process each item separately and accumulate lines
+  - **Binary search for optimal font size**: `calculateOptimalFontSize` uses binary search between min/max bounds to find largest font that fits
+  - **Font string format**: Canvas API expects format: `"{weight} {size}px {family}"` (e.g., "700 24px Inter")
+  - **Line height calculation**: Total height = number of lines * (fontSize * lineHeight)
+  - **Browser-only limitation**: Canvas API only available in browser, throws error in SSR context (this is expected)
+  - **Test mocking pattern**: Mock Canvas API with rough character width approximation (10px per char) for unit tests
+  - **Helper functions created**:
+    - `calculateOptimalFontSize()` - binary search for best fit
+    - `doesTextFit()` - boolean check if text fits in bounds
+    - `breakTextIntoLines()` - internal helper for line breaking
+    - `buildFontString()` - internal helper for Canvas font format
+  - **Next task dependency**: feature-19 will use this utility to implement auto-fit text in the editor
+  - **Working commands**:
+    - `bun run test src/lib/text-measure.test.ts` - run tests (all 11 pass)
+    - `grep -q 'measureText' apps/nextjs/src/lib/text-measure.ts` - verify function exists
+---

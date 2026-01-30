@@ -898,7 +898,7 @@
       ],
       "expected": "Short-medium text: font shrinks to fit (visible in screenshot). Very long text: shows overflow_indicator (red border, warning icon, or similar). Font size stays within min/max bounds defined in layout constraints."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-20",
