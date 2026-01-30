@@ -1262,3 +1262,31 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s http://localhost:3000/en/editor/test` - returns 200 (page loads)
   - **Next task dependency**: This completes the editor's AI-assisted text editing flow - users can now click overflow text and get AI help shortening it
 ---
+
+---
+## Iteration 47 - feature-21
+- **What was done**: Built style kit selector UI with 8 curated style kits
+- **Files changed**: 
+  - apps/nextjs/src/components/editor/StyleKitSelector.tsx (created)
+  - apps/nextjs/src/components/editor/types.ts (added isPremium to StyleKit)
+  - apps/nextjs/src/components/editor/index.ts (added export)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (integrated selector)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Style kit selector pattern**: Created dropdown component that fetches kits from API and displays them in a grid
+  - **Free vs Premium organization**: Separated kits into two sections with different styling (blue for free, purple for premium)
+  - **Mini canvas preview**: Each kit shows a small preview canvas with headline/body text and accent bar in the kit's actual colors/fonts
+  - **Dynamic testids**: Used `data-testid={style_kit_${kit.id}}` for each kit button - generates testids like `style_kit_minimal_clean`, `style_kit_dark_mode_punch`, etc.
+  - **Global style switching**: Handler updates all slides at once by mapping over slides array and replacing styleKit property
+  - **Instant canvas updates**: When styleKit changes, LayerRenderer automatically picks up new colors, fonts, and spacing from the updated styleKit
+  - **Test route layout**: Added right-side controls panel (320px) with style kit selector, slide info, and current style display
+  - **StyleKit type enhancement**: Added optional `isPremium?: boolean` property to support tier-based filtering
+  - **Backdrop pattern**: Used fixed backdrop div to close dropdown when clicking outside
+  - **State management**: currentStyleKitId tracked separately to highlight active kit in selector
+  - **Working validation commands**:
+    - `curl -s http://localhost:3000/api/style-kits | jq 'length'` - Verify 8 kits
+    - `curl -s http://localhost:3000/api/style-kits | jq -r '.[].id'` - List all kit IDs
+    - `curl -s -L http://localhost:3000/en/editor/test` - Test route loads with selector
+  - **Next task dependency**: feature-22 will add theme controls (font, color, spacing adjustments) building on this selector
+---
