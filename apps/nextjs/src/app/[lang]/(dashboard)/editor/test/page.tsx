@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorCanvas, ThumbnailRail } from '~/components/editor';
-import type { SlideData } from '~/components/editor';
+import { EditorCanvas, ThumbnailRail, StyleKitSelector } from '~/components/editor';
+import type { SlideData, StyleKit } from '~/components/editor';
 
 // Sample style kit (Minimal Clean)
 const minimalCleanStyleKit = {
@@ -23,6 +23,7 @@ const minimalCleanStyleKit = {
     padding: 'normal' as const,
     line_height: 1.5,
   },
+  isPremium: false,
 };
 
 // Sample slides with different layouts
@@ -209,6 +210,9 @@ export default function EditorTestPage() {
   // Track active slide index
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
 
+  // Track current style kit (start with minimal_clean)
+  const [currentStyleKitId, setCurrentStyleKitId] = useState('minimal_clean');
+
   // Handle content change for a specific slide
   const handleContentChange = (slideIndex: number, layerId: string, content: string | string[]) => {
     setSlides(prev => prev.map((slide, idx) => {
@@ -223,6 +227,15 @@ export default function EditorTestPage() {
       }
       return slide;
     }));
+  };
+
+  // Handle style kit change - update all slides
+  const handleStyleKitChange = (newStyleKit: StyleKit) => {
+    setCurrentStyleKitId(newStyleKit.id);
+    setSlides(prev => prev.map(slide => ({
+      ...slide,
+      styleKit: newStyleKit,
+    })));
   };
 
   // Add a new slide (copy of generic_single_focus layout)
@@ -313,58 +326,114 @@ export default function EditorTestPage() {
       <div className="mx-auto max-w-7xl p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Editor Canvas Test - Slide Thumbnails
+            Editor Canvas Test - Style Kit Selector
           </h1>
           <p className="mt-2 text-gray-600">
-            Click on thumbnails in the left rail to switch between slides. The active slide is highlighted.
+            Choose a style kit to apply colors and fonts to all slides. Click thumbnails to switch slides.
           </p>
           <div className="mt-4 rounded-lg bg-blue-50 p-4">
             <p className="text-sm text-blue-900">
-              <strong>Feature 16:</strong> Slide thumbnail rail with mini canvas previews.
-              Click any thumbnail to switch the main canvas.
+              <strong>Feature 21:</strong> Style kit selector with 8 kits (4 free, 4 premium).
+              Selecting a kit updates canvas colors and fonts instantly.
             </p>
           </div>
         </div>
 
-        {/* Editor with thumbnail rail */}
-        <div className="flex h-[800px] overflow-hidden rounded-lg bg-white shadow-lg">
+        {/* Editor with thumbnail rail and controls */}
+        <div className="flex gap-6">
           {/* Thumbnail rail on the left */}
-          <ThumbnailRail
-            slides={slides}
-            activeSlideIndex={activeSlideIndex}
-            onSlideSelect={setActiveSlideIndex}
-            onSlideAdd={handleAddSlide}
-            onSlideDuplicate={handleDuplicateSlide}
-            onSlideDelete={handleDeleteSlide}
-            onSlideReorder={handleSlideReorder}
-          />
+          <div className="w-[180px] flex-shrink-0">
+            <ThumbnailRail
+              slides={slides}
+              activeSlideIndex={activeSlideIndex}
+              onSlideSelect={setActiveSlideIndex}
+              onSlideAdd={handleAddSlide}
+              onSlideDuplicate={handleDuplicateSlide}
+              onSlideDelete={handleDeleteSlide}
+              onSlideReorder={handleSlideReorder}
+            />
+          </div>
 
           {/* Main canvas editor */}
-          <div className="flex-1">
+          <div className="flex-1 overflow-hidden rounded-lg bg-white shadow-lg">
             <EditorCanvas 
               slide={slides[activeSlideIndex]} 
               onContentChange={(layerId, content) => handleContentChange(activeSlideIndex, layerId, content)}
             />
           </div>
-        </div>
 
-        {/* Slide info */}
-        <div className="mt-8 rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">
-            Active Slide: {activeSlideIndex + 1} of {slides.length}
-          </h2>
-          <div className="space-y-2 text-sm text-gray-600">
-            <p>
-              <strong>Layout:</strong> {slides[activeSlideIndex].layoutId}
-            </p>
-            <p>
-              <strong>Layers:</strong> {slides[activeSlideIndex].blueprint.layers.length} (
-              {slides[activeSlideIndex].blueprint.layers.map(l => l.type).join(', ')})
-            </p>
-            <p>
-              <strong>Editable Text Boxes:</strong>{' '}
-              {slides[activeSlideIndex].blueprint.layers.filter(l => l.type === 'text_box').length}
-            </p>
+          {/* Controls panel on the right */}
+          <div className="w-[320px] flex-shrink-0 space-y-4">
+            {/* Style Kit Selector */}
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                Style Kit
+              </h3>
+              <StyleKitSelector
+                currentStyleKitId={currentStyleKitId}
+                onStyleKitChange={handleStyleKitChange}
+              />
+            </div>
+
+            {/* Slide info */}
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                Active Slide
+              </h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>
+                  <strong>Slide:</strong> {activeSlideIndex + 1} of {slides.length}
+                </p>
+                <p>
+                  <strong>Layout:</strong> {slides[activeSlideIndex].layoutId}
+                </p>
+                <p>
+                  <strong>Layers:</strong> {slides[activeSlideIndex].blueprint.layers.length}
+                </p>
+                <p>
+                  <strong>Text Boxes:</strong>{' '}
+                  {slides[activeSlideIndex].blueprint.layers.filter(l => l.type === 'text_box').length}
+                </p>
+              </div>
+            </div>
+
+            {/* Current style kit info */}
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                Current Style
+              </h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p>
+                  <strong>Kit:</strong> {slides[activeSlideIndex].styleKit.name}
+                </p>
+                <p>
+                  <strong>Headline:</strong> {slides[activeSlideIndex].styleKit.typography.headline_font} {slides[activeSlideIndex].styleKit.typography.headline_weight}
+                </p>
+                <p>
+                  <strong>Body:</strong> {slides[activeSlideIndex].styleKit.typography.body_font} {slides[activeSlideIndex].styleKit.typography.body_weight}
+                </p>
+                <div className="flex items-center space-x-2">
+                  <strong>Colors:</strong>
+                  <div className="flex space-x-1">
+                    <div
+                      className="h-6 w-6 rounded border border-gray-200"
+                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.background }}
+                      title="Background"
+                    />
+                    <div
+                      className="h-6 w-6 rounded border border-gray-200"
+                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.foreground }}
+                      title="Foreground"
+                    />
+                    <div
+                      className="h-6 w-6 rounded border border-gray-200"
+                      style={{ backgroundColor: slides[activeSlideIndex].styleKit.colors.accent }}
+                      title="Accent"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

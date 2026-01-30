@@ -960,7 +960,7 @@
       ],
       "expected": "style_kit_selector opens dropdown/panel with 8 style kits. Each kit has data-testid='style_kit_{kit_id}'. Clicking a kit updates canvas background color, text colors, and fonts to match kit definition."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-22",

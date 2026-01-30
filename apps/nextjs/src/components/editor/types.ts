@@ -64,4 +64,5 @@ export interface StyleKit {
     padding: 'tight' | 'normal' | 'roomy';
     line_height: number;
   };
+  isPremium?: boolean;
 }
