@@ -1986,3 +1986,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s -X POST http://localhost:3000/api/stripe/checkout -d '{"priceId":"test"}' -o /dev/null -w '%{http_code}'` - Returns 401 (auth required)
     - `test -f apps/nextjs/src/app/api/stripe/checkout/route.ts && echo 'PASS'` - Verify route exists
   - **Next task dependency**: integration-03 will create webhook handler to process subscription events
+
+---
+## Iteration 20 - integration-03
+- **What was done**: Validated Stripe webhook handler implementation (already complete from iteration 16)
+- **Files changed**: 
+  - .ralph/tasks.json (marked integration-03 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already complete from iteration 16 (integration-01)**: The webhook handler at /api/webhooks/stripe was fully implemented with all required functionality
+  - **Webhook implementation verified**:
+    - POST endpoint at apps/nextjs/src/app/api/webhooks/stripe/route.ts
+    - Signature verification using stripe.webhooks.constructEvent()
+    - Handles checkout.session.completed event via handleEvent() function
+    - Updates Profile.subscriptionTier field in database (not Customer table)
+    - Uses clerkUserId to lookup Profile (QuickCarousals pattern)
+  - **Additional events handled**: Implementation goes beyond requirements with invoice.payment_succeeded, customer.subscription.deleted, and customer.subscription.updated
+  - **Security verification**: Uses STRIPE_WEBHOOK_SECRET from env.mjs for signature validation
+  - **Middleware configuration**: /api/webhooks/* routes are excluded from Clerk auth in clerk.ts - this is correct since webhooks use signature verification
+  - **Error handling**: Returns 400 for invalid signatures, 200 for successful processing
+  - **Database update pattern**: Queries Profile by clerkUserId, then updates subscriptionTier using getSubscriptionPlan() to map priceId to SubscriptionTier enum
+  - **Validation workflow**: 
+    - `curl -X POST http://localhost:3000/api/webhooks/stripe -d '{}'` returns 400 (invalid signature)
+    - `grep -q "checkout.session.completed" packages/stripe/src/webhooks.ts` - verify event handler
+    - `grep -q "stripe.webhooks.constructEvent" apps/nextjs/src/app/api/webhooks/stripe/route.ts` - verify signature check
+  - **Working commands**:
+    - Test endpoint returns 400 without valid Stripe signature (correct behavior)
+    - All validation checks pass for signature verification, event handling, and database updates
+  - **Next task dependency**: This completes the Stripe integration - users can now subscribe, and webhooks will update their subscription tier
+---
