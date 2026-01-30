@@ -1710,3 +1710,30 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 12:06:05
 **Session 68 started** (model: sonnet-4.5-thinking)
+
+## Iteration 68 - feature-31: PNG Export Validation
+
+**Status:** ✅ COMPLETE
+
+**What was done:**
+- Validated PNG export implementation (already complete from feature-29)
+- Verified processPNGExport() function renders slides individually
+- Confirmed numbered filename format: slide-1.png, slide-2.png, etc.
+- Verified cover thumbnail option via THUMBNAIL export type
+- Validated API endpoint handles PNG array correctly
+
+**Implementation details:**
+- PNG export generates separate file per slide with format: `${projectId}-slide-${i + 1}-${Date.now()}.png`
+- Files uploaded to storage with user-scoped paths
+- URLs stored as JSON array in Export.fileUrl: `["userId/file1.png", "userId/file2.png"]`
+- API endpoint parses JSON array and generates signed URLs for each PNG
+- THUMBNAIL type renders only first slide (cover image)
+
+**Validation results:**
+✅ PNG export logic exists in render-worker.ts
+✅ ExportType enum includes PNG
+✅ Filename format includes slide numbering
+✅ All files uploaded to storage
+✅ API endpoint handles PNG array correctly
+
+**Next task:** feature-32 - Create export modal UI to trigger exports

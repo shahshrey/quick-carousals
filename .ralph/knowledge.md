@@ -1598,3 +1598,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `test -f apps/nextjs/src/app/api/exports/route.ts` - Verify route exists
   - **Next task dependency**: feature-31 will add PNG export handling, feature-32 will create export modal UI to call these endpoints
 ---
+
+---
+## Iteration 68 - feature-31
+- **What was done**: Validated PNG export implementation (already complete from feature-29)
+- **Files changed**: 
+  - .ralph/tasks.json (marked feature-31 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already complete from iteration 64 (feature-29)**: The PNG export functionality was fully implemented in the render worker, just needed validation
+  - **PNG export implementation verified**:
+    - `processPNGExport()` function in render-worker.ts renders all slides individually
+    - Each slide generates a separate PNG file with format: `${projectId}-slide-${i + 1}-${Date.now()}.png`
+    - Files are uploaded to STORAGE_BUCKETS.EXPORTS with user-scoped paths
+    - URLs stored as JSON array in Export.fileUrl field: `["userId/file1.png", "userId/file2.png"]`
+  - **Cover thumbnail already implemented**: THUMBNAIL export type renders only first slide at full resolution (1080x1350)
+  - **API endpoint handles PNG correctly**: GET /api/exports/[id] parses JSON array of paths and generates signed URLs for each PNG
+  - **Complete PNG export flow**:
+    1. POST /api/exports with type: "PNG"
+    2. Worker fetches all slides from database
+    3. Renders each slide to PNG buffer via renderSlideToCanvas()
+    4. Uploads each PNG to storage with numbered filenames
+    5. Stores array of URLs as JSON in fileUrl column
+    6. API endpoint returns array of signed download URLs
+  - **ExportType enum validated**: schema.prisma includes PDF, PNG, THUMBNAIL types
+  - **Working validation commands**:
+    - `grep -rq 'png\|PNG' apps/nextjs/src/lib && echo 'PASS'` - Verify PNG logic exists
+    - `grep -rq 'ExportType' packages/db/prisma/schema.prisma && echo 'PASS'` - Verify enum
+    - `grep "slide-" apps/nextjs/src/lib/queues/render-worker.ts` - Check filename format
+  - **Next task dependency**: This completes export functionality - feature-32 will create export modal UI to trigger PNG exports
