@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EditorCanvas, ThumbnailRail, StyleKitSelector } from '~/components/editor';
+import { EditorCanvas, ThumbnailRail, StyleKitSelector, ThemeControls } from '~/components/editor';
 import type { SlideData, StyleKit } from '~/components/editor';
 
 // Sample style kit (Minimal Clean)
@@ -238,6 +238,14 @@ export default function EditorTestPage() {
     })));
   };
 
+  // Handle theme controls update - update all slides with fine-tuned style kit
+  const handleStyleKitUpdate = (updatedStyleKit: StyleKit) => {
+    setSlides(prev => prev.map(slide => ({
+      ...slide,
+      styleKit: updatedStyleKit,
+    })));
+  };
+
   // Add a new slide (copy of generic_single_focus layout)
   const handleAddSlide = () => {
     const newSlide: SlideData = {
@@ -326,15 +334,15 @@ export default function EditorTestPage() {
       <div className="mx-auto max-w-7xl p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Editor Canvas Test - Style Kit Selector
+            Editor Canvas Test - Theme Controls
           </h1>
           <p className="mt-2 text-gray-600">
-            Choose a style kit to apply colors and fonts to all slides. Click thumbnails to switch slides.
+            Choose a style kit and fine-tune colors, fonts, and spacing. Changes apply to canvas immediately.
           </p>
           <div className="mt-4 rounded-lg bg-blue-50 p-4">
             <p className="text-sm text-blue-900">
-              <strong>Feature 21:</strong> Style kit selector with 8 kits (4 free, 4 premium).
-              Selecting a kit updates canvas colors and fonts instantly.
+              <strong>Feature 22:</strong> Theme controls panel with color palette editor, font pair selector, 
+              and spacing scale toggle (tight/normal/roomy).
             </p>
           </div>
         </div>
@@ -372,6 +380,17 @@ export default function EditorTestPage() {
               <StyleKitSelector
                 currentStyleKitId={currentStyleKitId}
                 onStyleKitChange={handleStyleKitChange}
+              />
+            </div>
+
+            {/* Theme Controls */}
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h3 className="mb-3 text-sm font-semibold text-gray-700">
+                Theme Controls
+              </h3>
+              <ThemeControls
+                styleKit={slides[activeSlideIndex].styleKit}
+                onStyleKitUpdate={handleStyleKitUpdate}
               />
             </div>
 

@@ -3,6 +3,7 @@ export { LayerRenderer } from './LayerRenderer';
 export { SlideThumbnail } from './SlideThumbnail';
 export { ThumbnailRail } from './ThumbnailRail';
 export { StyleKitSelector } from './StyleKitSelector';
+export { ThemeControls } from './ThemeControls';
 export type {
   Layer,
   BackgroundLayer,

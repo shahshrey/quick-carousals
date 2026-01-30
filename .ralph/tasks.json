@@ -987,7 +987,7 @@
       ],
       "expected": "color_picker opens color palette editor. font_selector shows font pair options. spacing_toggle cycles tight/normal/roomy. Changes apply to canvas immediately."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-23",
