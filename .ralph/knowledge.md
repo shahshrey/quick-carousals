@@ -1233,3 +1233,32 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/editor/test` - test route (200)
   - **Next feature dependency**: feature-20 (Fix with AI button) will build on this overflow detection to offer AI-powered fixes
 ---
+
+---
+## Iteration 45 - feature-20
+- **What was done**: Implemented overflow indicator and Fix with AI button for text that doesn't fit
+- **Files changed**: 
+  - apps/nextjs/src/app/api/rewrite/route.ts (created)
+  - apps/nextjs/src/components/editor/EditorCanvas.tsx (added Fix with AI button and overflow detection)
+  - apps/nextjs/src/app/[lang]/(dashboard)/editor/test/page.tsx (added overflow test slide)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **API endpoint pattern for text rewriting**: Created /api/rewrite with 6 actions (shorter, punchier, examples, reduce_jargon, more_specific, contrarian_hook)
+  - **Action-specific prompts**: Each rewrite action has tailored system prompt with rules for the AI to follow
+  - **Overflow detection in React**: Can use text-measure utilities inside useEffect/event handlers, but need to check `typeof window` first
+  - **Button placement with textarea**: Fix with AI button positioned below textarea (marginTop: 8px), needs onMouseDown preventDefault to avoid blur event
+  - **Loading state pattern**: Use loading flag + disabled state, show spinner with animation, change button color during loading
+  - **Error handling for AI calls**: Catch fetch errors, check response.ok, show user-friendly alerts for failures
+  - **Import pattern consistency**: Use Request not NextRequest for withAuthAndErrors handler signature
+  - **ApiErrors export location**: ApiErrors is exported from ~/lib/api-error, NOT from ~/lib/with-auth
+  - **Temperature tuning**: Use higher temperature (0.8) for creative tasks like contrarian hooks, lower (0.7) for other rewrites
+  - **Test data for validation**: Added slide 6 with extremely long headline to trigger overflow indicator and Fix with AI button
+  - **Overflow indicator from feature-19**: Red border Rect with name="overflow_indicator" already implemented in LayerRenderer
+  - **Working validation commands**:
+    - `curl -s -X POST http://localhost:3000/api/rewrite -d '{"text":"...","action":"shorter"}' | jq .` - returns 401 (auth required)
+    - `grep -n "fix_with_ai_button" apps/nextjs/src/components/editor/EditorCanvas.tsx` - verify button exists
+    - `grep -n "overflow_indicator" apps/nextjs/src/components/editor/LayerRenderer.tsx` - verify red border exists
+    - `curl -s http://localhost:3000/en/editor/test` - returns 200 (page loads)
+  - **Next task dependency**: This completes the editor's AI-assisted text editing flow - users can now click overflow text and get AI help shortening it
+---

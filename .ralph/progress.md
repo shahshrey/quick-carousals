@@ -1348,3 +1348,40 @@ feature-15: Implement zoom/pan controls
 
 ### 2026-01-30 10:33:32
 **Session 45 started** (model: sonnet-4.5-thinking)
+
+## Iteration 45 - feature-20 (COMPLETE)
+
+**Task**: Add overflow indicator and Fix with AI button
+
+**Implementation**:
+1. Created `/api/rewrite` endpoint with 6 rewrite actions:
+   - `shorter`: Reduce text length (with optional maxWords parameter)
+   - `punchier`: Make text more impactful
+   - `examples`: Add concrete examples
+   - `reduce_jargon`: Simplify technical terms
+   - `more_specific`: Add specific details
+   - `contrarian_hook`: Transform into attention-grabbing hook
+
+2. Enhanced EditorCanvas component:
+   - Added `isFixingWithAI` state for loading indicator
+   - Implemented `checkIfOverflows()` function using text-measure utilities
+   - Added `handleFixWithAI()` async function to call /api/rewrite
+   - Added Fix with AI button that appears below textarea when text overflows
+   - Button shows animated spinner during AI processing
+   - Properly handles blur events with onMouseDown preventDefault
+
+3. Added test slide with overflowing text:
+   - Slide 6 in test page has extremely long headline
+   - Triggers red border overflow indicator (from feature-19)
+   - Shows Fix with AI button when user clicks to edit
+
+**Validation**:
+- ✅ API endpoint returns 401 for unauthenticated requests
+- ✅ Test page loads successfully (200 status)
+- ✅ `fix_with_ai_button` testid present in EditorCanvas
+- ✅ `overflow_indicator` present in LayerRenderer (from feature-19)
+- ✅ Overflow test slide added to test page
+- ✅ No TypeScript errors in rewrite route
+
+**Next Steps**: Feature 20 complete. Ready for next editor feature.
+
