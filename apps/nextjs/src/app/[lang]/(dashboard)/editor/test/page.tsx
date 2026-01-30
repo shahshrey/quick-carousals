@@ -205,6 +205,89 @@ export default function EditorTestPage() {
     }));
   };
 
+  // Add a new slide (copy of generic_single_focus layout)
+  const handleAddSlide = () => {
+    const newSlide: SlideData = {
+      layoutId: 'generic_single_focus',
+      blueprint: {
+        layers: [
+          { type: 'background', properties: {} },
+          {
+            id: 'headline',
+            type: 'text_box',
+            position: { x: 60, y: 100, width: 960, height: 150 },
+            constraints: { max_font: 48, min_font: 32, max_lines: 3 },
+          },
+          {
+            id: 'body',
+            type: 'text_box',
+            position: { x: 60, y: 300, width: 960, height: 800 },
+            constraints: { max_font: 28, min_font: 20, max_lines: 12 },
+          },
+        ],
+      },
+      content: {
+        headline: 'New Slide',
+        body: 'Click to edit this text',
+      },
+      styleKit: minimalCleanStyleKit,
+    };
+
+    setSlides(prev => [...prev, newSlide]);
+    setActiveSlideIndex(slides.length); // Switch to the new slide
+  };
+
+  // Duplicate the selected slide
+  const handleDuplicateSlide = (index: number) => {
+    const slideToDuplicate = slides[index];
+    const duplicatedSlide: SlideData = {
+      ...slideToDuplicate,
+      content: { ...slideToDuplicate.content }, // Deep copy content
+    };
+
+    setSlides(prev => {
+      const newSlides = [...prev];
+      newSlides.splice(index + 1, 0, duplicatedSlide); // Insert after current slide
+      return newSlides;
+    });
+    setActiveSlideIndex(index + 1); // Switch to the duplicated slide
+  };
+
+  // Delete the selected slide
+  const handleDeleteSlide = (index: number) => {
+    if (slides.length <= 1) return; // Don't delete the last slide
+
+    setSlides(prev => prev.filter((_, idx) => idx !== index));
+    
+    // Adjust active slide index
+    if (index === activeSlideIndex) {
+      // If deleting active slide, move to previous or next
+      setActiveSlideIndex(Math.max(0, index - 1));
+    } else if (index < activeSlideIndex) {
+      // If deleting before active slide, adjust index
+      setActiveSlideIndex(activeSlideIndex - 1);
+    }
+  };
+
+  // Reorder slides via drag-drop
+  const handleSlideReorder = (fromIndex: number, toIndex: number) => {
+    setSlides(prev => {
+      const newSlides = [...prev];
+      const [movedSlide] = newSlides.splice(fromIndex, 1);
+      newSlides.splice(toIndex, 0, movedSlide);
+      return newSlides;
+    });
+
+    // Update active slide index to follow the moved slide
+    if (fromIndex === activeSlideIndex) {
+      setActiveSlideIndex(toIndex);
+    } else if (fromIndex < activeSlideIndex && toIndex >= activeSlideIndex) {
+      setActiveSlideIndex(activeSlideIndex - 1);
+    } else if (fromIndex > activeSlideIndex && toIndex <= activeSlideIndex) {
+      setActiveSlideIndex(activeSlideIndex + 1);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl p-8">
@@ -230,6 +313,10 @@ export default function EditorTestPage() {
             slides={slides}
             activeSlideIndex={activeSlideIndex}
             onSlideSelect={setActiveSlideIndex}
+            onSlideAdd={handleAddSlide}
+            onSlideDuplicate={handleDuplicateSlide}
+            onSlideDelete={handleDeleteSlide}
+            onSlideReorder={handleSlideReorder}
           />
 
           {/* Main canvas editor */}

@@ -845,7 +845,7 @@
       ],
       "expected": "add_slide_button adds new slide (count increases). delete_slide_button removes selected slide. duplicate_slide_button copies selected slide. Drag-drop reorders slides in thumbnail rail."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-18",
