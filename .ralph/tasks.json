@@ -541,7 +541,7 @@
       ],
       "expected": "Route exists. Empty input returns validation error (400) or auth error (401). Unit tests pass. When authenticated: POST with valid topic returns {slides: [...]} with 8-12 slides, each having headline and content."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-06",

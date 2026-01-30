@@ -3,7 +3,7 @@
  */
 
 import { z, type ZodSchema } from "zod";
-import { ApiErrors } from "./api-error";
+import { ApiErrors } from "../api-error";
 
 /**
  * Validate request JSON body against a Zod schema
