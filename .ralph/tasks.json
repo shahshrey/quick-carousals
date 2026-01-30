@@ -787,7 +787,7 @@
       ],
       "expected": "zoom_slider exists (range input 50-200%), fit_screen_button exists and resets zoom, dragging canvas pans when zoomed >100%, no console errors"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "feature-16",

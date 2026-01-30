@@ -23,8 +23,14 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
   const [stageSize, setStageSize] = useState({ width: CANVAS_WIDTH, height: CANVAS_HEIGHT });
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [editPosition, setEditPosition] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  
+  // Zoom and pan controls
+  const [zoom, setZoom] = useState(100); // 50-200%
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
-  // Calculate responsive scaling based on container size
+  // Calculate responsive scaling based on container size and zoom
   useEffect(() => {
     const updateScale = () => {
       if (!containerRef.current) return;
@@ -33,10 +39,13 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
 
-      // Calculate scale to fit within container while maintaining aspect ratio
+      // Calculate base scale to fit within container while maintaining aspect ratio
       const scaleX = containerWidth / CANVAS_WIDTH;
       const scaleY = containerHeight / CANVAS_HEIGHT;
-      const newScale = Math.min(scaleX, scaleY, 1); // Cap at 1 to avoid upscaling
+      const baseScale = Math.min(scaleX, scaleY, 1); // Cap at 1 to avoid upscaling
+
+      // Apply zoom percentage on top of base scale
+      const newScale = baseScale * (zoom / 100);
 
       setScale(newScale);
       setStageSize({
@@ -50,7 +59,7 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
     // Update on window resize
     window.addEventListener('resize', updateScale);
     return () => window.removeEventListener('resize', updateScale);
-  }, []);
+  }, [zoom]);
 
   // Handle text box click to enter edit mode
   const handleTextBoxClick = (layerId: string, position: { x: number; y: number; width: number; height: number }) => {
@@ -86,6 +95,40 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
     }
   };
 
+  // Handle zoom slider change
+  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newZoom = parseInt(e.target.value, 10);
+    setZoom(newZoom);
+  };
+
+  // Fit to screen (reset zoom and pan)
+  const handleFitToScreen = () => {
+    setZoom(100);
+    setPan({ x: 0, y: 0 });
+  };
+
+  // Pan handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only enable panning if zoomed in (zoom > 100%)
+    if (zoom > 100 && !editingLayerId) {
+      setIsPanning(true);
+      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isPanning) {
+      setPan({
+        x: e.clientX - panStart.x,
+        y: e.clientY - panStart.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+  };
+
   // Get current editing content
   const editingContent = editingLayerId && slide ? slide.content[editingLayerId] : '';
   const editingText = Array.isArray(editingContent) ? editingContent.join('\n') : editingContent;
@@ -98,44 +141,108 @@ export function EditorCanvas({ className, slide, onContentChange }: EditorCanvas
         width: '100%',
         height: '100%',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: 'column',
         backgroundColor: '#f5f5f5',
         position: 'relative',
       }}
       data-testid="canvas_surface"
     >
-      <Stage
-        ref={stageRef}
-        width={stageSize.width}
-        height={stageSize.height}
-        scaleX={scale}
-        scaleY={scale}
+      {/* Zoom and Pan Controls */}
+      <div
         style={{
-          border: '1px solid #ddd',
+          padding: '12px 16px',
           backgroundColor: '#fff',
+          borderBottom: '1px solid #ddd',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
         }}
-        onClick={handleStageClick}
       >
-        <Layer>
-          {slide && (
-            <LayerRenderer
-              layers={slide.blueprint.layers}
-              content={slide.content}
-              styleKit={slide.styleKit}
-              onTextBoxClick={handleTextBoxClick}
-            />
-          )}
-        </Layer>
-      </Stage>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
+          <span>Zoom:</span>
+          <input
+            type="range"
+            min="50"
+            max="200"
+            value={zoom}
+            onChange={handleZoomChange}
+            data-testid="zoom_slider"
+            style={{ width: '150px' }}
+          />
+          <span style={{ minWidth: '45px' }}>{zoom}%</span>
+        </label>
+        <button
+          onClick={handleFitToScreen}
+          data-testid="fit_screen_button"
+          style={{
+            padding: '6px 12px',
+            fontSize: '14px',
+            backgroundColor: '#3b82f6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+          }}
+        >
+          Fit to Screen
+        </button>
+      </div>
+
+      {/* Canvas Area */}
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          position: 'relative',
+          cursor: zoom > 100 ? (isPanning ? 'grabbing' : 'grab') : 'default',
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <div
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px)`,
+            transition: isPanning ? 'none' : 'transform 0.2s ease',
+          }}
+        >
+          <Stage
+            ref={stageRef}
+            width={stageSize.width}
+            height={stageSize.height}
+            scaleX={scale}
+            scaleY={scale}
+            style={{
+              border: '1px solid #ddd',
+              backgroundColor: '#fff',
+            }}
+            onClick={handleStageClick}
+          >
+            <Layer>
+              {slide && (
+                <LayerRenderer
+                  layers={slide.blueprint.layers}
+                  content={slide.content}
+                  styleKit={slide.styleKit}
+                  onTextBoxClick={handleTextBoxClick}
+                />
+              )}
+            </Layer>
+          </Stage>
+        </div>
+      </div>
 
       {/* Inline text editor overlay */}
       {editingLayerId && editPosition && (
         <div
           style={{
             position: 'absolute',
-            left: `calc(50% - ${stageSize.width / 2}px + ${editPosition.x}px)`,
-            top: `calc(50% - ${stageSize.height / 2}px + ${editPosition.y}px)`,
+            left: `calc(50% - ${stageSize.width / 2}px + ${editPosition.x}px + ${pan.x}px)`,
+            top: `calc(50% - ${stageSize.height / 2}px + ${editPosition.y}px + ${pan.y}px + 60px)`,
             width: `${editPosition.width}px`,
             height: `${editPosition.height}px`,
             zIndex: 1000,
