@@ -1413,3 +1413,39 @@ kill $(lsof -ti:3000)          # Kill process on port 3000
     - `grep -rq 'brand_name_input\|brand_handle_input' apps/nextjs/src` - Testids present
   - **Next task dependency**: feature-26 will add brand kit application to carousel editor
 ---
+
+---
+## Iteration 58 - feature-26
+- **What was done**: Implemented brand kit application to project creation flow
+- **Files changed**: 
+  - apps/nextjs/src/app/api/generate/text/route.ts (added brand kit application logic)
+  - .ralph/tasks.json (marked complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was mostly complete**: Creation flow UI with brand_kit_toggle already existed from previous work, but text endpoint was missing brand kit logic
+  - **Brand kit application pattern**: Both /api/generate/topic and /api/generate/text now follow same pattern:
+    1. Check applyBrandKit flag in request
+    2. Fetch user's Profile by clerkUserId
+    3. Query BrandKit table ordered by isDefault DESC, createdAt DESC
+    4. Apply brandKit object to each generated slide if found
+  - **Database query optimization**: Order by isDefault DESC to get default kit first, fallback to most recent if no default
+  - **Slide enhancement structure**: When brandKit is applied, each slide gets additional fields:
+    ```typescript
+    slide.brandKit = {
+      colors: brandKit.colors || {},
+      fonts: brandKit.fonts || {},
+      logoUrl: brandKit.logoUrl || null,
+      handle: brandKit.handle || null,
+    }
+    ```
+  - **Frontend already complete**: Creation flow page (`apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx`) already had:
+    - brand_kit_toggle checkbox with correct data-testid
+    - applyBrandKit state management
+    - Proper inclusion in both topic and text API calls
+  - **Consistent implementation**: Used exact same pattern as topic endpoint for consistency
+  - **Type safety**: Cast slide to `any` for brandKit property since it's optional enhancement not in base interface
+  - **Working validation commands**:
+    - `grep -rq 'brand_kit_toggle' apps/nextjs/src && echo 'PASS'` - Verify testid exists
+    - `grep -A 10 "Apply brand kit if available" apps/nextjs/src/app/api/generate/text/route.ts` - Verify logic
+  - **Next task dependency**: This completes brand kit integration - editor now needs to render with brand kit styling
+---
