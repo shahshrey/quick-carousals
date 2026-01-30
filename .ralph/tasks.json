@@ -436,7 +436,7 @@
         "bun run typecheck 2>&1 | grep -q 'error' && echo 'FAIL: type errors' || echo 'PASS: no type errors'",
         "test -f apps/nextjs/src/lib/openai.test.ts && echo 'PASS: test file exists' || echo 'FAIL: tests missing'",
         "bun run test apps/nextjs/src/lib/openai.test.ts 2>&1 | tee /tmp/openai_test.txt",
-        "grep -q 'PASS\\|\u2713' /tmp/openai_test.txt && echo 'PASS: tests passing' || echo 'FAIL: tests failing'"
+        "grep -q 'PASS\\|✓' /tmp/openai_test.txt && echo 'PASS: tests passing' || echo 'FAIL: tests failing'"
       ],
       "expected": "OpenAI client exists with types, tests exist and pass"
     },
@@ -472,7 +472,7 @@
       "feature-02"
     ],
     "steps": [
-      "Create prompt with copy constraints (headline \u226412 words, bullets \u22645)",
+      "Create prompt with copy constraints (headline ≤12 words, bullets ≤5)",
       "Generate content for each slide from plan",
       "Return {headline, body, emphasis_text} per slide"
     ],
@@ -482,7 +482,7 @@
         "grep -q 'generateSlideCopy' apps/nextjs/src/lib/openai.ts && echo 'PASS: function exists' || echo 'FAIL'",
         "grep -q 'headline\\|body' apps/nextjs/src/lib/openai.ts && echo 'PASS: output fields' || echo 'FAIL'"
       ],
-      "expected": "generateSlideCopy(plan) returns [{headline (\u226412 words), body (\u22645 bullets), emphasis_text}, ...]"
+      "expected": "generateSlideCopy(plan) returns [{headline (≤12 words), body (≤5 bullets), emphasis_text}, ...]"
     },
     "passes": true
   },
@@ -518,7 +518,7 @@
     ],
     "steps": [
       "Create route handler with Zod validation",
-      "Chain: slidePlan \u2192 slideCopy \u2192 layoutSelection",
+      "Chain: slidePlan → slideCopy → layoutSelection",
       "Return complete slides array",
       "Write API route tests (apps/nextjs/src/app/api/generate/topic/route.test.ts)",
       "Test: valid topic generates 8-12 slides",
@@ -537,7 +537,7 @@
         "# 3. Check test file exists and runs",
         "test -f apps/nextjs/src/app/api/generate/topic/route.test.ts && echo 'PASS: test file exists' || echo 'FAIL: tests missing'",
         "bun run test apps/nextjs/src/app/api/generate/topic 2>&1 | tee /tmp/topic_test.txt",
-        "grep -q 'PASS\\|\u2713' /tmp/topic_test.txt && echo 'PASS: API tests passing' || echo 'FAIL: API tests failing'"
+        "grep -q 'PASS\\|✓' /tmp/topic_test.txt && echo 'PASS: API tests passing' || echo 'FAIL: API tests failing'"
       ],
       "expected": "Route exists. Empty input returns validation error (400) or auth error (401). Unit tests pass. When authenticated: POST with valid topic returns {slides: [...]} with 8-12 slides, each having headline and content."
     },
@@ -1373,7 +1373,7 @@
         "# 3. Run unit tests (which mock auth)",
         "test -f apps/nextjs/src/app/api/projects/route.test.ts && echo 'PASS: CRUD tests exist' || echo 'FAIL: tests missing'",
         "bun run test apps/nextjs/src/app/api/projects 2>&1 | tee /tmp/projects_test.txt",
-        "grep -q 'PASS\\|\u2713' /tmp/projects_test.txt && echo 'PASS: CRUD tests passing' || echo 'FAIL: CRUD tests failing'"
+        "grep -q 'PASS\\|✓' /tmp/projects_test.txt && echo 'PASS: CRUD tests passing' || echo 'FAIL: CRUD tests failing'"
       ],
       "expected": "Auth guard returns 401 for unauthenticated requests. Route files exist. Unit tests (with mocked auth) pass for all CRUD operations."
     },
@@ -1408,7 +1408,7 @@
         "test -f apps/nextjs/src/hooks/use-auto-save.test.ts && echo 'PASS: tests exist' || echo 'FAIL: tests missing'",
         "# Run unit tests (can mock auth/API)",
         "bun run test apps/nextjs/src/hooks/use-auto-save 2>&1 | tee /tmp/autosave_test.txt",
-        "grep -q 'PASS\\|\u2713' /tmp/autosave_test.txt && echo 'PASS: tests passing' || echo 'FAIL: tests failing'",
+        "grep -q 'PASS\\|✓' /tmp/autosave_test.txt && echo 'PASS: tests passing' || echo 'FAIL: tests failing'",
         "# Manual browser test",
         "agent-browser open $BASE_URL/en/editor/test",
         "agent-browser wait --load networkidle",
@@ -1714,7 +1714,7 @@
       ],
       "expected": "Thumbnail rail scrollable with active highlight. Right panel controls grouped logically. Tooltips appear on hover with keyboard shortcuts (Cmd+E for export, etc)."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "testing-01",
@@ -1725,7 +1725,7 @@
       "feature-33"
     ],
     "steps": [
-      "Test: enter topic \u2192 generate \u2192 edit \u2192 export PDF",
+      "Test: enter topic → generate → edit → export PDF",
       "Verify all steps complete successfully",
       "Capture screenshots at each step"
     ],
@@ -1765,7 +1765,7 @@
       "feature-33"
     ],
     "steps": [
-      "Test: paste text \u2192 generate \u2192 edit \u2192 export PNG",
+      "Test: paste text → generate → edit → export PNG",
       "Test with short text (<500 chars)",
       "Test with long text (>5000 chars)"
     ],
@@ -2026,7 +2026,7 @@
       "validation-06"
     ],
     "steps": [
-      "Run complete end-to-end flow: topic \u2192 generate \u2192 edit \u2192 style change \u2192 export",
+      "Run complete end-to-end flow: topic → generate → edit → style change → export",
       "Verify no console errors throughout flow",
       "Verify export files are downloadable and valid",
       "Generate final validation report"
@@ -2095,7 +2095,7 @@
         "total_pass=$(grep -c 'PASS' $LOG_DIR/validation/final_report.txt)",
         "total_fail=$(grep -c 'FAIL' $LOG_DIR/validation/final_report.txt)",
         "echo \"\\nTotal PASS: $total_pass, Total FAIL: $total_fail\" | tee -a $LOG_DIR/validation/final_report.txt",
-        "test $total_fail -eq 0 && echo '\\n\u2705 ALL VALIDATIONS PASSED' | tee -a $LOG_DIR/validation/final_report.txt || echo '\\n\u274c SOME VALIDATIONS FAILED - Review report' | tee -a $LOG_DIR/validation/final_report.txt"
+        "test $total_fail -eq 0 && echo '\\n✅ ALL VALIDATIONS PASSED' | tee -a $LOG_DIR/validation/final_report.txt || echo '\\n❌ SOME VALIDATIONS FAILED - Review report' | tee -a $LOG_DIR/validation/final_report.txt"
       ],
       "expected": "All validation checks pass, final PDF export successful, no console errors, comprehensive report generated"
     },
@@ -2144,7 +2144,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/build_report.txt | tee $LOG_DIR/validation/build_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/build_fail_count.txt) -eq 0 && echo '\\n\u2705 BUILD VALIDATION PASSED' || echo '\\n\u274c BUILD VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/build_fail_count.txt) -eq 0 && echo '\\n✅ BUILD VALIDATION PASSED' || echo '\\n❌ BUILD VALIDATION FAILED'"
       ],
       "expected": "TypeScript compiles with 0 errors, ESLint passes, production build succeeds, bundle size within limits"
     },
@@ -2191,7 +2191,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/test_report.txt | tee $LOG_DIR/validation/test_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/test_fail_count.txt) -eq 0 && echo '\\n\u2705 TEST VALIDATION PASSED' || echo '\\n\u274c TEST VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/test_fail_count.txt) -eq 0 && echo '\\n✅ TEST VALIDATION PASSED' || echo '\\n❌ TEST VALIDATION FAILED'"
       ],
       "expected": "All unit tests pass, code coverage >= 80%, no regressions"
     },
@@ -2222,34 +2222,34 @@
         "echo '\\n--- Health Endpoint ---' | tee -a $LOG_DIR/validation/api_report.txt",
         "curl -s -w '\\n%{http_code}' $BASE_URL/api/health | tee $LOG_DIR/validation/api/health.txt",
         "health_status=$(tail -1 $LOG_DIR/validation/api/health.txt)",
-        "test $health_status -eq 200 && echo 'PASS: GET /api/health \u2192 200' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: GET /api/health failed' | tee -a $LOG_DIR/validation/api_report.txt",
+        "test $health_status -eq 200 && echo 'PASS: GET /api/health → 200' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: GET /api/health failed' | tee -a $LOG_DIR/validation/api_report.txt",
         "",
         "# Style kits endpoint",
         "echo '\\n--- Style Kits Endpoint ---' | tee -a $LOG_DIR/validation/api_report.txt",
         "curl -s -w '\\n%{http_code}' $BASE_URL/api/style-kits | tee $LOG_DIR/validation/api/style_kits.txt",
         "style_status=$(tail -1 $LOG_DIR/validation/api/style_kits.txt)",
         "style_count=$(head -n -1 $LOG_DIR/validation/api/style_kits.txt | jq 'length' 2>/dev/null || echo 0)",
-        "test $style_status -eq 200 && test $style_count -eq 8 && echo 'PASS: GET /api/style-kits \u2192 200, 8 kits' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Style kits endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
+        "test $style_status -eq 200 && test $style_count -eq 8 && echo 'PASS: GET /api/style-kits → 200, 8 kits' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Style kits endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
         "",
         "# Layouts endpoint",
         "echo '\\n--- Layouts Endpoint ---' | tee -a $LOG_DIR/validation/api_report.txt",
         "curl -s -w '\\n%{http_code}' $BASE_URL/api/layouts | tee $LOG_DIR/validation/api/layouts.txt",
         "layout_status=$(tail -1 $LOG_DIR/validation/api/layouts.txt)",
         "layout_count=$(head -n -1 $LOG_DIR/validation/api/layouts.txt | jq 'length' 2>/dev/null || echo 0)",
-        "test $layout_status -eq 200 && test $layout_count -eq 9 && echo 'PASS: GET /api/layouts \u2192 200, 9 layouts' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Layouts endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
+        "test $layout_status -eq 200 && test $layout_count -eq 9 && echo 'PASS: GET /api/layouts → 200, 9 layouts' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Layouts endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
         "",
         "# Generate endpoint (topic)",
         "echo '\\n--- Generate Topic Endpoint ---' | tee -a $LOG_DIR/validation/api_report.txt",
         "curl -s -w '\\n%{http_code}' -X POST -H 'Content-Type: application/json' -d '{\"topic\":\"test\",\"tone\":\"professional\",\"slideCount\":8}' $BASE_URL/api/generate/topic | tee $LOG_DIR/validation/api/generate_topic.txt",
         "gen_status=$(tail -1 $LOG_DIR/validation/api/generate_topic.txt)",
         "has_slides=$(head -n -1 $LOG_DIR/validation/api/generate_topic.txt | jq 'has(\"slides\")' 2>/dev/null || echo false)",
-        "test $gen_status -eq 200 && test $has_slides = 'true' && echo 'PASS: POST /api/generate/topic \u2192 200, has slides' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Generate topic endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
+        "test $gen_status -eq 200 && test $has_slides = 'true' && echo 'PASS: POST /api/generate/topic → 200, has slides' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Generate topic endpoint issue' | tee -a $LOG_DIR/validation/api_report.txt",
         "",
         "# Protected endpoint without auth (should 401)",
         "echo '\\n--- Auth Protection ---' | tee -a $LOG_DIR/validation/api_report.txt",
         "curl -s -w '\\n%{http_code}' $BASE_URL/api/projects | tee $LOG_DIR/validation/api/projects_unauth.txt",
         "unauth_status=$(tail -1 $LOG_DIR/validation/api/projects_unauth.txt)",
-        "test $unauth_status -eq 401 && echo 'PASS: GET /api/projects (no auth) \u2192 401' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Protected endpoint not returning 401' | tee -a $LOG_DIR/validation/api_report.txt",
+        "test $unauth_status -eq 401 && echo 'PASS: GET /api/projects (no auth) → 401' | tee -a $LOG_DIR/validation/api_report.txt || echo 'FAIL: Protected endpoint not returning 401' | tee -a $LOG_DIR/validation/api_report.txt",
         "",
         "# Error response format",
         "echo '\\n--- Error Response Format ---' | tee -a $LOG_DIR/validation/api_report.txt",
@@ -2259,7 +2259,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/api_report.txt | tee $LOG_DIR/validation/api_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/api_fail_count.txt) -eq 0 && echo '\\n\u2705 API VALIDATION PASSED' || echo '\\n\u274c API VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/api_fail_count.txt) -eq 0 && echo '\\n✅ API VALIDATION PASSED' || echo '\\n❌ API VALIDATION FAILED'"
       ],
       "expected": "All API endpoints return correct status codes, response schemas are valid, error format consistent"
     },
@@ -2313,7 +2313,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/db_report.txt | tee $LOG_DIR/validation/db_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/db_fail_count.txt) -eq 0 && echo '\\n\u2705 DATABASE VALIDATION PASSED' || echo '\\n\u274c DATABASE VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/db_fail_count.txt) -eq 0 && echo '\\n✅ DATABASE VALIDATION PASSED' || echo '\\n❌ DATABASE VALIDATION FAILED'"
       ],
       "expected": "Schema valid, all models exist, types generated, connection works, seed data loads"
     },
@@ -2375,7 +2375,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/security_report.txt | tee $LOG_DIR/validation/security_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/security_fail_count.txt) -eq 0 && echo '\\n\u2705 SECURITY VALIDATION PASSED' || echo '\\n\u274c SECURITY VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/security_fail_count.txt) -eq 0 && echo '\\n✅ SECURITY VALIDATION PASSED' || echo '\\n❌ SECURITY VALIDATION FAILED'"
       ],
       "expected": "No secrets exposed, security headers present, input sanitization works, webhook signatures verified"
     },
@@ -2434,7 +2434,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/error_report.txt | tee $LOG_DIR/validation/error_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/error_fail_count.txt) -eq 0 && echo '\\n\u2705 ERROR HANDLING VALIDATION PASSED' || echo '\\n\u274c ERROR HANDLING VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/error_fail_count.txt) -eq 0 && echo '\\n✅ ERROR HANDLING VALIDATION PASSED' || echo '\\n❌ ERROR HANDLING VALIDATION FAILED'"
       ],
       "expected": "404 page helpful, API errors have messages, invalid inputs handled gracefully, UI shows validation errors"
     },
@@ -2502,7 +2502,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/persistence_report.txt | tee $LOG_DIR/validation/persistence_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/persistence_fail_count.txt) -eq 0 && echo '\\n\u2705 PERSISTENCE VALIDATION PASSED' || echo '\\n\u274c PERSISTENCE VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/persistence_fail_count.txt) -eq 0 && echo '\\n✅ PERSISTENCE VALIDATION PASSED' || echo '\\n❌ PERSISTENCE VALIDATION FAILED'"
       ],
       "expected": "Auto-save works, content survives refresh, content survives browser close/reopen"
     },
@@ -2562,7 +2562,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/payment_report.txt | tee $LOG_DIR/validation/payment_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/payment_fail_count.txt) -eq 0 && echo '\\n\u2705 PAYMENT VALIDATION PASSED' || echo '\\n\u274c PAYMENT VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/payment_fail_count.txt) -eq 0 && echo '\\n✅ PAYMENT VALIDATION PASSED' || echo '\\n❌ PAYMENT VALIDATION FAILED'"
       ],
       "expected": "Stripe configured, checkout works, webhook validates signatures, billing page shows plans, feature gating implemented"
     },
@@ -2622,7 +2622,7 @@
         "",
         "# Summary",
         "grep -c 'FAIL' $LOG_DIR/validation/seo_report.txt | tee $LOG_DIR/validation/seo_fail_count.txt",
-        "test $(cat $LOG_DIR/validation/seo_fail_count.txt) -eq 0 && echo '\\n\u2705 SEO VALIDATION PASSED' || echo '\\n\u274c SEO VALIDATION FAILED'"
+        "test $(cat $LOG_DIR/validation/seo_fail_count.txt) -eq 0 && echo '\\n✅ SEO VALIDATION PASSED' || echo '\\n❌ SEO VALIDATION FAILED'"
       ],
       "expected": "Title and meta description present, Open Graph tags configured, robots.txt and sitemap exist"
     },
@@ -2653,69 +2653,69 @@
     "validation": {
       "_note": "Final aggregated validation report",
       "commands": [
-        "echo '\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557' | tee $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u2551        QUICKCAROUSALS - FINAL VALIDATION REPORT                  \u2551' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '╔══════════════════════════════════════════════════════════════════╗' | tee $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '║        QUICKCAROUSALS - FINAL VALIDATION REPORT                  ║' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '╚══════════════════════════════════════════════════════════════════╝' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "echo '' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "echo \"Generated: $(date)\" | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "echo '' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Collect results from all validation reports",
-        "echo '\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u2502 VALIDATION SUMMARY BY CATEGORY                                   \u2502' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '┌──────────────────────────────────────────────────────────────────┐' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '│ VALIDATION SUMMARY BY CATEGORY                                   │' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '├──────────────────────────────────────────────────────────────────┤' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Build validation",
         "build_pass=$(grep -c 'PASS' $LOG_DIR/validation/build_report.txt 2>/dev/null || echo 0)",
         "build_fail=$(grep -c 'FAIL' $LOG_DIR/validation/build_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Build & TypeScript' $build_pass $build_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Build & TypeScript' $build_pass $build_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Test validation",
         "test_pass=$(grep -c 'PASS' $LOG_DIR/validation/test_report.txt 2>/dev/null || echo 0)",
         "test_fail=$(grep -c 'FAIL' $LOG_DIR/validation/test_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Unit Tests' $test_pass $test_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Unit Tests' $test_pass $test_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# API validation",
         "api_pass=$(grep -c 'PASS' $LOG_DIR/validation/api_report.txt 2>/dev/null || echo 0)",
         "api_fail=$(grep -c 'FAIL' $LOG_DIR/validation/api_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'API Contracts' $api_pass $api_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'API Contracts' $api_pass $api_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Database validation",
         "db_pass=$(grep -c 'PASS' $LOG_DIR/validation/db_report.txt 2>/dev/null || echo 0)",
         "db_fail=$(grep -c 'FAIL' $LOG_DIR/validation/db_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Database Integrity' $db_pass $db_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Database Integrity' $db_pass $db_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Security validation",
         "sec_pass=$(grep -c 'PASS' $LOG_DIR/validation/security_report.txt 2>/dev/null || echo 0)",
         "sec_fail=$(grep -c 'FAIL' $LOG_DIR/validation/security_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Security' $sec_pass $sec_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Security' $sec_pass $sec_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Error handling validation",
         "err_pass=$(grep -c 'PASS' $LOG_DIR/validation/error_report.txt 2>/dev/null || echo 0)",
         "err_fail=$(grep -c 'FAIL' $LOG_DIR/validation/error_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Error Handling' $err_pass $err_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Error Handling' $err_pass $err_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Persistence validation",
         "pers_pass=$(grep -c 'PASS' $LOG_DIR/validation/persistence_report.txt 2>/dev/null || echo 0)",
         "pers_fail=$(grep -c 'FAIL' $LOG_DIR/validation/persistence_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Data Persistence' $pers_pass $pers_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Data Persistence' $pers_pass $pers_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Payment validation",
         "pay_pass=$(grep -c 'PASS' $LOG_DIR/validation/payment_report.txt 2>/dev/null || echo 0)",
         "pay_fail=$(grep -c 'FAIL' $LOG_DIR/validation/payment_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Payment Flow' $pay_pass $pay_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Payment Flow' $pay_pass $pay_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# SEO validation",
         "seo_pass=$(grep -c 'PASS' $LOG_DIR/validation/seo_report.txt 2>/dev/null || echo 0)",
         "seo_fail=$(grep -c 'FAIL' $LOG_DIR/validation/seo_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'SEO & Meta Tags' $seo_pass $seo_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'SEO & Meta Tags' $seo_pass $seo_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Carousel validation (from earlier tasks)",
         "car_pass=$(grep -c 'PASS' $LOG_DIR/validation/final_report.txt 2>/dev/null || echo 0)",
         "car_fail=$(grep -c 'FAIL' $LOG_DIR/validation/final_report.txt 2>/dev/null || echo 0)",
-        "printf '\u2502 %-30s %3d PASS / %3d FAIL \u2502\\n' 'Carousel Generation' $car_pass $car_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ %-30s %3d PASS / %3d FAIL │\\n' 'Carousel Generation' $car_pass $car_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
-        "echo '\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '└──────────────────────────────────────────────────────────────────┘' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "echo '' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Calculate totals",
@@ -2725,27 +2725,27 @@
         "pass_rate=0",
         "if [ $total -gt 0 ]; then pass_rate=$((total_pass * 100 / total)); fi",
         "",
-        "echo '\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u2502 OVERALL RESULTS                                                  \u2502' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "printf '\u2502 Total Checks: %-4d    Passed: %-4d    Failed: %-4d             \u2502\\n' $total $total_pass $total_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "printf '\u2502 Pass Rate: %3d%%                                                 \u2502\\n' $pass_rate | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "echo '\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '┌──────────────────────────────────────────────────────────────────┐' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '│ OVERALL RESULTS                                                  │' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '├──────────────────────────────────────────────────────────────────┤' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ Total Checks: %-4d    Passed: %-4d    Failed: %-4d             │\\n' $total $total_pass $total_fail | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "printf '│ Pass Rate: %3d%%                                                 │\\n' $pass_rate | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "echo '└──────────────────────────────────────────────────────────────────┘' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "echo '' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "",
         "# Final verdict",
         "if [ $total_fail -eq 0 ]; then",
-        "  echo '\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u2551  \u2705 ALL VALIDATIONS PASSED - READY FOR PRODUCTION                \u2551' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╔══════════════════════════════════════════════════════════════════╗' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '║  ✅ ALL VALIDATIONS PASSED - READY FOR PRODUCTION                ║' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╚══════════════════════════════════════════════════════════════════╝' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "elif [ $total_fail -le 5 ]; then",
-        "  echo '\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u2551  \u26a0\ufe0f  MINOR ISSUES - Review failures before deployment            \u2551' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╔══════════════════════════════════════════════════════════════════╗' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '║  ⚠️  MINOR ISSUES - Review failures before deployment            ║' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╚══════════════════════════════════════════════════════════════════╝' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "else",
-        "  echo '\u2554\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2557' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u2551  \u274c CRITICAL FAILURES - DO NOT DEPLOY                            \u2551' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
-        "  echo '\u255a\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u255d' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╔══════════════════════════════════════════════════════════════════╗' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '║  ❌ CRITICAL FAILURES - DO NOT DEPLOY                            ║' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
+        "  echo '╚══════════════════════════════════════════════════════════════════╝' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
         "fi",
         "",
         "echo '' | tee -a $LOG_DIR/validation/FINAL_VALIDATION_REPORT.txt",
