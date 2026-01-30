@@ -1607,7 +1607,7 @@
       ],
       "expected": "current_plan shows Free/Creator/Pro. upgrade_button opens Stripe Checkout for selected tier."
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "integration-05",

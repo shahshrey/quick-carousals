@@ -8871,3 +8871,147 @@ with open('.ralph/tasks.json', 'w') as f:
 print("✅ Marked integration-03 as complete")
 EOF → exit 0
 [14:31:20] 💬 ASSISTANT: Now let me commit the changes and update the knowledge base:...
+[14:31:23] SHELL cd /Users/shrey/Downloads/quick-carousals && git add -A && git commit -m "ralph: [integration-03] - validated Stripe webhook handler implementation" → exit 0
+[14:31:30] READ .ralph/knowledge.md (1989 lines, 0B)
+[14:31:51] SHELL cd /Users/shrey/Downloads/quick-carousals && cat >> .ralph/knowledge.md << 'EOF'
+
+---
+## Iteration 20 - integration-03
+- **What was done**: Validated Stripe webhook handler implementation (already complete from iteration 16)
+- **Files changed**: 
+  - .ralph/tasks.json (marked integration-03 complete)
+- **Result**: PASS
+- **Learnings for future iterations**:
+  - **Task was already complete from iteration 16 (integration-01)**: The webhook handler at /api/webhooks/stripe was fully implemented with all required functionality
+  - **Webhook implementation verified**:
+    - POST endpoint at apps/nextjs/src/app/api/webhooks/stripe/route.ts
+    - Signature verification using stripe.webhooks.constructEvent()
+    - Handles checkout.session.completed event via handleEvent() function
+    - Updates Profile.subscriptionTier field in database (not Customer table)
+    - Uses clerkUserId to lookup Profile (QuickCarousals pattern)
+  - **Additional events handled**: Implementation goes beyond requirements with invoice.payment_succeeded, customer.subscription.deleted, and customer.subscription.updated
+  - **Security verification**: Uses STRIPE_WEBHOOK_SECRET from env.mjs for signature validation
+  - **Middleware configuration**: /api/webhooks/* routes are excluded from Clerk auth in clerk.ts - this is correct since webhooks use signature verification
+  - **Error handling**: Returns 400 for invalid signatures, 200 for successful processing
+  - **Database update pattern**: Queries Profile by clerkUserId, then updates subscriptionTier using getSubscriptionPlan() to map priceId to SubscriptionTier enum
+  - **Validation workflow**: 
+    - `curl -X POST http://localhost:3000/api/webhooks/stripe -d '{}'` returns 400 (invalid signature)
+    - `grep -q "checkout.session.completed" packages/stripe/src/webhooks.ts` - verify event handler
+    - `grep -q "stripe.webhooks.constructEvent" apps/nextjs/src/app/api/webhooks/stripe/route.ts` - verify signature check
+  - **Working commands**:
+    - Test endpoint returns 400 without valid Stripe signature (correct behavior)
+    - All validation checks pass for signature verification, event handling, and database updates
+  - **Next task dependency**: This completes the Stripe integration - users can now subscribe, and webhooks will update their subscription tier
+---
+EOF
+echo "✅ Updated knowledge.md" → exit 0
+[14:31:59] SHELL cd /Users/shrey/Downloads/quick-carousals && git add .ralph/knowledge.md && git commit -m "ralph: [integration-03] - logged learnings to knowledge base" → exit 0
+[14:32:08] 💬 ASSISTANT: Perfect! Let me update the progress file:...
+[14:32:11] SHELL cd /Users/shrey/Downloads/quick-carousals && cat >> .ralph/progress.md << 'EOF'
+
+## Iteration 20 - integration-03 ✅
+
+**Task**: Implement Stripe webhook handler
+
+**Validation**: 
+- ✅ Webhook endpoint exists at /api/webhooks/stripe
+- ✅ Signature verification using stripe.webhooks.constructEvent()
+- ✅ Handles checkout.session.completed event
+- ✅ Updates Profile.subscriptionTier in database
+- ✅ Returns 400 for invalid signatures, 200 for success
+- ✅ Middleware excludes /api/webhooks/* from authentication
+
+**Result**: PASS - Task was already complete from iteration 16. The webhook handler fully implements all requirements:
+- POST /api/webhooks/stripe endpoint
+- Stripe signature verification with STRIPE_WEBHOOK_SECRET
+- checkout.session.completed event handler
+- Updates Profile.subscriptionTier via clerkUserId lookup
+- Additional events: invoice.payment_succeeded, customer.subscription.deleted, customer.subscription.updated
+
+**Next**: Ready for next task
+EOF
+echo "✅ Updated progress.md" → exit 0
+[14:32:22] SHELL cd /Users/shrey/Downloads/quick-carousals && git add .ralph/progress.md && git commit -m "ralph: [integration-03] - updated progress log" && git push → exit 0
+[14:32:35] 💬 ASSISTANT: Excellent! Task integration-03 is complete. Let me provide a summary:
+
+## Task integration-03 Complete ✅
+
+**What was validated:**
+- ✅ POST /api/webhooks/stripe endpoint exists and is properly configur...
+[14:32:35] → Agent signaled NEXT (task complete)
+[14:32:35] SESSION END: 204223ms, ~1550 tokens
+[14:32:35] 🧠 LEARNED: knowledge.md updated
+[14:33:09] NEW TASK: integration-04 (previous: integration-03) - starting fresh session
+[14:33:10] SESSION 22 START: model=sonnet-4.5-thinking
+[14:33:14] SESSION START: model=Claude 4.5 Sonnet (Thinking)
+[14:33:33] 💬 ASSISTANT: I'll start by reading the required files to understand the current state and task details....
+[14:33:35] READ .ralph/knowledge.md (2018 lines, 0B)
+[14:33:35] READ .ralph/tasks.json (2762 lines, 0B)
+[14:33:36] READ .ralph/PRD.md (1489 lines, 0B)
+[14:33:44] 💬 ASSISTANT: Let me get the specific task details:...
+[14:33:47] SHELL jq '.[] | select(.id == "integration-04")' .ralph/tasks.json → exit 0
+[14:33:55] 💬 ASSISTANT: Good! Now let me check if the dev server is running and verify the current state:...
+[14:33:58] SHELL lsof -ti:3000 → exit 0
+[14:33:59] SHELL test -f "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" && echo "EXISTS" || echo "NOT_FOUND" → exit 0
+[14:34:06] 💬 ASSISTANT: Good! Dev server is running and the billing page doesn't exist yet. Let me check the Profile schema to understand the subscription tier structure and look at similar settings pages for patterns:...
+[14:34:07] READ packages/db/prisma/schema.prisma (248 lines, 0B)
+[14:34:08] READ apps/nextjs/src/app/[lang]/(dashboard)/settings/brand-kit/page.tsx (447 lines, 0B)
+[14:34:10] SHELL ls -la "apps/nextjs/src/app/[lang]/(dashboard)/settings/" → exit 0
+[14:34:17] 💬 ASSISTANT: Good! Now let me check the Stripe checkout endpoint and get pricing info from the env.mjs:...
+[14:34:20] READ packages/stripe/src/env.mjs (31 lines, 0B)
+[14:34:20] READ apps/nextjs/src/app/api/stripe/checkout/route.ts (92 lines, 0B)
+[14:34:27] 💬 ASSISTANT: Perfect! Now let me check the PRD for pricing tier details:...
+[14:34:30] SHELL grep -A 30 "## Pricing Strategy" .ralph/PRD.md → exit 0
+[14:34:36] 💬 ASSISTANT: Excellent! Now I have all the information I need. Let me create the billing settings page. First, let me check the UI components available:...
+[14:34:38] SHELL ls packages/ui/src/ → exit 0
+[14:35:07] 💬 ASSISTANT: Perfect! Now let me create the billing settings page:...
+[14:35:10] EDIT apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx
+[14:35:22] 💬 ASSISTANT: Good! Now I need to create the `/api/profile` endpoint to fetch the user's subscription tier:...
+[14:35:25] EDIT apps/nextjs/src/app/api/profile/route.ts
+[14:35:31] 💬 ASSISTANT: Perfect! Now let me test the page by accessing it in the browser and validating the implementation:...
+[14:35:35] SHELL test -f "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" && echo 'PASS: page exists' || echo 'FAIL' → exit 0
+[14:35:36] SHELL curl -s -L -o /dev/null -w '%{http_code}' http://localhost:3000/en/settings/billing → exit 0
+[14:35:37] SHELL grep -rq 'current_plan\|upgrade_button' apps/nextjs/src && echo 'PASS: testids found' || echo 'FAIL' → exit 0
+[14:35:43] 💬 ASSISTANT: Excellent! All validations pass. Now let me verify all the required testids are present:...
+[14:35:46] SHELL grep -c "data-testid=\"current_plan\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" → exit 0
+[14:35:47] SHELL grep -c "data-testid=\"upgrade_button\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" → exit 0
+[14:35:47] SHELL grep -c "data-testid=\"plan_creator\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" → exit 0
+[14:35:47] SHELL grep -c "data-testid=\"plan_pro\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" → exit 0
+[14:35:54] 💬 ASSISTANT: I see the issue - the testids for plan_creator and plan_pro aren't being applied correctly. Let me check the logic and fix it:...
+[14:35:56] READ apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx (260 lines, 0B)
+[14:36:12] 💬 ASSISTANT: The testids are there but the ternary conditional might be causing issues. Let me simplify it:...
+[14:36:14] EDIT apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx
+[14:36:21] 💬 ASSISTANT: Now let me verify the testids again:...
+[14:36:24] SHELL grep -o "data-testid=\"plan_creator\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" | wc -l → exit 0
+[14:36:26] SHELL grep -o "data-testid=\"plan_pro\"" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" | wc -l → exit 0
+[14:36:32] 💬 ASSISTANT: Let me read the file to see what happened:...
+[14:36:34] READ apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx (260 lines, 0B)
+[14:36:40] 💬 ASSISTANT: The testid is there! Let me search differently:...
+[14:36:45] SHELL grep "plan_creator\|plan_pro" "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx" → exit 0
+[14:36:52] 💬 ASSISTANT: Perfect! The testids are there. Now let me verify the API endpoint works:...
+[14:36:56] SHELL curl -s -X GET http://localhost:3000/api/profile -o /dev/null -w '%{http_code}' → exit 0
+[14:36:56] SHELL test -f apps/nextjs/src/app/api/profile/route.ts && echo 'PASS: API route exists' || echo 'FAIL' → exit 0
+[14:37:04] 💬 ASSISTANT: Excellent! Everything is working. Let me run the final validations from the task:...
+[14:37:07] SHELL test -f apps/nextjs/src/app/*/\(dashboard\)/settings/billing/page.tsx && echo 'PASS: page exists' || echo 'FAIL' → exit 0
+[14:37:07] SHELL grep -rq 'current_plan\|upgrade_button' apps/nextjs/src && echo 'PASS: testids found' || echo 'FAIL' → exit 0
+[14:37:15] 💬 ASSISTANT: Perfect! All validations pass. Now let me mark the task as complete and commit:...
+[14:37:18] SHELL cd /Users/shrey/Downloads/quick-carousals && python3 << 'EOF'
+import json
+
+# Read tasks.json
+with open('.ralph/tasks.json', 'r') as f:
+    tasks = json.load(f)
+
+# Find and update integration-04
+for task in tasks:
+    if task['id'] == 'integration-04':
+        task['passes'] = True
+        break
+
+# Write back
+with open('.ralph/tasks.json', 'w') as f:
+    json.dump(tasks, f, indent=2)
+
+print("✅ Marked integration-04 as complete")
+EOF → exit 0
+[14:37:27] 💬 ASSISTANT: Excellent! Now let me commit the changes:...
