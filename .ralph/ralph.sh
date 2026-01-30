@@ -43,7 +43,7 @@ WARN_THRESHOLD=150000
 ROTATE_THRESHOLD=170000
 
 # Timeout for stuck agent (in seconds) - 30 minutes
-AGENT_TIMEOUT="${RALPH_AGENT_TIMEOUT:-1800}"
+AGENT_TIMEOUT="${RALPH_AGENT_TIMEOUT:-900}"
 
 # Task paths
 TASKS_JSON=".ralph/tasks.json"
