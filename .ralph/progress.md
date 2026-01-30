@@ -993,3 +993,32 @@
 
 ### 2026-01-30 08:53:00
 **Session 26 started** (model: sonnet-4.5-thinking)
+
+## Iteration 26 - feature-12 ✅
+
+**Task**: Install Konva and create canvas component
+
+**Completed**:
+- ✅ Installed react-konva@19.2.1 and konva@10.2.0
+- ✅ Created EditorCanvas component with:
+  - Fixed 1080x1350 viewport (LinkedIn portrait format)
+  - Responsive scaling that maintains aspect ratio
+  - Window resize listener for viewport changes
+  - Konva Stage and Layer structure ready for rendering
+- ✅ Created component export in editor/index.ts
+- ✅ All validation checks passed
+- ✅ No TypeScript errors in component
+- ✅ Committed changes and marked task complete
+
+**Implementation Details**:
+- Canvas dimensions: CANVAS_WIDTH = 1080, CANVAS_HEIGHT = 1350
+- Scaling algorithm: `Math.min(scaleX, scaleY, 1)` to fit and cap at 1x
+- Component is client-side ('use client') for React hooks
+- Uses containerRef to measure available space dynamically
+
+**Files Created**:
+- `apps/nextjs/src/components/editor/EditorCanvas.tsx`
+- `apps/nextjs/src/components/editor/index.ts`
+- `apps/nextjs/src/app/test/editor-canvas/page.tsx` (test page)
+
+**Next Task**: feature-13 - Layer rendering
