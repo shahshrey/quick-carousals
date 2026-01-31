@@ -2,32 +2,31 @@
   "metadata": {
     "version": "1.0",
     "created_at": "2026-01-30T16:53:00Z",
-    "last_updated": 1769809551.531191,
+    "last_updated": 1769810789.974373,
     "description": "Manual test cases for QuickCarousals - created by Ralph Test Discovery agent",
     "coverage_summary": {
-      "total_tests": 237,
+      "total_tests": 256,
       "by_priority": {
         "critical": 83,
-        "high": 118,
-        "medium": 20,
-        "low": 2
+        "high": 132,
+        "medium": 38,
+        "low": 3
       },
       "by_category": {
-        "api": 59,
-        "frontend": 81,
-        "database": 14,
-        "integration": 59,
-        "e2e": 7,
-        "security": 4,
-        "performance": 1
+        "api": 67,
+        "integration": 61,
+        "frontend": 90,
+        "database": 15,
+        "security": 15,
+        "e2e": 8
       },
       "modules_analyzed": 20,
       "modules_total": 20,
-      "journeys_analyzed": 1,
+      "journeys_analyzed": 2,
       "journeys_total": 6,
-      "total_test_cases": 237
+      "total_test_cases": 256
     },
-    "total_tests": 237,
+    "total_tests": 256,
     "modules_analyzed": 20
   },
   "modules": {
@@ -135,31 +134,31 @@
   "user_journeys": {
     "new_user_onboarding": {
       "name": "New User Onboarding",
-      "description": "Landing page \u2192 Sign up \u2192 Dashboard \u2192 First carousel",
+      "description": "Landing page → Sign up → Dashboard → First carousel",
       "status": "analyzed",
       "test_count": 3
     },
     "topic_to_export": {
-      "name": "Topic \u2192 Export (Happy Path)",
-      "description": "Enter topic \u2192 Generate \u2192 Edit \u2192 Export PDF",
-      "status": "pending_analysis",
-      "test_count": 0
+      "name": "Topic → Export (Happy Path)",
+      "description": "Enter topic → Generate → Edit → Export PDF",
+      "status": "analyzed",
+      "test_count": 3
     },
     "text_to_export": {
-      "name": "Paste Text \u2192 Export",
-      "description": "Paste text \u2192 Generate \u2192 Edit \u2192 Export PNG",
+      "name": "Paste Text → Export",
+      "description": "Paste text → Generate → Edit → Export PNG",
       "status": "pending_analysis",
       "test_count": 0
     },
     "returning_user": {
       "name": "Returning User Experience",
-      "description": "Login \u2192 Dashboard with projects \u2192 Edit existing",
+      "description": "Login → Dashboard with projects → Edit existing",
       "status": "pending_analysis",
       "test_count": 0
     },
     "upgrade_flow": {
       "name": "Subscription Upgrade",
-      "description": "Free \u2192 Creator tier upgrade via Stripe",
+      "description": "Free → Creator tier upgrade via Stripe",
       "status": "pending_analysis",
       "test_count": 0
     },
@@ -173,13 +172,13 @@
   "cross_cutting": {
     "security": {
       "name": "Security Testing",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 8
     },
     "error_handling": {
       "name": "Error Handling",
-      "status": "pending_analysis",
-      "test_count": 0
+      "status": "analyzed",
+      "test_count": 8
     }
   },
   "test_cases": [
@@ -966,14 +965,14 @@
       "acceptance_criteria": [
         "All layoutIds in response exist in TemplateLayout table",
         "Layout mappings follow rules defined in LAYOUT_MAPPINGS (openai.ts lines 488-520)",
-        "Text length affects layout selection (short content \u2192 simpler layouts)",
+        "Text length affects layout selection (short content → simpler layouts)",
         "Hook slides use hook_big_headline or generic_single_focus",
         "Promise slides use promise_two_column",
         "Value slides use value_bullets or value_numbered_steps",
         "Recap slides use recap_grid",
         "CTA slides use cta_centered",
         "Unknown slide types default to generic_single_focus",
-        "Layout selection is deterministic (same input \u2192 same output)"
+        "Layout selection is deterministic (same input → same output)"
       ],
       "related_files": [
         "apps/nextjs/src/lib/openai.ts",
@@ -1622,7 +1621,7 @@
         "metadata.slideCount matches actual slides.length",
         "AI prompt includes SHORT text pacing instructions",
         "Content is expanded thoughtfully (not padded with filler)",
-        "Slides follow structure: hook \u2192 value \u2192 recap \u2192 CTA",
+        "Slides follow structure: hook → value → recap → CTA",
         "All layoutIds are valid and exist in database",
         "Response time is under 45 seconds"
       ],
@@ -1747,7 +1746,7 @@
         "Content is condensed but valuable",
         "Key examples and insights are preserved",
         "Redundancy is removed",
-        "Clear hierarchy: hook \u2192 value \u2192 recap \u2192 CTA",
+        "Clear hierarchy: hook → value → recap → CTA",
         "AI prompt includes LONG text pacing instructions",
         "Response time is under 50 seconds (longer text = more processing)"
       ],
@@ -2311,7 +2310,7 @@
         {
           "step": 2,
           "action": "Check mode selection buttons",
-          "expected": "Two mode buttons are visible: 'From Topic' (\ud83d\udca1) and 'From Text' (\ud83d\udcdd). 'From Topic' is selected by default (primary style)."
+          "expected": "Two mode buttons are visible: 'From Topic' (💡) and 'From Text' (📝). 'From Topic' is selected by default (primary style)."
         },
         {
           "step": 3,
@@ -2331,7 +2330,7 @@
         {
           "step": 6,
           "action": "Check generate button state",
-          "expected": "Generate button is disabled (input is empty). Button text: '\u2728 Generate Carousel'."
+          "expected": "Generate button is disabled (input is empty). Button text: '✨ Generate Carousel'."
         }
       ],
       "acceptance_criteria": [
@@ -2570,7 +2569,7 @@
         {
           "step": 3,
           "action": "Verify premium kit message",
-          "expected": "Below the grid, a purple banner says: '\ud83c\udfa8 Unlock all X style kits with Creator or Pro. Upgrade now'"
+          "expected": "Below the grid, a purple banner says: '🎨 Unlock all X style kits with Creator or Pro. Upgrade now'"
         },
         {
           "step": 4,
@@ -2696,7 +2695,7 @@
         {
           "step": 2,
           "action": "Check for warning banner",
-          "expected": "Yellow warning card appears at top: '\u26a0\ufe0f Carousel Limit Reached'. Shows '3 of 3 carousels' on FREE plan."
+          "expected": "Yellow warning card appears at top: '⚠️ Carousel Limit Reached'. Shows '3 of 3 carousels' on FREE plan."
         },
         {
           "step": 3,
@@ -2722,7 +2721,7 @@
       "acceptance_criteria": [
         "Warning banner only appears when projectCount >= carouselLimit",
         "Banner has yellow background (bg-yellow-50 border-yellow-200)",
-        "Warning emoji \u26a0\ufe0f is visible",
+        "Warning emoji ⚠️ is visible",
         "Upgrade button has data-testid='upgrade_prompt'",
         "Generate button is blocked when limit reached (line 95-98)",
         "Error message is clear and includes the limit number",
@@ -3272,7 +3271,7 @@
         {
           "step": 5,
           "action": "Verify editing UI elements appear below textarea",
-          "expected": "Rewrite menu button appears with \u2728 Rewrite label (data-testid='rewrite_menu')"
+          "expected": "Rewrite menu button appears with ✨ Rewrite label (data-testid='rewrite_menu')"
         }
       ],
       "acceptance_criteria": [
@@ -3661,7 +3660,7 @@
         "Red border wraps exact text box position and dimensions",
         "Fix with AI button has red background (#ef4444) to match overflow indicator",
         "Overflow indicator has name='overflow_indicator' for testing",
-        "Fix with AI button shows \u2728 Fix with AI label (line 697)",
+        "Fix with AI button shows ✨ Fix with AI label (line 697)",
         "No overflow detection on server (line 189 check: typeof window === 'undefined')"
       ],
       "related_files": [
@@ -3802,7 +3801,7 @@
       ],
       "acceptance_criteria": [
         "Rewrite menu button is blue (#3b82f6) when idle, gray (#9ca3af) when loading",
-        "Menu displays 4 options with emojis: \u2702\ufe0f Make Shorter, \ud83d\udca5 Make Punchier, \ud83d\udcdd Add Examples, \ud83d\udd27 Reduce Jargon",
+        "Menu displays 4 options with emojis: ✂️ Make Shorter, 💥 Make Punchier, 📝 Add Examples, 🔧 Reduce Jargon",
         "Each option has hover effect: light blue background (#f0f9ff), padding shifts left",
         "Clicking option closes menu immediately (line 148)",
         "API action matches clicked option: 'shorter' | 'punchier' | 'examples' | 'reduce_jargon'",
@@ -4026,7 +4025,7 @@
       "category": "frontend",
       "type": "happy_path",
       "priority": "high",
-      "description": "Validates that text_box layers with bulletStyle render bullet points correctly (\u2022 disc or 1. numbered) from array content",
+      "description": "Validates that text_box layers with bulletStyle render bullet points correctly (• disc or 1. numbered) from array content",
       "business_context": "Value slides use bullet points to list key information. Bullet style must match the slide type and enhance readability.",
       "preconditions": [
         "Slide has text_box layer with bulletStyle: 'disc' or 'numbered'",
@@ -4041,7 +4040,7 @@
         {
           "step": 2,
           "action": "Verify bullet formatting for disc style",
-          "expected": "Each line is prefixed with '\u2022 ' (lines 122-123: text = layerContent.map(line => `\u2022 ${line}`).join('\\n'))"
+          "expected": "Each line is prefixed with '• ' (lines 122-123: text = layerContent.map(line => `• ${line}`).join('\\n'))"
         },
         {
           "step": 3,
@@ -4060,7 +4059,7 @@
         }
       ],
       "acceptance_criteria": [
-        "bulletStyle='disc' adds '\u2022 ' prefix to each line",
+        "bulletStyle='disc' adds '• ' prefix to each line",
         "bulletStyle='numbered' adds '1. ', '2. ', etc. (1-indexed)",
         "bulletStyle undefined or null renders plain lines (no prefix)",
         "Bullet formatting happens in LayerRenderer, not stored in database",
@@ -4659,7 +4658,7 @@
         {
           "step": 2,
           "action": "Click the Spacing button",
-          "expected": "handleSpacingToggle cycles to next option: normal \u2192 roomy"
+          "expected": "handleSpacingToggle cycles to next option: normal → roomy"
         },
         {
           "step": 3,
@@ -4669,18 +4668,18 @@
         {
           "step": 4,
           "action": "Click Spacing button again",
-          "expected": "Cycles to next: roomy \u2192 tight"
+          "expected": "Cycles to next: roomy → tight"
         },
         {
           "step": 5,
           "action": "Click Spacing button again",
-          "expected": "Cycles back: tight \u2192 normal (wraps around)"
+          "expected": "Cycles back: tight → normal (wraps around)"
         }
       ],
       "acceptance_criteria": [
         "Spacing button shows current spacing in capitalized badge",
         "Clicking cycles through 3 options: tight, normal, roomy (array at line 21)",
-        "Cycling wraps around: roomy \u2192 tight (modulo logic at line 57)",
+        "Cycling wraps around: roomy → tight (modulo logic at line 57)",
         "Line height updates based on spacing: tight=1.3, normal=1.5, roomy=1.7 (lines 61-65)",
         "onStyleKitUpdate is called with both padding and line_height",
         "Help text below button explains each spacing option (lines 264-273)"
@@ -4801,7 +4800,7 @@
       "acceptance_criteria": [
         "Selecting layout calls onLayoutChange(layoutId, layersBlueprint)",
         "Active layout (currentSlide.layoutId) has blue border and bg (#e0e7ff) (lines 114-117)",
-        "Active layout shows '\u2713 Active' label (lines 161-163)",
+        "Active layout shows '✓ Active' label (lines 161-163)",
         "Non-active layouts have gray border, white background, hover effect",
         "Layout preview shows mini canvas (86.4x108, 8% scale) (lines 21-23)",
         "Preview renders background color and gray text box placeholders (lines 138-154)",
@@ -5070,7 +5069,7 @@
       "category": "integration",
       "type": "happy_path",
       "priority": "critical",
-      "description": "Validates the complete editor page load sequence: fetch project \u2192 fetch slides \u2192 fetch style kit \u2192 fetch layouts \u2192 transform data \u2192 render UI",
+      "description": "Validates the complete editor page load sequence: fetch project → fetch slides → fetch style kit → fetch layouts → transform data → render UI",
       "business_context": "Editor is the core workspace where users spend most of their time. Complete and correct data loading is critical for user confidence and productivity.",
       "preconditions": [
         "User is authenticated",
@@ -5162,7 +5161,7 @@
         {
           "step": 3,
           "action": "Verify error state rendering",
-          "expected": "Error screen shows: red warning icon (\u26a0\ufe0f), 'Failed to Load Project' heading, error message, 'Back to Dashboard' button (lines 224-239)"
+          "expected": "Error screen shows: red warning icon (⚠️), 'Failed to Load Project' heading, error message, 'Back to Dashboard' button (lines 224-239)"
         },
         {
           "step": 4,
@@ -5272,7 +5271,7 @@
         {
           "step": 3,
           "action": "Verify save status indicator updates",
-          "expected": "Status shows '\u23f3 Saving...' during request (line 272), then '\u2713 Saved' on success (line 273)"
+          "expected": "Status shows '⏳ Saving...' during request (line 272), then '✓ Saved' on success (line 273)"
         },
         {
           "step": 4,
@@ -5288,11 +5287,11 @@
       "acceptance_criteria": [
         "Auto-save triggers after 500ms of inactivity",
         "Multiple rapid changes result in single save (debounced)",
-        "Save status indicator shows all states: idle \u2192 saving \u2192 saved",
+        "Save status indicator shows all states: idle → saving → saved",
         "API call includes all slides with correct orderIndex (line 40)",
         "Content is JSON.stringified correctly (line 35)",
         "Initial mount does NOT trigger save (isInitialMount guard at lines 55-60)",
-        "Save errors update status to 'error' with \u26a0\ufe0f icon"
+        "Save errors update status to 'error' with ⚠️ icon"
       ],
       "related_files": [
         "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
@@ -5790,12 +5789,12 @@
         {
           "step": 3,
           "action": "Click Close button in modal",
-          "expected": "onClose() \u2192 setShowExportModal(false) hides modal (line 341)"
+          "expected": "onClose() → setShowExportModal(false) hides modal (line 341)"
         },
         {
           "step": 4,
           "action": "Re-open modal and click Export with options (e.g., PDF, All slides)",
-          "expected": "onExport(options) \u2192 handleExport(options) called (line 342)"
+          "expected": "onExport(options) → handleExport(options) called (line 342)"
         },
         {
           "step": 5,
@@ -5900,7 +5899,7 @@
       "steps": [
         {
           "step": 1,
-          "action": "Click the '\u2190 Back' button in header",
+          "action": "Click the '← Back' button in header",
           "expected": "router.push('/en/dashboard') called (line 264)"
         },
         {
@@ -5958,7 +5957,7 @@
         {
           "step": 3,
           "action": "Test auto-save indicator",
-          "expected": "Save status shows saving \u2192 saved transitions, console.log shows auto-save triggered (line 230)"
+          "expected": "Save status shows saving → saved transitions, console.log shows auto-save triggered (line 230)"
         },
         {
           "step": 4,
@@ -6246,7 +6245,7 @@
       "acceptance_criteria": [
         "API returns 401 if user not authenticated",
         "API returns 404 if export not found or user doesn't own project",
-        "Status transitions: PENDING \u2192 PROCESSING \u2192 COMPLETED or FAILED",
+        "Status transitions: PENDING → PROCESSING → COMPLETED or FAILED",
         "Signed URLs generated for COMPLETED exports (24-hour expiry)",
         "PNG exports return array of URLs (one per slide)",
         "PDF exports return single URL string",
@@ -6302,7 +6301,7 @@
         {
           "step": 4,
           "action": "Check watermark logic for free tier",
-          "expected": "profile.subscriptionTier = 'FREE' \u2192 showWatermark = true (line 131), otherwise false"
+          "expected": "profile.subscriptionTier = 'FREE' → showWatermark = true (line 131), otherwise false"
         },
         {
           "step": 5,
@@ -6327,7 +6326,7 @@
       ],
       "acceptance_criteria": [
         "Worker processes jobs with concurrency = 2 (render-worker.ts line 350)",
-        "Export status updates: PENDING \u2192 PROCESSING \u2192 COMPLETED",
+        "Export status updates: PENDING → PROCESSING → COMPLETED",
         "PDF generated with correct dimensions (1080x1350 per page)",
         "All slides included in PDF in correct order (orderIndex ASC)",
         "Watermark applied for free tier users, omitted for paid tiers",
@@ -6535,7 +6534,7 @@
         {
           "step": 5,
           "action": "UI updates to completion state",
-          "expected": "Heading: 'Export Complete!' (line 268), download button visible (lines 298-326), green button with '\u2b07\ufe0f Download' text"
+          "expected": "Heading: 'Export Complete!' (line 268), download button visible (lines 298-326), green button with '⬇️ Download' text"
         },
         {
           "step": 6,
@@ -6563,7 +6562,7 @@
         "progress",
         "realtime"
       ],
-      "notes": "Polling useEffect at lines 42-95. Progress UI at lines 280-295. Status transitions: PENDING \u2192 PROCESSING \u2192 COMPLETED/FAILED."
+      "notes": "Polling useEffect at lines 42-95. Progress UI at lines 280-295. Status transitions: PENDING → PROCESSING → COMPLETED/FAILED."
     },
     {
       "id": "TC-EXPORT-009",
@@ -6676,7 +6675,7 @@
         {
           "step": 6,
           "action": "Verify paid tier users don't get watermark",
-          "expected": "subscriptionTier = 'CREATOR' or 'PRO' \u2192 showWatermark = false, no watermark rendered"
+          "expected": "subscriptionTier = 'CREATOR' or 'PRO' → showWatermark = false, no watermark rendered"
         }
       ],
       "acceptance_criteria": [
@@ -8215,7 +8214,7 @@
         }
       ],
       "acceptance_criteria": [
-        "Status badge text matches status value (DRAFT\u2192'Draft', PUBLISHED\u2192'Published', ARCHIVED\u2192'Archived')",
+        "Status badge text matches status value (DRAFT→'Draft', PUBLISHED→'Published', ARCHIVED→'Archived')",
         "Color schemes are distinct and accessible (sufficient contrast)",
         "Dark mode colors are properly applied based on system/user preference",
         "Badge is displayed in CardDescription area, aligned with timestamp",
@@ -9852,7 +9851,7 @@
         "Each kit has valid JSON in typography, colors, spacingRules fields",
         "isPremium flag correctly set (4 false, 4 true)",
         "Seed script is idempotent (running twice doesn't create duplicates)",
-        "Seed log confirms: '\u2705 Successfully seeded 8 StyleKits' (seed.ts line 432)"
+        "Seed log confirms: '✅ Successfully seeded 8 StyleKits' (seed.ts line 432)"
       ],
       "related_files": [
         "packages/db/prisma/seed.ts",
@@ -10136,7 +10135,7 @@
         }
       ],
       "acceptance_criteria": [
-        "Tier updates correctly on plan change (CREATOR \u2192 PRO or PRO \u2192 CREATOR)",
+        "Tier updates correctly on plan change (CREATOR → PRO or PRO → CREATOR)",
         "Feature limits update immediately (carousel limit, slide limit, brand kit limit)",
         "No downtime or feature access issues during transition",
         "Both upgrade and downgrade scenarios work correctly"
@@ -10577,7 +10576,7 @@
         {
           "step": 2,
           "action": "Error bubbles up to route handler catch block",
-          "expected": "Error logged to console with message prefix '\u274c Error when handling Stripe Event'"
+          "expected": "Error logged to console with message prefix '❌ Error when handling Stripe Event'"
         },
         {
           "step": 3,
@@ -11572,7 +11571,7 @@
         {
           "step": 3,
           "action": "OpenAI simplifies jargon",
-          "expected": "Output replaces 'leverage synergies' \u2192 'work together', 'optimize KPIs' \u2192 'improve key results'"
+          "expected": "Output replaces 'leverage synergies' → 'work together', 'optimize KPIs' → 'improve key results'"
         },
         {
           "step": 4,
@@ -11639,7 +11638,7 @@
       ],
       "acceptance_criteria": [
         "Response status 200",
-        "Vague terms replaced ('many' \u2192 '127', 'quickly' \u2192 'in 3 weeks')",
+        "Vague terms replaced ('many' → '127', 'quickly' → 'in 3 weeks')",
         "Quantifiable metrics added where appropriate",
         "Length remains similar (not significantly longer)",
         "Numbers are realistic and credible",
@@ -12399,7 +12398,7 @@
       "acceptance_criteria": [
         "Custom onSave function is called instead of default PATCH",
         "Hook passes correct data to onSave callback",
-        "Status transitions correctly (idle \u2192 saving \u2192 saved)",
+        "Status transitions correctly (idle → saving → saved)",
         "Default API call (PATCH /api/projects/:id) is NOT made",
         "Error handling works with custom onSave (sets error state if promise rejects)"
       ],
@@ -12475,7 +12474,7 @@
       "category": "frontend",
       "type": "happy_path",
       "priority": "high",
-      "description": "Validates that save status indicator accurately shows idle \u2192 saving \u2192 saved \u2192 idle transitions",
+      "description": "Validates that save status indicator accurately shows idle → saving → saved → idle transitions",
       "business_context": "Users need visual feedback about save state. Status indicator builds trust that work is being saved.",
       "preconditions": [
         "User is editing a project",
@@ -12724,7 +12723,7 @@
         "Line height multiplier applied correctly (default 1.2)",
         "Total height = numLines * (fontSize * lineHeight)",
         "Max width tracks widest bullet text",
-        "Bullet prefixes (\u2022, 1., 2.) accounted for in width calculation"
+        "Bullet prefixes (•, 1., 2.) accounted for in width calculation"
       ],
       "related_files": [
         "apps/nextjs/src/lib/text-measure.ts",
@@ -12957,7 +12956,7 @@
     },
     {
       "id": "TC-DB-003",
-      "name": "Verify CASCADE delete on Profile \u2192 Project \u2192 Slide relationship",
+      "name": "Verify CASCADE delete on Profile → Project → Slide relationship",
       "module": "database",
       "user_journey": null,
       "category": "database",
@@ -13021,7 +13020,7 @@
     },
     {
       "id": "TC-DB-004",
-      "name": "Verify CASCADE delete on Project \u2192 Export relationship",
+      "name": "Verify CASCADE delete on Project → Export relationship",
       "module": "database",
       "user_journey": null,
       "category": "database",
@@ -13317,7 +13316,7 @@
       "description": "Validates that Project model enforces foreign key constraint on styleKitId, preventing projects from referencing non-existent StyleKits",
       "business_context": "Every Project must have a valid StyleKit for rendering. Invalid styleKitId would cause editor and export failures. Foreign key constraint ensures referential integrity.",
       "preconditions": [
-        "Database schema is applied with foreign key on Project.styleKitId \u2192 StyleKit.id",
+        "Database schema is applied with foreign key on Project.styleKitId → StyleKit.id",
         "StyleKit with id='minimal_clean' exists (from seed data)",
         "StyleKit with id='invalid-nonexistent-kit' does NOT exist"
       ],
@@ -14794,7 +14793,7 @@
         {
           "step": 14,
           "action": "Wait for AI generation to complete (20-45 seconds)",
-          "expected": "Three sequential API calls execute: POST /api/generate/topic (AI pipeline: generateSlidePlan \u2192 generateSlideCopy \u2192 selectLayoutsForSlides), returns 10 slides with layoutIds"
+          "expected": "Three sequential API calls execute: POST /api/generate/topic (AI pipeline: generateSlidePlan → generateSlideCopy → selectLayoutsForSlides), returns 10 slides with layoutIds"
         },
         {
           "step": 15,
@@ -14854,7 +14853,7 @@
         {
           "step": 26,
           "action": "Wait for export processing (10-30 seconds)",
-          "expected": "Modal polls GET /api/exports/[id] every 2 seconds. Status changes: PENDING \u2192 PROCESSING (75% progress, 'Rendering slides...') \u2192 COMPLETED (100%, 'Export ready!'). Background worker renders each slide to PNG using @napi-rs/canvas, combines into PDF using PDFKit, uploads to Supabase Storage 'exports' bucket."
+          "expected": "Modal polls GET /api/exports/[id] every 2 seconds. Status changes: PENDING → PROCESSING (75% progress, 'Rendering slides...') → COMPLETED (100%, 'Export ready!'). Background worker renders each slide to PNG using @napi-rs/canvas, combines into PDF using PDFKit, uploads to Supabase Storage 'exports' bucket."
         },
         {
           "step": 27,
@@ -14887,7 +14886,7 @@
         "FILE STORAGE: PDF file exists in Supabase Storage at path: {userId}/{filename}",
         "PDF CONTENT: Downloaded PDF has 10 pages, each 1080x1350, all text rendered, watermark present on all pages",
         "UI STATE: Dashboard shows 1 project card, editor shows correct project data, export modal shows completed state",
-        "NAVIGATION: All page transitions work (landing\u2192register\u2192dashboard\u2192create\u2192editor\u2192dashboard)",
+        "NAVIGATION: All page transitions work (landing→register→dashboard→create→editor→dashboard)",
         "TIER ENFORCEMENT: FREE tier limits respected (3 style kits visible, watermark present, 8 slide limit shown in dropdown)",
         "NO ERRORS: Browser console has zero errors, API responses all 2xx, no database constraint violations",
         "RESPONSIVE: All pages render correctly at desktop resolution (1920x1080 tested)",
@@ -15149,7 +15148,7 @@
         },
         {
           "step": 24,
-          "action": "Click each slide thumbnail sequentially (1\u21922\u21923\u21924\u21925\u21926\u21927\u21928) to preview all slides",
+          "action": "Click each slide thumbnail sequentially (1→2→3→4→5→6→7→8) to preview all slides",
           "expected": "Canvas updates to show each slide's content. Total of 8 slides (not 10), all rendered correctly."
         },
         {
@@ -15265,6 +15264,1575 @@
         "learnability"
       ],
       "notes": "This test represents REALISTIC new user behavior - not rushing, but exploring and learning the interface. Key insights: 1) Users will try different options before committing, 2) Hover states and visual feedback are critical for confidence, 3) Customizations must persist through the entire flow (no loss of settings), 4) Auto-save must work transparently (no explicit save button needed). This test is longer (40 steps) because it includes exploration actions. If this test reveals confusion points (e.g., toggle doesn't work, color doesn't apply), those are UX bugs that harm onboarding success. Current known gaps: pricing page shows wrong features (may confuse user in step 2), brand kit toggle behavior unclear (step 17). Time budget for this user: 10-15 minutes (includes reading and exploring)."
+    },
+    {
+      "id": "TC-JOURNEY-TOPIC-001",
+      "name": "Topic to Export - Complete Happy Path (Comprehensive Validation)",
+      "module": "user_journeys",
+      "user_journey": "topic_to_export",
+      "category": "e2e",
+      "type": "happy_path",
+      "priority": "critical",
+      "description": "Validates the COMPLETE topic-to-export journey from create page through PDF download. This is THE core user flow - if this breaks, the product is broken. Tests every critical touchpoint: topic entry, AI generation (20-45s), editor load, canvas rendering, auto-save, theme customization, export job queue (10-30s), and file download.",
+      "business_context": "This is the PRIMARY value proposition of QuickCarousals: 'Turn an idea into a LinkedIn-ready carousel in 3 minutes'. If users cannot complete this flow successfully, the business fails. This journey represents the user's first success moment and determines retention.",
+      "preconditions": [
+        "User is logged in as FREE tier",
+        "User has 0 existing projects",
+        "Dev server running at http://localhost:3000",
+        "OpenAI API key configured and valid",
+        "PostgreSQL database running and seeded with StyleKits and TemplateLayouts",
+        "Redis running for export queue",
+        "Supabase Storage available for exports"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Navigate to /en/create page",
+          "expected": "Create page loads with Topic mode selected by default, text input visible, slide count dropdown showing only 8 (FREE tier limit), tone selector showing 4 options (professional/bold/calm/contrarian), brand kit toggle disabled (0 kits for FREE)"
+        },
+        {
+          "step": 2,
+          "action": "Enter topic: '5 productivity tips for remote workers' (53 characters, within 1-500 limit)",
+          "expected": "Text appears in input field character-by-character, no validation errors, generate button becomes enabled"
+        },
+        {
+          "step": 3,
+          "action": "Leave slide count at default 10, tone at default 'professional', brand kit toggle off",
+          "expected": "UI shows selected values, no changes trigger errors"
+        },
+        {
+          "step": 4,
+          "action": "Open style kit selector dropdown, verify 3 free kits visible: minimal_clean, bold_modern, elegant_serif",
+          "expected": "Dropdown opens with 3 style kits in Free section, 5 premium kits grayed out with 'Premium' badges. Preview cards show colors and fonts. No console errors."
+        },
+        {
+          "step": 5,
+          "action": "Select 'bold_modern' style kit from dropdown",
+          "expected": "Style kit selector updates to show 'bold_modern' selected, dropdown closes"
+        },
+        {
+          "step": 6,
+          "action": "Click 'Generate' button",
+          "expected": "Button becomes disabled, loading spinner appears, button text changes to 'Generating...', pulsing animation starts on button"
+        },
+        {
+          "step": 7,
+          "action": "Wait for AI generation to complete (expect 20-45 seconds for 3-stage pipeline: slide plan → slide copy → layout selection)",
+          "expected": "Loading state persists throughout generation. No timeout errors. After completion, browser redirects to /en/editor/[new-project-id]"
+        },
+        {
+          "step": 8,
+          "action": "Verify editor page loads with generated slides",
+          "expected": "Editor page loads within 2 seconds. ThumbnailRail shows 10 thumbnails (1-indexed display). EditorCanvas displays first slide at 1080x1350 with scaled content. Header shows 'Saving...' then 'All changes saved'. No console errors."
+        },
+        {
+          "step": 9,
+          "action": "Inspect generated content structure: verify slide types (hook, promise, value slides, recap, cta), verify each slide has headline, body, appropriate layout",
+          "expected": "All 10 slides present with correct slide types. Each slide renders text content, no empty slides, no overflow warnings (red borders). Layouts match slide types (hook_big_headline for hook, promise_two_column for promise, etc.)"
+        },
+        {
+          "step": 10,
+          "action": "Click on slide 3 thumbnail in ThumbnailRail",
+          "expected": "Slide 3 thumbnail gets blue border/shadow (active state). EditorCanvas updates to show slide 3 content. ThemeControls and LayoutVariantSelector update to reflect slide 3 data. Transition is smooth (<500ms)."
+        },
+        {
+          "step": 11,
+          "action": "Click on a text box in EditorCanvas",
+          "expected": "Text box shows blue outline. Textarea overlay appears at exact scaled position. Text is editable. Rewrite menu appears with 4 actions (shorter, punchier, examples, reduce_jargon)."
+        },
+        {
+          "step": 12,
+          "action": "Edit text: change 'Tip #3' headline to 'Pro Tip #3' (add 4 characters)",
+          "expected": "Text updates in real-time in textarea. Auto-fit algorithm recalculates font size (binary search, <100ms). Canvas re-renders with new text. No overflow detected (height still fits bounds)."
+        },
+        {
+          "step": 13,
+          "action": "Click outside textarea to close text editing",
+          "expected": "Textarea overlay closes. Edited text persists on canvas. Auto-save triggers after 500ms debounce. Header shows 'Saving...' briefly, then 'All changes saved'."
+        },
+        {
+          "step": 14,
+          "action": "Wait 2 seconds for auto-save to complete, then refresh browser page",
+          "expected": "Browser reloads editor page. All 10 slides reload from database. Slide 3 shows 'Pro Tip #3' headline change persisted. No data loss."
+        },
+        {
+          "step": 15,
+          "action": "Open ThemeControls, click on background color picker",
+          "expected": "Color picker dropdown opens with color input and hex text input. Current background color is selected."
+        },
+        {
+          "step": 16,
+          "action": "Change background color from default to #1a202c (dark gray)",
+          "expected": "Color picker updates, hex input shows #1a202c. EditorCanvas immediately re-renders all visible slide content with new background. Auto-save triggers. Header shows 'Saving...' then 'All changes saved'."
+        },
+        {
+          "step": 17,
+          "action": "Open LayoutVariantSelector",
+          "expected": "Selector fetches layouts from GET /api/layouts on first open (if not cached). Displays only layouts matching current slide's slideType. Shows 3-column grid with mini previews (8% scale). Active layout has blue border."
+        },
+        {
+          "step": 18,
+          "action": "Select a different layout variant for current slide",
+          "expected": "Layout preview gets blue border. EditorCanvas re-renders slide with new layout (layersBlueprint changes). Text content remaps to new layer structure. Auto-fit recalculates for all text boxes. Auto-save triggers."
+        },
+        {
+          "step": 19,
+          "action": "Click zoom in button (+) in EditorCanvas toolbar",
+          "expected": "Canvas zoom increases (e.g., 100% → 125%). Scale calculation updates. Pan controls become enabled (grab cursor). Canvas content enlarges proportionally. No pixelation (vector rendering)."
+        },
+        {
+          "step": 20,
+          "action": "Pan canvas by clicking and dragging",
+          "expected": "Canvas content moves with mouse. Cursor shows 'grabbing' state. Pan position updates in real-time. Canvas does not pan off-screen completely (though no bounds enforcement currently)."
+        },
+        {
+          "step": 21,
+          "action": "Click 'Fit to Screen' button",
+          "expected": "Zoom resets to base scale (fills container width/height), pan resets to (0,0). Canvas centers in viewport. Transition is smooth."
+        },
+        {
+          "step": 22,
+          "action": "Navigate to last slide (slide 10 - CTA slide) via ThumbnailRail",
+          "expected": "EditorCanvas shows CTA slide with layout cta_centered. Slide displays call-to-action text. No rendering issues."
+        },
+        {
+          "step": 23,
+          "action": "Verify FREE tier watermark visible: 'QuickCarousals.com' at (540, 1320) in light gray rgba(0,0,0,0.4)",
+          "expected": "Watermark text renders on canvas at bottom-center. Text is semi-transparent, non-intrusive but visible. Watermark is part of canvas layer, not UI overlay."
+        },
+        {
+          "step": 24,
+          "action": "Click 'Export' button in header (data-testid='export_button')",
+          "expected": "ExportModal opens showing configuration screen. Two format buttons (PDF/PNG), filename input pre-filled with 'Carousel - [date]', cover thumbnail checkbox. No loading state yet."
+        },
+        {
+          "step": 25,
+          "action": "Verify filename input shows project title or default filename",
+          "expected": "Filename input contains text (e.g., '5 productivity tips for remote workers' or 'Carousel - Feb 01, 2026'). Input is editable."
+        },
+        {
+          "step": 26,
+          "action": "Leave PDF format selected (default), leave cover thumbnail unchecked, click 'Start Export' button",
+          "expected": "Button becomes disabled. API call: POST /api/exports with projectId, exportType='PDF', filename. Response returns exportId. Modal transitions to progress screen showing 'PENDING' status (25% progress bar)."
+        },
+        {
+          "step": 27,
+          "action": "Wait for export status polling (2-second interval). Watch status transitions: PENDING → PROCESSING → COMPLETED",
+          "expected": "Progress screen shows polling status. Status updates from PENDING (25%) to PROCESSING (75%). Background worker fetches slides, renders each to PNG using @napi-rs/canvas, generates PDF using PDFKit, uploads to Supabase Storage. After 10-30 seconds, status changes to COMPLETED (100%)."
+        },
+        {
+          "step": 28,
+          "action": "Verify COMPLETED status shows 'Download' button",
+          "expected": "Progress bar shows 100%. Success message appears. 'Download PDF' button is enabled and visible. No error messages."
+        },
+        {
+          "step": 29,
+          "action": "Click 'Download PDF' button",
+          "expected": "API call: GET /api/exports/[exportId] returns signed URL (24h expiry) from Supabase Storage. Browser triggers download (programmatic <a> click with download attribute). PDF file downloads to user's Downloads folder."
+        },
+        {
+          "step": 30,
+          "action": "Open downloaded PDF file in system PDF viewer (Preview/Adobe/Browser)",
+          "expected": "PDF opens successfully. Contains 10 pages (one per slide). Each page is 1080x1350 (portrait). Content matches editor canvas exactly. Colors correct (#1a202c background). Text readable, no cut-off. Watermark 'QuickCarousals.com' visible on every page at bottom-center. PDF file size reasonable (500KB - 2MB for 10 slides)."
+        },
+        {
+          "step": 31,
+          "action": "Close ExportModal, navigate back to dashboard via 'Dashboard' link in header",
+          "expected": "Browser navigates to /en/dashboard. Dashboard shows 1 project card with title '5 productivity tips for remote workers', status badge 'DRAFT' (yellow), last updated timestamp. No empty state message."
+        },
+        {
+          "step": 32,
+          "action": "Click on project card to return to editor",
+          "expected": "Navigate to /en/editor/[project-id]. Editor loads with all 10 slides, theme changes persisted (dark background), text edits persisted ('Pro Tip #3'). Auto-save header shows 'All changes saved'."
+        }
+      ],
+      "acceptance_criteria": [
+        "SPEED: Total journey time from step 1 to step 30 is under 5 minutes (3-minute promise + buffer for realistic user pace)",
+        "AI GENERATION: Completes within 45 seconds, generates exactly 10 slides with correct types (hook/promise/value/recap/cta)",
+        "EDITOR LOAD: Editor page loads in under 2 seconds after generation redirects",
+        "CANVAS RENDERING: All slides render at 1080x1350 with no overflow errors, text is readable",
+        "AUTO-SAVE: All edits (text changes, theme changes, layout changes) persist after 500ms debounce, survive page refresh",
+        "EXPORT QUEUE: Export job completes within 30 seconds, no job failures",
+        "PDF QUALITY: Downloaded PDF has 10 pages, correct dimensions, colors match editor, text is not cut off, watermark present on all pages",
+        "DATABASE INTEGRITY: Project record created with correct userId, styleKitId. All 10 Slide records created with correct projectId, layoutId, orderIndex 0-9. Export record created with status COMPLETED.",
+        "STORAGE: PDF file uploaded to Supabase Storage at path {userId}/{filename}.pdf, file is accessible via signed URL",
+        "ERROR ABSENCE: No console errors throughout entire journey, no 500 API responses, no unhandled promise rejections",
+        "UI RESPONSIVENESS: All interactions (clicks, typing, zoom, pan) feel responsive (<100ms feedback), no janky animations",
+        "FREE TIER ENFORCEMENT: Slide count limited to 8 in dropdown, brand kit toggle disabled, watermark present on export, only 3 style kits visible in selector"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx",
+        "apps/nextjs/src/components/editor/ThumbnailRail.tsx",
+        "apps/nextjs/src/components/editor/ThemeControls.tsx",
+        "apps/nextjs/src/components/editor/LayoutVariantSelector.tsx",
+        "apps/nextjs/src/components/editor/ExportModal.tsx",
+        "apps/nextjs/src/app/api/exports/route.ts",
+        "apps/nextjs/src/app/api/exports/[id]/route.ts",
+        "apps/nextjs/src/lib/queues/render-worker.ts",
+        "apps/nextjs/src/lib/render-slide.ts",
+        "apps/nextjs/src/lib/generate-pdf.ts",
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/lib/text-measure.ts"
+      ],
+      "tags": [
+        "e2e",
+        "critical-path",
+        "core-flow",
+        "topic-generation",
+        "export",
+        "free-tier"
+      ],
+      "notes": "This test represents the COMPLETE user value proposition. All 32 steps must pass for product to function. Journey touches 8+ modules (auth, generation, creation, editor, export, storage, queue, database). If any step fails, entire product experience is broken. Test should be automated with Playwright for regression testing."
+    },
+    {
+      "id": "TC-JOURNEY-TOPIC-002",
+      "name": "Topic to Export - Error Recovery Path (Generation Failure)",
+      "module": "user_journeys",
+      "user_journey": "topic_to_export",
+      "category": "e2e",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates error handling when AI generation FAILS due to OpenAI API errors (rate limit, timeout, invalid response). Tests that user receives clear error message, can retry generation, and system recovers gracefully without corrupting database state.",
+      "business_context": "AI generation failures will happen in production (OpenAI downtime, rate limits, network issues). Users must NOT lose their input or think the product is broken. Clear error messaging and retry capability are critical for retention.",
+      "preconditions": [
+        "User is logged in as FREE tier",
+        "OpenAI API is experiencing issues (simulated or real rate limit/timeout)",
+        "User is on /en/create page"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enter valid topic: 'Best practices for remote team collaboration' (50 characters)",
+          "expected": "Topic input accepts text, no validation errors, generate button enabled"
+        },
+        {
+          "step": 2,
+          "action": "Select style kit 'minimal_clean', leave defaults for slide count (10) and tone (professional)",
+          "expected": "UI shows selections, no errors"
+        },
+        {
+          "step": 3,
+          "action": "Click 'Generate' button to trigger generation that will FAIL",
+          "expected": "Button disables, loading spinner appears, button text changes to 'Generating...'"
+        },
+        {
+          "step": 4,
+          "action": "Wait for OpenAI API to fail (could be 429 rate limit after 10s, or timeout after 30s, or validation error immediately)",
+          "expected": "After error occurs (10-30 seconds), loading state stops. Error banner appears at top of create page with RED background showing error message like 'Generation failed. Please try again.' or 'OpenAI rate limit exceeded. Try again in a few minutes.'"
+        },
+        {
+          "step": 5,
+          "action": "Verify user input is PRESERVED after error (topic text still in input, style kit still selected, options unchanged)",
+          "expected": "All form inputs retain their values. User does NOT need to re-enter topic or re-select options. Generate button is re-enabled."
+        },
+        {
+          "step": 6,
+          "action": "Verify no project record created in database (check /api/projects list is empty)",
+          "expected": "Navigate to /en/dashboard, verify empty state still shows. API call GET /api/projects returns empty array []. No orphaned project or slide records in database."
+        },
+        {
+          "step": 7,
+          "action": "Return to /en/create, verify error message persists if user doesn't dismiss it",
+          "expected": "Error banner still visible if not explicitly closed. User can see what went wrong."
+        },
+        {
+          "step": 8,
+          "action": "Close error banner by clicking X or dismiss button",
+          "expected": "Error banner closes, disappears from UI. No error state in console."
+        },
+        {
+          "step": 9,
+          "action": "Wait 30 seconds (simulated wait for rate limit to clear), then click 'Generate' again with SAME inputs",
+          "expected": "Generation starts again. Loading state shows. If OpenAI API is now working, generation succeeds and redirects to editor. If still failing, error banner reappears with updated error message."
+        },
+        {
+          "step": 10,
+          "action": "If retry succeeds: verify editor loads with generated slides, all 10 slides present, no corruption from previous failed attempt",
+          "expected": "Editor loads successfully. ThumbnailRail shows 10 slides. EditorCanvas renders first slide. Auto-save shows 'All changes saved'. Database has 1 project + 10 slides (no orphaned records from failed attempt)."
+        }
+      ],
+      "acceptance_criteria": [
+        "ERROR MESSAGING: Clear, user-friendly error message appears within 3 seconds of failure. Message explains what happened (rate limit, timeout, API error) in plain English.",
+        "INPUT PRESERVATION: Topic text, style kit selection, slide count, tone all PERSIST after error. User does not need to re-enter data.",
+        "NO DATABASE CORRUPTION: Failed generation does NOT create orphaned project or slide records. Database state is clean (no partial data).",
+        "RETRY CAPABILITY: Generate button re-enables after error. User can click Generate again without page refresh.",
+        "ERROR DISMISSAL: User can close error banner. Error state does not persist after dismissal unless generation fails again.",
+        "SUCCESS AFTER RETRY: If retry succeeds, journey continues normally (editor loads, slides created, auto-save works).",
+        "NO MEMORY LEAKS: Failed generation does not cause memory leaks or hanging promises. Browser console shows no unhandled promise rejections.",
+        "API RESPONSE LOGGING: OpenAI API errors are logged server-side (for debugging) but NOT exposed to client (no API keys or stack traces in client error messages)."
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/lib/api-error.ts"
+      ],
+      "tags": [
+        "e2e",
+        "error-handling",
+        "retry",
+        "generation-failure",
+        "user-experience"
+      ],
+      "notes": "This test validates product resilience. AI APIs WILL fail - the question is whether the product handles it gracefully. User retention depends on clear error messages and easy recovery. Test with simulated OpenAI errors (mock API responses) or real rate limit conditions."
+    },
+    {
+      "id": "TC-JOURNEY-TOPIC-003",
+      "name": "Topic to Export - Premium Features Upgrade Prompts (FREE → CREATOR Conversion)",
+      "module": "user_journeys",
+      "user_journey": "topic_to_export",
+      "category": "e2e",
+      "type": "happy_path",
+      "priority": "high",
+      "description": "Validates that FREE tier users encounter appropriate upgrade prompts during topic-to-export journey when trying to access premium features: 15 slides, premium style kits, brand kits. Tests that prompts are CLEAR, NON-INTRUSIVE, and ACTIONABLE (link to /settings/billing). This is a critical conversion funnel test.",
+      "business_context": "FREE tier is intentionally limited to encourage upgrades. Upgrade prompts must be visible but not annoying, clear but not pushy, actionable but not blocking. Conversion rate from FREE → CREATOR is a key business metric.",
+      "preconditions": [
+        "User is logged in as FREE tier (subscriptionTier = 'FREE')",
+        "User has used 2 of 3 carousel limit (projectCount = 2)",
+        "User is on /en/create page"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Verify carousel limit warning banner shows at top of create page: 'You have 2 of 3 carousels. Upgrade to Creator for 30 carousels.'",
+          "expected": "Yellow/orange banner visible at top with warning icon, clear text, and 'Upgrade' link to /settings/billing. Banner is noticeable but not blocking."
+        },
+        {
+          "step": 2,
+          "action": "Enter topic: 'Complete guide to productivity' (33 characters)",
+          "expected": "Topic input accepts text, no validation errors"
+        },
+        {
+          "step": 3,
+          "action": "Open slide count dropdown, verify only '8' option is available (FREE tier limit), no higher options",
+          "expected": "Dropdown shows only '8 slides' option. No 9, 10, 11, etc. Tooltip or disabled options show 'Upgrade to Creator for up to 15 slides'."
+        },
+        {
+          "step": 4,
+          "action": "Open style kit selector, verify 3 free kits (minimal_clean, high_contrast_punch, marker_highlight, sticky_note) and 5 premium kits grayed out",
+          "expected": "Style kit dropdown shows Free section (4 kits, clickable) and Premium section (4 kits, grayed out with 'Premium' badge). Premium kits have cursor: not-allowed. Hovering premium kit shows tooltip 'Upgrade to Creator for all style kits'."
+        },
+        {
+          "step": 5,
+          "action": "Try to click on a premium style kit (e.g., 'gradient_modern')",
+          "expected": "Click is blocked (cursor: not-allowed, no selection). Tooltip remains visible. Subtle animation or feedback indicates kit is unavailable. No console errors."
+        },
+        {
+          "step": 6,
+          "action": "Verify brand kit toggle is DISABLED (opacity 0.5, cursor: not-allowed)",
+          "expected": "Brand kit toggle is grayed out. Tooltip or inline text shows 'Brand kits require Creator or Pro plan'."
+        },
+        {
+          "step": 7,
+          "action": "Click 'Learn More' link in brand kit section (if present) or hover for tooltip",
+          "expected": "Tooltip or modal explains: 'Brand kits let you add your logo, colors, and fonts. Available on Creator ($X/mo) and Pro ($Y/mo) plans. Upgrade in Settings > Billing.'"
+        },
+        {
+          "step": 8,
+          "action": "Select a free style kit (minimal_clean), leave slide count at 8, click Generate",
+          "expected": "Generation starts normally. Loading state shows. After 20-45 seconds, redirects to editor with 8 slides (not 10, respecting FREE tier limit)."
+        },
+        {
+          "step": 9,
+          "action": "In editor, verify slide count is 8 (not 10), verify Add Slide button shows upgrade tooltip",
+          "expected": "ThumbnailRail shows 8 thumbnails. Add Slide button (+) is visible but clicking shows tooltip: 'FREE tier allows up to 8 slides. Upgrade to Creator for 15 slides.' Button does NOT create new slide."
+        },
+        {
+          "step": 10,
+          "action": "Open ThemeControls, verify all color/font customization IS available (not gated)",
+          "expected": "Color pickers work, font selectors work. FREE tier CAN customize themes within current slide count limit."
+        },
+        {
+          "step": 11,
+          "action": "Complete export to PDF (same steps as TC-JOURNEY-TOPIC-001 steps 24-30)",
+          "expected": "Export succeeds. PDF downloads with 8 pages. Watermark 'QuickCarousals.com' present on all pages (FREE tier watermark enforcement)."
+        },
+        {
+          "step": 12,
+          "action": "After export, in ExportModal or header, verify watermark explanation text or upgrade prompt: 'Watermark appears on FREE tier exports. Upgrade to remove watermark.'",
+          "expected": "Subtle message or icon with tooltip explains watermark. Link to /settings/billing for upgrade."
+        },
+        {
+          "step": 13,
+          "action": "Click 'Upgrade' link from any upgrade prompt (banner, tooltip, modal)",
+          "expected": "Browser navigates to /en/settings/billing. Billing page loads showing 3 plans (FREE current, CREATOR upgrade CTA, PRO upgrade CTA). Current plan has blue border/badge. Upgrade buttons are enabled and linked to Stripe checkout."
+        },
+        {
+          "step": 14,
+          "action": "On billing page, verify CREATOR plan highlights: 30 carousels, 15 slides, no watermark, 8 style kits, 1 brand kit. Pricing shown ($X/month).",
+          "expected": "CREATOR plan card displays all features with checkmarks. Price is clearly visible. 'Upgrade to Creator' button is prominent (blue/purple)."
+        },
+        {
+          "step": 15,
+          "action": "Return to dashboard without upgrading (browser back button), verify project count is now 3 of 3 (limit reached)",
+          "expected": "Dashboard shows 3 project cards. Carousel limit banner now shows 'You have reached your carousel limit (3/3). Upgrade to create more.' No 'Create New Carousel' button visible (or button disabled with tooltip)."
+        },
+        {
+          "step": 16,
+          "action": "Verify user cannot create 4th carousel: try to access /en/create directly via URL",
+          "expected": "Create page redirects to dashboard with error message 'Carousel limit reached. Upgrade to Creator for 30 carousels.' OR create page loads but shows blocking upgrade modal preventing form access."
+        }
+      ],
+      "acceptance_criteria": [
+        "UPGRADE PROMPT VISIBILITY: At least 4 upgrade prompts visible during journey (carousel limit banner, slide count dropdown, premium style kits, watermark explanation). Prompts are clear and non-intrusive.",
+        "FEATURE GATING: FREE tier limits strictly enforced: 8 slides max, 3 carousels max, 0 brand kits, 3 style kits, watermark on exports. User cannot bypass via UI manipulation.",
+        "MESSAGING CLARITY: All upgrade prompts explain WHAT is limited, WHY it's limited (tier), and HOW to upgrade (link to /settings/billing with specific plan recommendations).",
+        "ACTIONABLE LINKS: All 'Upgrade' links navigate to /settings/billing. Billing page loads successfully. Upgrade CTAs are functional (link to Stripe checkout - not tested in this journey, but buttons present).",
+        "NON-BLOCKING UX: Upgrade prompts do NOT prevent FREE tier users from using available features. User can successfully complete topic-to-export with FREE tier limits (8 slides, free style kit, watermark).",
+        "CONVERSION FUNNEL: User journey demonstrates clear upgrade incentives: more carousels, more slides, no watermark, more style kits, brand kits. Each prompt includes value proposition.",
+        "LIMIT ENFORCEMENT: Carousel limit (3/3) BLOCKS further carousel creation via UI AND via direct URL access to /en/create.",
+        "WATERMARK PRESENCE: FREE tier PDF export has 'QuickCarousals.com' watermark on all 8 pages. Watermark is visible but not obtrusive."
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/hooks/use-subscription.ts",
+        "apps/nextjs/src/components/editor/EditorCanvas.tsx",
+        "apps/nextjs/src/components/editor/ThumbnailRail.tsx",
+        "apps/nextjs/src/components/editor/StyleKitSelector.tsx",
+        "apps/nextjs/src/lib/queues/render-worker.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/settings/billing/page.tsx",
+        "apps/nextjs/src/app/api/profile/route.ts"
+      ],
+      "tags": [
+        "e2e",
+        "monetization",
+        "conversion-funnel",
+        "free-tier",
+        "upgrade-prompts",
+        "feature-gating"
+      ],
+      "notes": "This test validates the MONETIZATION strategy. Upgrade prompts must convert FREE users to paid plans without frustrating them. Balance between 'too pushy' (annoying) and 'too subtle' (no conversions) is critical. Test should measure clarity and actionability of upgrade messaging, not actual Stripe payment flow."
+    },
+    {
+      "id": "TC-SEC-001",
+      "name": "Unauthenticated API request returns 401",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that all protected API endpoints reject requests without valid authentication tokens",
+      "business_context": "Preventing unauthorized access to API endpoints is fundamental security. Without auth enforcement, anyone could access user data, generate carousels, export files, and manipulate projects without an account.",
+      "preconditions": [
+        "No authentication token is provided",
+        "API endpoints are protected by withAuth() or withAuthAndErrors() middleware"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send GET request to /api/projects WITHOUT Clerk authentication cookie/header",
+          "expected": "Request is intercepted by withAuthAndErrors middleware"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Response status is 401 Unauthorized"
+        },
+        {
+          "step": 3,
+          "action": "Parse response body",
+          "expected": "Response body contains error object with code 'UNAUTHORIZED' and message 'Authentication required'"
+        },
+        {
+          "step": 4,
+          "action": "Repeat test for POST /api/generate/topic, POST /api/brand-kits, POST /api/exports",
+          "expected": "All protected endpoints return 401 without authentication"
+        }
+      ],
+      "acceptance_criteria": [
+        "All protected API routes return 401 status code",
+        "Error response follows standard ApiError format: {error: {code, message, details}}",
+        "No sensitive data is leaked in error response",
+        "No partial execution occurs (middleware blocks before handler runs)",
+        "Public endpoints (health, webhooks, style-kits list) still work without auth"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/with-auth.ts",
+        "apps/nextjs/src/utils/clerk.ts"
+      ],
+      "tags": [
+        "security",
+        "authentication",
+        "authorization",
+        "critical"
+      ],
+      "notes": "This is THE MOST CRITICAL security test. If auth middleware fails, entire data isolation model breaks. Test EVERY protected endpoint (there are 15+ endpoints). Public endpoints like /api/health, /api/webhooks/*, /api/style-kits should still return 200."
+    },
+    {
+      "id": "TC-SEC-002",
+      "name": "User cannot access another user's projects",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates data isolation - authenticated users can only access their own projects, not projects belonging to other users",
+      "business_context": "Data isolation is core to multi-tenant SaaS security. If users can access each other's projects, it's a catastrophic privacy/security breach. Competitors could steal content, sensitive business information could be exposed.",
+      "preconditions": [
+        "Two users exist: User A (with projects) and User B",
+        "User B is authenticated with valid session",
+        "User B knows the projectId of User A's project (obtained via enumeration or leak)"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User B sends GET request to /api/projects/[User A's projectId]",
+          "expected": "API verifies project ownership in route handler"
+        },
+        {
+          "step": 2,
+          "action": "API queries Profile table to get User B's Profile.id from clerkUserId",
+          "expected": "Profile.id is retrieved successfully"
+        },
+        {
+          "step": 3,
+          "action": "API queries Project table with WHERE id = [projectId] AND userId = [User B's Profile.id]",
+          "expected": "Query returns no results (project belongs to User A, not User B)"
+        },
+        {
+          "step": 4,
+          "action": "Check response status code",
+          "expected": "Response status is 404 Not Found (not 403, to avoid information disclosure)"
+        },
+        {
+          "step": 5,
+          "action": "Parse response body",
+          "expected": "Error message does not reveal whether project exists for another user"
+        }
+      ],
+      "acceptance_criteria": [
+        "Request returns 404 status code (not 403 which confirms project exists)",
+        "No project data is returned to User B",
+        "Error message is generic: 'Project not found' (not 'Project belongs to another user')",
+        "Database query includes userId filter in WHERE clause",
+        "Test applies to ALL resource endpoints: projects, brand-kits, exports, slides"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/projects/[id]/route.ts",
+        "apps/nextjs/src/app/api/brand-kits/[id]/route.ts",
+        "apps/nextjs/src/app/api/exports/[id]/route.ts"
+      ],
+      "tags": [
+        "security",
+        "data-isolation",
+        "authorization",
+        "critical",
+        "multi-tenant"
+      ],
+      "notes": "CRITICAL BUSINESS RISK. Currently, projects/[id]/route.ts DOES implement ownership checks (lines 48-57). Brand kits/[id]/route.ts uses verifyOwnership helper. BUT: frontend bypassing backend tier checks means data access enforcement is inconsistent. Test ownership checks on: GET, PATCH, DELETE for projects, brand kits, exports."
+    },
+    {
+      "id": "TC-SEC-003",
+      "name": "User cannot modify another user's brand kit",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that PATCH and DELETE operations on brand kits enforce ownership - users cannot modify or delete brand kits they don't own",
+      "business_context": "Brand kits contain company logos, colors, fonts - critical brand assets. If users can modify each other's brand kits, it's corporate sabotage risk. Competitor could delete logo or change colors to damage brand.",
+      "preconditions": [
+        "User A has a brand kit with id='brand-kit-A'",
+        "User B is authenticated with valid session",
+        "User B knows brand-kit-A's ID"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User B sends PATCH request to /api/brand-kits/brand-kit-A with body: {name: 'Hacked Kit'}",
+          "expected": "API verifies ownership using verifyOwnership helper"
+        },
+        {
+          "step": 2,
+          "action": "verifyOwnership queries BrandKit WHERE id = brand-kit-A AND userId = [User B's Profile.id]",
+          "expected": "Query returns no results (kit belongs to User A)"
+        },
+        {
+          "step": 3,
+          "action": "Check response status code",
+          "expected": "Response status is 404 Not Found"
+        },
+        {
+          "step": 4,
+          "action": "Verify brand kit was not modified in database",
+          "expected": "Brand kit name is still original value, not 'Hacked Kit'"
+        },
+        {
+          "step": 5,
+          "action": "Repeat test with DELETE request to /api/brand-kits/brand-kit-A",
+          "expected": "DELETE also returns 404, brand kit not deleted"
+        }
+      ],
+      "acceptance_criteria": [
+        "PATCH request returns 404 status code",
+        "DELETE request returns 404 status code",
+        "Brand kit data is not modified in database",
+        "Brand kit is not deleted from database",
+        "Uploaded logo file (if any) is not deleted from storage",
+        "Error response does not reveal kit exists for another user"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/brand-kits/[id]/route.ts"
+      ],
+      "tags": [
+        "security",
+        "data-isolation",
+        "authorization",
+        "critical",
+        "brand-kit"
+      ],
+      "notes": "Brand kits [id]/route.ts implements verifyOwnership helper (lines 38-63) which does check userId. HOWEVER: Logo storage deletion (lines 129-139) logs errors but continues - if storage deletion fails, orphaned files accumulate. Security is good but resource cleanup could be improved."
+    },
+    {
+      "id": "TC-SEC-004",
+      "name": "Sensitive environment variables not exposed in API responses",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that API error messages, debug info, and responses do not leak sensitive environment variables or credentials",
+      "business_context": "Exposing API keys (OpenAI, Stripe, Clerk) or database credentials could allow attackers to impersonate the application, steal data, or incur massive costs on our accounts.",
+      "preconditions": [
+        "Application has sensitive env vars configured: OPENAI_API_KEY, STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET, POSTGRES_URL, etc.",
+        "User can trigger error scenarios that might expose internal data"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send malformed request to /api/generate/topic to trigger error (e.g., invalid JSON body)",
+          "expected": "API returns 400 error with generic message"
+        },
+        {
+          "step": 2,
+          "action": "Inspect response body for sensitive strings",
+          "expected": "Response does not contain: 'sk-', 'OPENAI_API_KEY', 'STRIPE_API_KEY', 'postgres://', 'redis://', file paths"
+        },
+        {
+          "step": 3,
+          "action": "Check browser DevTools Network tab for response headers",
+          "expected": "No sensitive headers exposed (X-API-Key, Authorization, etc.)"
+        },
+        {
+          "step": 4,
+          "action": "Send request with intentionally invalid OpenAI prompt to trigger AI generation error",
+          "expected": "Error message says 'Failed to generate' (generic), not OpenAI API error details"
+        },
+        {
+          "step": 5,
+          "action": "Check console.error logs (server-side) to verify sensitive data is logged internally but not returned",
+          "expected": "Server logs may contain errors but client receives sanitized message"
+        }
+      ],
+      "acceptance_criteria": [
+        "No API responses contain env var names or values",
+        "No stack traces exposed in production (process.env.NODE_ENV === 'production')",
+        "Error messages are user-friendly and generic: 'Failed to generate', 'Internal error', 'Invalid request'",
+        "OpenAI API errors are caught and replaced with generic messages",
+        "Database connection errors don't expose POSTGRES_URL",
+        "Redis connection errors don't expose UPSTASH_REDIS_REST_URL or token"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/with-auth.ts",
+        "apps/nextjs/src/lib/api-error.ts",
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/env.mjs"
+      ],
+      "tags": [
+        "security",
+        "credential-leak",
+        "information-disclosure",
+        "high-priority"
+      ],
+      "notes": "Code review shows good patterns: withAuthAndErrors catches errors and returns ApiError format (lines 56-76). OpenAI errors are caught (generate/topic/route.ts lines 304-306). BUT: Generic 'Internal error' messages might be too vague for debugging. Balance between security and developer experience needed. Test in PRODUCTION mode (NODE_ENV=production) to verify stack traces are hidden."
+    },
+    {
+      "id": "TC-SEC-005",
+      "name": "Admin routes require ADMIN_EMAIL verification",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that admin-only routes (e.g., /admin/dashboard) reject non-admin users even if authenticated",
+      "business_context": "Admin routes may have elevated permissions (view all users, modify settings, access metrics). If any authenticated user can access admin, it's a privilege escalation vulnerability.",
+      "preconditions": [
+        "ADMIN_EMAIL environment variable is set with comma-separated admin emails",
+        "User A is authenticated with email NOT in ADMIN_EMAIL list",
+        "User B is authenticated with email IN ADMIN_EMAIL list"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User A navigates to /admin/dashboard",
+          "expected": "Middleware intercepts request and checks isAdmin flag"
+        },
+        {
+          "step": 2,
+          "action": "Middleware extracts email from sessionClaims.user.email",
+          "expected": "User A's email is retrieved: userA@example.com"
+        },
+        {
+          "step": 3,
+          "action": "Middleware checks if userA@example.com is in ADMIN_EMAIL list",
+          "expected": "Email is NOT in list, isAdmin = false"
+        },
+        {
+          "step": 4,
+          "action": "Check response",
+          "expected": "User A is redirected to /admin/login (lines 101-102 in clerk.ts)"
+        },
+        {
+          "step": 5,
+          "action": "User B navigates to /admin/dashboard",
+          "expected": "User B's email IS in ADMIN_EMAIL, isAdmin = true, access granted"
+        }
+      ],
+      "acceptance_criteria": [
+        "Non-admin users are redirected to /admin/login",
+        "Admin users (email in ADMIN_EMAIL) can access /admin/dashboard",
+        "ADMIN_EMAIL parsing handles spaces correctly: 'admin1@ex.com, admin2@ex.com' works",
+        "Empty ADMIN_EMAIL env var blocks ALL users from admin (fail-secure)",
+        "Admin check uses EXACT email match (not substring or regex)",
+        "sessionClaims.user.email is trusted source (from Clerk, not client)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/utils/clerk.ts"
+      ],
+      "tags": [
+        "security",
+        "authorization",
+        "admin",
+        "privilege-escalation",
+        "high-priority"
+      ],
+      "notes": "Admin logic is in middleware (clerk.ts lines 83-104). Uses email-based allowlist from ADMIN_EMAIL env var. POTENTIAL ISSUE: Line 86 splits by comma but doesn't trim whitespace - 'admin@ex.com, user@ex.com' would fail to match 'admin@ex.com'. Fix: adminEmails.map(e => e.trim()). Also: No admin routes currently exist in codebase besides placeholder - feature may be unused."
+    },
+    {
+      "id": "TC-SEC-006",
+      "name": "Stripe webhook signature verification prevents fake events",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates that Stripe webhook endpoint rejects events with invalid signatures, preventing attackers from forging subscription updates",
+      "business_context": "Stripe webhooks update user subscription tiers. If signature verification fails, attacker could send fake 'payment_succeeded' events to upgrade their account to PRO without paying. This is direct revenue loss and fraud.",
+      "preconditions": [
+        "STRIPE_WEBHOOK_SECRET is configured in environment",
+        "Stripe webhook endpoint is /api/webhooks/stripe",
+        "Attacker knows webhook URL structure"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Attacker crafts fake webhook payload: {type: 'checkout.session.completed', data: {object: {id: 'fake', metadata: {userId: 'user_123'}}}",
+          "expected": "Payload looks legitimate but has no Stripe signature"
+        },
+        {
+          "step": 2,
+          "action": "Send POST to /api/webhooks/stripe with fake payload and NO stripe-signature header",
+          "expected": "Webhook handler calls stripe.webhooks.constructEvent() which fails"
+        },
+        {
+          "step": 3,
+          "action": "Check response status code",
+          "expected": "Response status is 400 Bad Request (signature validation failed)"
+        },
+        {
+          "step": 4,
+          "action": "Verify user's subscriptionTier in database",
+          "expected": "Tier is unchanged (still FREE), fake event did not process"
+        },
+        {
+          "step": 5,
+          "action": "Repeat test with INVALID signature (wrong secret)",
+          "expected": "Also returns 400, event not processed"
+        }
+      ],
+      "acceptance_criteria": [
+        "Webhook returns 400 for missing stripe-signature header",
+        "Webhook returns 400 for invalid signature (wrong secret)",
+        "No database updates occur for failed signature verification",
+        "constructEvent() is called BEFORE any business logic",
+        "STRIPE_WEBHOOK_SECRET matches value in Stripe dashboard",
+        "Error response does not leak webhook secret or endpoint details"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/webhooks/stripe/route.ts",
+        "packages/stripe/src/webhooks.ts"
+      ],
+      "tags": [
+        "security",
+        "webhook",
+        "signature-verification",
+        "stripe",
+        "critical",
+        "fraud-prevention"
+      ],
+      "notes": "CRITICAL MONETIZATION SECURITY. Webhook handler DOES verify signature (webhooks/stripe/route.ts calls stripe.webhooks.constructEvent with signature and secret). This is correct implementation. BUT: Knowledge base shows 'No Webhook Idempotency' issue - if Stripe retries same event, handler processes it multiple times. Not a security issue but could cause inconsistent state."
+    },
+    {
+      "id": "TC-SEC-007",
+      "name": "Rate limiting prevents API abuse",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "medium",
+      "description": "Validates that expensive operations (AI generation, exports) have rate limits to prevent abuse and cost explosion",
+      "business_context": "AI generation costs $0.01-0.10 per request (OpenAI API). Export rendering uses CPU/memory. Without rate limits, attacker or malicious user could send 1000 generation requests, costing hundreds of dollars and overloading servers.",
+      "preconditions": [
+        "User is authenticated",
+        "Rate limiting middleware is implemented (or planned)",
+        "Rate limits are configured per-endpoint or per-user"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send 100 rapid POST requests to /api/generate/topic in 10 seconds",
+          "expected": "First N requests (e.g., 10) succeed with 200 responses"
+        },
+        {
+          "step": 2,
+          "action": "Check response for request N+1",
+          "expected": "Response status is 429 Too Many Requests"
+        },
+        {
+          "step": 3,
+          "action": "Parse 429 response body",
+          "expected": "Response includes Retry-After header or retryAfter field in JSON"
+        },
+        {
+          "step": 4,
+          "action": "Wait for retry period (e.g., 60 seconds) and retry",
+          "expected": "After waiting, request succeeds with 200"
+        },
+        {
+          "step": 5,
+          "action": "Test export endpoint with rapid requests",
+          "expected": "Export endpoint also has rate limits (fewer per minute than generation)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Rate limits exist for: /api/generate/topic, /api/generate/text, /api/exports",
+        "429 response includes clear error message and retry timing",
+        "Rate limits are per-user (not global) to prevent one user blocking others",
+        "FREE tier has stricter rate limits than PRO tier (monetization incentive)",
+        "Rate limit counters reset after time window (e.g., per minute, per hour)",
+        "Redis or similar is used for distributed rate limiting (not in-memory)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/app/api/exports/route.ts",
+        "apps/nextjs/src/lib/redis.ts"
+      ],
+      "tags": [
+        "security",
+        "rate-limiting",
+        "abuse-prevention",
+        "cost-control",
+        "medium-priority"
+      ],
+      "notes": "CODE REVIEW FINDING: NO RATE LIMITING IMPLEMENTED. OpenAI library has built-in retry logic (generate/topic/route.ts) but no rate limits on our API endpoints. This is HIGH RISK for cost explosion. Recommendation: Use Upstash Redis rate limiting (redis.ts exists), implement per-user limits. FREE: 10 requests/hour, CREATOR: 100/hour, PRO: 1000/hour. CRITICAL SECURITY GAP."
+    },
+    {
+      "id": "TC-SEC-008",
+      "name": "File upload validation prevents malicious files",
+      "module": "security",
+      "user_journey": null,
+      "category": "security",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates that brand kit logo upload enforces file type, size, and content validation to prevent malware uploads and storage abuse",
+      "business_context": "Logo upload allows users to upload files to storage. Without validation, attacker could upload: malware (disguised as images), huge files (storage DoS), executable code (if storage is misconfigured), or copyrighted content.",
+      "preconditions": [
+        "User is authenticated with brand kit creation permission",
+        "Supabase Storage 'logos' bucket is configured"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Attempt to upload file with extension .exe (disguised as logo)",
+          "expected": "API checks file type via Content-Type header and file extension"
+        },
+        {
+          "step": 2,
+          "action": "Check response status code",
+          "expected": "Response status is 400 Bad Request with error: 'Invalid logo file type'"
+        },
+        {
+          "step": 3,
+          "action": "Attempt to upload 10MB PNG file (exceeds 5MB limit)",
+          "expected": "API checks file size before upload"
+        },
+        {
+          "step": 4,
+          "action": "Check response status code",
+          "expected": "Response status is 400 with error: 'Logo file too large. Maximum size: 5MB'"
+        },
+        {
+          "step": 5,
+          "action": "Upload valid PNG file (2MB, image/png, under limit)",
+          "expected": "Upload succeeds, file stored in logos bucket, URL returned"
+        },
+        {
+          "step": 6,
+          "action": "Verify stored file is accessible via public URL",
+          "expected": "Logo URL returns image with correct Content-Type header"
+        }
+      ],
+      "acceptance_criteria": [
+        "Only allowed file types accepted: PNG, JPEG, SVG, WebP (line 116 in brand-kits/route.ts)",
+        "5MB size limit enforced (line 122-125)",
+        "File validation happens BEFORE upload to storage (not after)",
+        "Filename is sanitized and made unique (generateUniqueFilename with timestamp)",
+        "Stored files are in user-specific paths (getUserFilePath includes userId)",
+        "MIME type validation uses Content-Type header (logoFile.type)",
+        "Failed uploads don't leave orphaned files in storage"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/brand-kits/route.ts",
+        "apps/nextjs/src/lib/storage.ts"
+      ],
+      "tags": [
+        "security",
+        "file-upload",
+        "validation",
+        "storage",
+        "high-priority"
+      ],
+      "notes": "File upload validation EXISTS and is GOOD (lines 113-140 in brand-kits/route.ts). Validates type and size. Uses unique filenames with timestamp. HOWEVER: No MIME type magic number validation - relies on Content-Type header which can be spoofed. Recommendation: Add server-side image validation (check PNG/JPEG file headers). Also: SVG can contain JavaScript - should sanitize SVG uploads or disable SVG support."
+    },
+    {
+      "id": "TC-ERR-001",
+      "name": "Network Timeout - AI Generation Request",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "api",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates OpenAI API timeout handling (30s) during topic generation - system should retry with exponential backoff, show clear error message, preserve user input",
+      "business_context": "AI generation is the core value proposition. Timeout errors WILL happen (OpenAI slowdowns, network issues). Users must not lose their input and should understand what went wrong with clear recovery options.",
+      "preconditions": [
+        "User is authenticated and on create page",
+        "OpenAI API is slow or unavailable (>30s response time)",
+        "User has entered a valid topic"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User enters topic '10 productivity tips for remote workers'",
+          "expected": "Topic input field populated, character count shows 42/500"
+        },
+        {
+          "step": 2,
+          "action": "User clicks Generate button",
+          "expected": "Loading state activates: spinner shows, button disables, status text 'Generating...'"
+        },
+        {
+          "step": 3,
+          "action": "Wait for 30 seconds (OpenAI timeout threshold)",
+          "expected": "Request times out, OpenAITimeoutError thrown with code='TIMEOUT', isRetryable=true"
+        },
+        {
+          "step": 4,
+          "action": "System executes retry logic (attempt 1 of 3)",
+          "expected": "1-second delay before retry, console logs 'OpenAI request retry attempt 1'"
+        },
+        {
+          "step": 5,
+          "action": "Second request also times out after 30s",
+          "expected": "2-second delay before second retry, console logs 'OpenAI request retry attempt 2'"
+        },
+        {
+          "step": 6,
+          "action": "Third request also times out after 30s",
+          "expected": "5-second delay before third retry, console logs 'OpenAI request retry attempt 3'"
+        },
+        {
+          "step": 7,
+          "action": "All 3 retries exhausted",
+          "expected": "Error banner appears with message: 'Generation timed out. Please try again.' Topic input still contains original text. Generate button re-enables. Loading state clears."
+        },
+        {
+          "step": 8,
+          "action": "User clicks Generate again",
+          "expected": "New generation attempt starts, loading state activates"
+        }
+      ],
+      "acceptance_criteria": [
+        "OpenAI timeout (30s) triggers retry logic automatically",
+        "Exponential backoff delays: 1s, 2s, 5s between retries",
+        "User input preserved throughout error flow (topic text not cleared)",
+        "Error message is user-friendly: 'timed out' not 'ETIMEDOUT' or stack trace",
+        "Generate button re-enables after error to allow retry",
+        "No console errors beyond expected OpenAITimeoutError logging",
+        "Total time to failure: ~90s (3 attempts × 30s each + delays)",
+        "Error banner displays specific action: 'Please try again' not just 'Error occurred'"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx"
+      ],
+      "tags": [
+        "network",
+        "timeout",
+        "retry",
+        "openai",
+        "generation",
+        "error-recovery"
+      ],
+      "notes": "This is the MOST COMMON error users will encounter. OpenAI timeouts happen ~2-5% of requests during peak hours. Retry logic is CRITICAL to reduce perceived failure rate. Without retries, users would see 2-5% failure. With 3 retries, failure rate drops to ~0.1%."
+    },
+    {
+      "id": "TC-ERR-002",
+      "name": "OpenAI Rate Limit Error with Retry-After",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "api",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates OpenAI 429 rate limit error handling - system should detect rate limit, NOT retry immediately, show clear error message with wait time, allow user to retry after cooldown",
+      "business_context": "OpenAI rate limits are HARD limits (not soft). Immediate retries will fail. Users need to know HOW LONG to wait. Without proper handling, users think app is broken and churn.",
+      "preconditions": [
+        "User has exceeded OpenAI rate limits (e.g., 500 requests/min for GPT-4)",
+        "User is authenticated and attempting generation"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User submits generation request that triggers OpenAI 429 error",
+          "expected": "POST /api/generate/topic returns 429 status"
+        },
+        {
+          "step": 2,
+          "action": "OpenAI client throws rate limit error with status=429",
+          "expected": "openai.ts detects status===429, throws OpenAIRateLimitError with isRetryable=true"
+        },
+        {
+          "step": 3,
+          "action": "API route catches OpenAIRateLimitError",
+          "expected": "route.ts checks error.message includes 'rate limit', returns ApiErrors.rateLimited(60)"
+        },
+        {
+          "step": 4,
+          "action": "Frontend receives 429 response with retryAfter:60 in details",
+          "expected": "Error banner shows: 'Too many requests. Please try again in 60 seconds.'"
+        },
+        {
+          "step": 5,
+          "action": "User clicks Generate button again immediately",
+          "expected": "Button is enabled but request likely fails again with same 429 error (no client-side rate limiting)"
+        },
+        {
+          "step": 6,
+          "action": "User waits 60 seconds and retries",
+          "expected": "Request succeeds, generation completes normally"
+        }
+      ],
+      "acceptance_criteria": [
+        "429 error detected by checking error.status === 429",
+        "OpenAIRateLimitError thrown with isRetryable=true (but should not be auto-retried)",
+        "API returns 429 status with retryAfter value in response",
+        "Error message includes specific wait time: '60 seconds' not just 'try again later'",
+        "User input preserved (topic/text not cleared)",
+        "Generate button re-enables (no client-side cooldown enforcement - potential improvement)",
+        "No automatic retries for rate limit errors (different from timeout behavior)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/openai.ts",
+        "apps/nextjs/src/lib/api-error.ts",
+        "apps/nextjs/src/app/api/generate/topic/route.ts",
+        "apps/nextjs/src/app/api/generate/text/route.ts"
+      ],
+      "tags": [
+        "rate-limit",
+        "openai",
+        "429",
+        "error-handling",
+        "cooldown"
+      ],
+      "notes": "CRITICAL BUG: No client-side enforcement of retryAfter. User can spam Generate button and get multiple 429 errors. Should disable button for retryAfter seconds. Also, no rate limiting on our API layer - free tier users could trigger OpenAI rate limits and cost us money."
+    },
+    {
+      "id": "TC-ERR-003",
+      "name": "Input Validation Error - Empty Topic Generation",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "medium",
+      "description": "Validates client-side validation prevents empty topic submission - Generate button should be disabled when input invalid, validation error shown immediately on blur/submit",
+      "business_context": "Frontend validation provides instant feedback without wasting API calls or OpenAI tokens. Prevents user frustration from waiting 20s for AI generation only to get 'invalid input' error.",
+      "preconditions": [
+        "User is on create page in Topic mode",
+        "No topic text has been entered"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User clicks on topic input field but enters nothing",
+          "expected": "Input field focuses, placeholder text shows 'e.g., 10 productivity tips...'"
+        },
+        {
+          "step": 2,
+          "action": "User clicks outside input (blur event)",
+          "expected": "No validation error shown yet (empty is default state)"
+        },
+        {
+          "step": 3,
+          "action": "Check Generate button state",
+          "expected": "Generate button is DISABLED (opacity-50, cursor-not-allowed), cannot be clicked"
+        },
+        {
+          "step": 4,
+          "action": "User tries to click disabled Generate button",
+          "expected": "No action occurs, no API call made, no error shown"
+        },
+        {
+          "step": 5,
+          "action": "User enters '5' (single character, under min length if enforced)",
+          "expected": "Character count shows '1/500', Generate button still disabled if min length >1"
+        },
+        {
+          "step": 6,
+          "action": "User enters full topic '5 tips for remote work'",
+          "expected": "Character count shows '24/500', Generate button ENABLES (full opacity, cursor-pointer)"
+        },
+        {
+          "step": 7,
+          "action": "User clears input back to empty",
+          "expected": "Generate button disables again immediately (reactive validation)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Generate button disabled when topic is empty (checked via isValid derived state)",
+        "Button state updates immediately on input change (no debounce delay)",
+        "Disabled button has visual indicators: opacity-50, cursor-not-allowed",
+        "No API calls made when button is disabled (browser prevents click)",
+        "Character counter updates in real-time as user types",
+        "Min length is 1 character (any non-empty string enables button)",
+        "Max length enforced at 500 characters (maxLength HTML attribute)",
+        "No error message shown for empty input (empty is default/acceptable state until submit)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx"
+      ],
+      "tags": [
+        "validation",
+        "frontend",
+        "input",
+        "topic",
+        "ux"
+      ],
+      "notes": "Good UX: Disables button instead of showing error. Empty state is not treated as error (no red text/border). Only prevents submission. Backend validation also exists (validateBody with Zod schema) but should never trigger if frontend works correctly."
+    },
+    {
+      "id": "TC-ERR-004",
+      "name": "API 401 Unauthorized - Session Expired During Generation",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "integration",
+      "type": "error_path",
+      "priority": "critical",
+      "description": "Validates auth session expiry during long operation - middleware should detect expired session, return 401, frontend should handle gracefully by redirecting to login with return URL",
+      "business_context": "Clerk sessions expire after inactivity (default 7 days). If user leaves page open and session expires, next API call fails with 401. User loses work if not handled gracefully. MUST preserve user input and redirect to login with ?from= parameter to return after re-auth.",
+      "preconditions": [
+        "User was authenticated but session has expired (Clerk token expired)",
+        "User is on create page with topic entered",
+        "User clicks Generate or attempts any authenticated API call"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Simulate session expiry by deleting Clerk session cookies",
+          "expected": "Clerk session no longer valid, auth() returns {userId: null}"
+        },
+        {
+          "step": 2,
+          "action": "User enters topic and clicks Generate",
+          "expected": "POST /api/generate/topic called"
+        },
+        {
+          "step": 3,
+          "action": "withAuthAndErrors middleware executes",
+          "expected": "auth() returns {userId: null}, middleware detects unauthorized state"
+        },
+        {
+          "step": 4,
+          "action": "Middleware returns 401 response",
+          "expected": "Response JSON: {error: {code: 'UNAUTHORIZED', message: 'Authentication required'}}"
+        },
+        {
+          "step": 5,
+          "action": "Frontend fetch() receives 401 status",
+          "expected": "Create page catch block logs 'Generation failed', extracts error message from response JSON"
+        },
+        {
+          "step": 6,
+          "action": "Check error handling behavior",
+          "expected": "Error banner shows generic 'Failed to generate' message. User input (topic text) PRESERVED in state."
+        },
+        {
+          "step": 7,
+          "action": "User manually refreshes page or navigates",
+          "expected": "Clerk middleware (clerkMiddleware) intercepts request, detects no session, redirects to /en/login-clerk?from=/en/create"
+        },
+        {
+          "step": 8,
+          "action": "User logs in via Clerk UI",
+          "expected": "After successful login, redirects to /en/create (from= parameter preserved)"
+        }
+      ],
+      "acceptance_criteria": [
+        "API returns 401 with consistent error format (ApiError structure)",
+        "Frontend detects 401 via response.ok === false check",
+        "Error message extracted from response.json().error.message",
+        "User input preserved in React state (not cleared on error)",
+        "No automatic redirect from API error (redirect happens on next page navigation via middleware)",
+        "Clerk middleware adds ?from= parameter to login URL for return navigation",
+        "After re-login, user returns to create page (but input lost due to page refresh - acceptable trade-off)",
+        "No infinite redirect loops (login page itself is public route)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/with-auth.ts",
+        "apps/nextjs/src/utils/clerk.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/create/page.tsx",
+        "apps/nextjs/src/app/api/generate/topic/route.ts"
+      ],
+      "tags": [
+        "auth",
+        "401",
+        "session-expiry",
+        "clerk",
+        "middleware",
+        "error-recovery"
+      ],
+      "notes": "LIMITATION: Frontend error handling doesn't specifically detect 401 to show 'session expired' message or auto-redirect. Just shows generic error. User must navigate away to trigger middleware redirect. Could improve UX by checking response.status===401 and redirecting immediately."
+    },
+    {
+      "id": "TC-ERR-005",
+      "name": "Auto-Save Failure with Retry Recovery",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "integration",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates auto-save error handling in editor - network failure during save should show error state in header, preserve user changes in local state, allow manual retry, not block further edits",
+      "business_context": "Auto-save runs every 500ms after edits. Network glitches WILL cause save failures. User must not lose work. Error must be visible but not intrusive. User should be able to continue editing while error persists, with manual retry option.",
+      "preconditions": [
+        "User is in editor with project loaded",
+        "User makes edits to slide content",
+        "Network connection fails or API becomes unavailable during auto-save"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User types new headline in active slide",
+          "expected": "Content updates in React state immediately (optimistic UI)"
+        },
+        {
+          "step": 2,
+          "action": "500ms debounce elapses",
+          "expected": "useAutoSave hook triggers performSave(), status changes to 'saving', header shows 'Saving...'"
+        },
+        {
+          "step": 3,
+          "action": "Simulate network failure - PUT /api/projects/:id/slides returns 500 or times out",
+          "expected": "fetch() throws error or returns !response.ok"
+        },
+        {
+          "step": 4,
+          "action": "useAutoSave catch block executes",
+          "expected": "setStatus('error'), setError('Failed to save changes'), console.error logs error details"
+        },
+        {
+          "step": 5,
+          "action": "Check header status display",
+          "expected": "Header shows error indicator: 'Failed to save' text in red, or error icon, or both"
+        },
+        {
+          "step": 6,
+          "action": "User continues editing (types more text)",
+          "expected": "Edits apply to local state, new content renders in canvas, auto-save attempts again after 500ms"
+        },
+        {
+          "step": 7,
+          "action": "Network recovers, next auto-save succeeds",
+          "expected": "status changes to 'saved', header shows 'All changes saved' or checkmark icon, error clears"
+        },
+        {
+          "step": 8,
+          "action": "Check that ALL edits (including during error state) are saved",
+          "expected": "Database contains both pre-error and post-error changes (accumulated during error period)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Auto-save error sets status='error' and populates error state with message",
+        "Error message displayed in header UI (visible to user without blocking work)",
+        "User can continue editing during error state (no modal blocking edits)",
+        "Subsequent edits trigger new auto-save attempts (retry is automatic on next edit)",
+        "Error state clears automatically when save succeeds (no manual dismiss needed)",
+        "No data loss: all edits during error period are preserved in local state and eventually saved",
+        "Console logs error details for debugging (includes error message and stack trace)",
+        "No infinite retry loop if save permanently fails (debounce limits retry frequency to 500ms intervals)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/hooks/use-auto-save.ts",
+        "apps/nextjs/src/app/[lang]/(dashboard)/editor/[id]/page.tsx",
+        "apps/nextjs/src/app/api/projects/[id]/slides/route.ts"
+      ],
+      "tags": [
+        "auto-save",
+        "error-recovery",
+        "network",
+        "editor",
+        "data-persistence"
+      ],
+      "notes": "GOOD: Auto-save has built-in retry via continuous editing. BAD: No manual 'Retry Save' button if user stops editing during error state. User must make another edit to trigger retry. Could improve with explicit retry button in error UI."
+    },
+    {
+      "id": "TC-ERR-006",
+      "name": "Export Job Failure - Graceful Error Display",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "integration",
+      "type": "error_path",
+      "priority": "high",
+      "description": "Validates BullMQ job failure handling during export - worker error should update Export status to FAILED with errorMessage, frontend polling should detect FAILED status, display error message to user, allow retry with new export",
+      "business_context": "Export is the final step to get value from product. Failures happen due to: rendering errors, font loading issues, storage upload failures, memory limits. User MUST know export failed and be able to retry. Silent failures = user churns thinking product is broken.",
+      "preconditions": [
+        "User clicks Export button in editor",
+        "Export job queued in BullMQ",
+        "Render worker encounters error during slide rendering or PDF generation"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User clicks 'Export as PDF' in ExportModal",
+          "expected": "POST /api/exports creates Export record with status='PENDING', queues BullMQ job, modal shows progress screen"
+        },
+        {
+          "step": 2,
+          "action": "BullMQ worker picks up job and starts processing",
+          "expected": "Export status updated to 'PROCESSING', frontend polling detects status change, progress bar advances to 75%"
+        },
+        {
+          "step": 3,
+          "action": "Worker throws error during rendering (e.g., font loading fails)",
+          "expected": "render-worker.ts catch block catches error, logs error details"
+        },
+        {
+          "step": 4,
+          "action": "Worker updates Export record with failure details",
+          "expected": "Database UPDATE: status='FAILED', errorMessage='Failed to load font: Inter', updatedAt=now()"
+        },
+        {
+          "step": 5,
+          "action": "Worker marks BullMQ job as failed",
+          "expected": "job.failed() called with error, BullMQ triggers retry if attempts < maxAttempts"
+        },
+        {
+          "step": 6,
+          "action": "If retries exhausted (3 attempts), job permanently fails",
+          "expected": "Export status remains 'FAILED', BullMQ removes job from queue"
+        },
+        {
+          "step": 7,
+          "action": "Frontend polling (every 2s) fetches GET /api/exports/:id",
+          "expected": "Response includes status='FAILED', errorMessage='Failed to load font: Inter'"
+        },
+        {
+          "step": 8,
+          "action": "ExportModal detects FAILED status",
+          "expected": "Progress bar hidden, error banner appears with message: 'Export failed: Failed to load font: Inter', 'Try Again' button shown"
+        },
+        {
+          "step": 9,
+          "action": "User clicks 'Try Again' button",
+          "expected": "Modal resets to config screen, user can re-export with same or different settings"
+        }
+      ],
+      "acceptance_criteria": [
+        "Worker catch block updates Export status to 'FAILED' (not left at 'PROCESSING')",
+        "errorMessage field populated with specific error details (not generic 'failed')",
+        "Frontend polling stops when status='FAILED' (no infinite polling)",
+        "Error message displayed to user in modal (visible, not just console.error)",
+        "User can close modal and retry export (not stuck in error state)",
+        "BullMQ retry logic executes (3 attempts with exponential backoff: 5s, 10s, 20s)",
+        "Console logs include full error stack trace for debugging",
+        "No exported files left in storage for failed exports (cleanup happens or job never reaches upload step)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/lib/queues/render-worker.ts",
+        "apps/nextjs/src/app/api/exports/route.ts",
+        "apps/nextjs/src/app/api/exports/[id]/route.ts",
+        "apps/nextjs/src/components/editor/ExportModal.tsx",
+        "apps/nextjs/src/lib/render-slide.ts"
+      ],
+      "tags": [
+        "export",
+        "bullmq",
+        "job-failure",
+        "error-recovery",
+        "rendering"
+      ],
+      "notes": "CRITICAL: Export failures are high-impact (user can't get final output). Common failure causes: font loading (custom fonts not available), out-of-memory (large carousels), storage quota exceeded, network failure during upload. Retries help with transient errors but not configuration issues (wrong font name, corrupt data)."
+    },
+    {
+      "id": "TC-ERR-007",
+      "name": "Database Constraint Violation - Foreign Key Error",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "database",
+      "type": "error_path",
+      "priority": "medium",
+      "description": "Validates foreign key constraint error handling when creating project with invalid styleKitId - API should catch database error, return 400 with clear message, not 500 with raw Postgres error",
+      "business_context": "Database constraints ensure data integrity. When violated (e.g., referencing non-existent styleKitId), raw Postgres errors are cryptic. API must catch and translate to user-friendly errors. Frontend can then show meaningful message like 'Selected style kit not found'.",
+      "preconditions": [
+        "User attempts to create project with styleKitId that doesn't exist in database",
+        "Or styleKitId is null when required"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Send POST /api/projects with body: {title: 'Test', styleKitId: 'nonexistent_kit_id'}",
+          "expected": "Request passes Zod validation (styleKitId is valid string format)"
+        },
+        {
+          "step": 2,
+          "action": "API route queries StyleKit table to verify styleKitId exists",
+          "expected": "SELECT query returns null (kit doesn't exist)"
+        },
+        {
+          "step": 3,
+          "action": "Explicit validation throws ApiError before database insert",
+          "expected": "throw ApiErrors.validation('Style kit not found', {styleKitId: 'nonexistent_kit_id'})"
+        },
+        {
+          "step": 4,
+          "action": "withAuthAndErrors wrapper catches ApiError",
+          "expected": "Returns NextResponse.json({error: {code: 'VALIDATION_ERROR', message: 'Style kit not found', details: {...}}}, {status: 400})"
+        },
+        {
+          "step": 5,
+          "action": "Frontend receives 400 response",
+          "expected": "Displays error message: 'Style kit not found' (from response.error.message)"
+        },
+        {
+          "step": 6,
+          "action": "Test fallback: if validation didn't happen, database INSERT would fail",
+          "expected": "Kysely throws error with foreign key constraint violation code"
+        },
+        {
+          "step": 7,
+          "action": "If database error reaches API catch block without translation",
+          "expected": "Generic 500 error returned: 'An internal error occurred' (BAD UX but doesn't leak database details)"
+        }
+      ],
+      "acceptance_criteria": [
+        "Explicit foreign key validation happens BEFORE database insert (lines 89-97 in projects/route.ts)",
+        "Validation failure returns 400 (not 500) with specific error code 'VALIDATION_ERROR'",
+        "Error message is user-friendly: 'Style kit not found' (not 'violates foreign key constraint \"fk_styleKitId\"')",
+        "Error details include the invalid styleKitId for debugging",
+        "No raw database error messages exposed to frontend (security risk)",
+        "Similar validation exists for brandKitId (lines 100-111 in projects/route.ts)",
+        "Console logs full error for debugging but response is sanitized",
+        "Frontend can distinguish validation errors (400) from server errors (500)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/api/projects/route.ts",
+        "apps/nextjs/src/lib/api-error.ts",
+        "apps/nextjs/src/lib/with-auth.ts"
+      ],
+      "tags": [
+        "database",
+        "foreign-key",
+        "validation",
+        "constraint",
+        "error-handling"
+      ],
+      "notes": "GOOD: Explicit validation before INSERT provides better UX than relying on database constraints. Allows custom error messages. BAD: relationMode='prisma' means foreign keys are emulated in app, not enforced at DB level. Direct SQL writes bypass validation."
+    },
+    {
+      "id": "TC-ERR-008",
+      "name": "Graceful Degradation - Dashboard API Failure Shows Empty State",
+      "module": "error_handling",
+      "user_journey": null,
+      "category": "frontend",
+      "type": "error_path",
+      "priority": "medium",
+      "description": "Validates dashboard graceful degradation when API fails - should show empty state (not error page), log error to console (for debugging), allow user to refresh manually, not crash page",
+      "business_context": "Dashboard is entry point after login. If project list API fails (database down, network issue), user should see helpful empty state, not blank page or error boundary. Empty state provides CTA to retry and doesn't look broken.",
+      "preconditions": [
+        "User navigates to /dashboard after login",
+        "GET /api/projects fails with 500 error or network timeout"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "User navigates to /dashboard",
+          "expected": "Dashboard page renders loading skeleton (6 placeholder cards with animate-pulse)"
+        },
+        {
+          "step": 2,
+          "action": "useEffect triggers fetch to GET /api/projects",
+          "expected": "API call initiated"
+        },
+        {
+          "step": 3,
+          "action": "API returns 500 error or request times out",
+          "expected": "fetch() throws error or returns response.ok===false"
+        },
+        {
+          "step": 4,
+          "action": "Dashboard catch block executes",
+          "expected": "console.error('Failed to load projects:', error), setLoading(false), projects array remains empty []"
+        },
+        {
+          "step": 5,
+          "action": "Check rendered UI after error",
+          "expected": "Empty state component renders (same as when user has no projects). Shows: Sparkles icon, 'No carousels yet' heading, 'Create Your First Carousel' button"
+        },
+        {
+          "step": 6,
+          "action": "User clicks 'Create Your First Carousel' button",
+          "expected": "Navigates to /create page (Links to /en/create)"
+        },
+        {
+          "step": 7,
+          "action": "User navigates back to dashboard (browser back button)",
+          "expected": "Page re-mounts, fetch retries automatically via useEffect, may succeed if API recovered"
+        }
+      ],
+      "acceptance_criteria": [
+        "API error caught by catch block, does NOT crash page (no Error Boundary triggered)",
+        "Error logged to console with full details (error message, stack trace if available)",
+        "NO user-facing error message displayed (differs from other modules - intentional design choice)",
+        "Empty state renders exactly like zero-projects state (user can't distinguish error from empty)",
+        "Loading state clears after error (loading=false set)",
+        "User can navigate to /create to create project (recovery path provided)",
+        "Refresh or back navigation triggers automatic retry (useEffect with [] deps)",
+        "No infinite retry loop (only fetches on mount)"
+      ],
+      "related_files": [
+        "apps/nextjs/src/app/[lang]/(dashboard)/dashboard/page.tsx",
+        "apps/nextjs/src/components/empty-placeholder.tsx"
+      ],
+      "tags": [
+        "graceful-degradation",
+        "dashboard",
+        "empty-state",
+        "error-recovery",
+        "ux"
+      ],
+      "notes": "DESIGN DECISION: Dashboard hides API errors from user, shows empty state instead. Rationale: Avoids alarming error messages for transient failures. User can create new project regardless of list loading. TRADE-OFF: User with many projects who sees empty state may be confused if they don't realize it's an error (not intentional deletion). Could improve with subtle error indicator (e.g., 'Failed to load projects. Refresh to retry.')."
     }
   ],
   "known_issues": [
@@ -15404,7 +16972,7 @@
       "module": "editor_page",
       "severity": "low",
       "issue": "No Optimistic Updates",
-      "description": "All operations wait for state update \u2192 auto-save \u2192 backend response, no optimistic UI updates during save (feels slower)"
+      "description": "All operations wait for state update → auto-save → backend response, no optimistic UI updates during save (feels slower)"
     },
     {
       "module": "editor_page",

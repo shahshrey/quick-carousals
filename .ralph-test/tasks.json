@@ -44,7 +44,7 @@
     "steps": [
       "Read the generate/topic API route",
       "Read the OpenAI integration code",
-      "Understand the AI pipeline: topic \u2192 slide plan \u2192 slide copy \u2192 layout selection",
+      "Understand the AI pipeline: topic → slide plan → slide copy → layout selection",
       "Create test cases for: valid topic generation, invalid inputs, rate limits",
       "Create test cases for: AI response validation, slide count constraints",
       "Add test cases to tests.json",
@@ -219,7 +219,7 @@
     ],
     "steps": [
       "Read export API routes",
-      "Understand render pipeline: canvas \u2192 PNG \u2192 PDF",
+      "Understand render pipeline: canvas → PNG → PDF",
       "Understand queue-based processing",
       "Read ExportModal UI component",
       "Create test cases for: PDF export, PNG export, progress tracking",
@@ -585,7 +585,7 @@
     "files_to_analyze": [],
     "steps": [
       "Review all previously analyzed modules",
-      "Map the complete new user journey: landing \u2192 signup \u2192 dashboard \u2192 first carousel",
+      "Map the complete new user journey: landing → signup → dashboard → first carousel",
       "Create end-to-end test cases that span multiple modules",
       "Add test cases to tests.json",
       "Update journey status to analyzed"
@@ -609,7 +609,7 @@
     "files_to_analyze": [],
     "steps": [
       "Map the complete topic-to-export journey",
-      "Create E2E test covering: create \u2192 generate \u2192 edit \u2192 export \u2192 download",
+      "Create E2E test covering: create → generate → edit → export → download",
       "Include both happy path and error scenarios",
       "Add test cases to tests.json",
       "Update journey status to analyzed"
@@ -618,7 +618,7 @@
       "_note": "Verify E2E test covers complete creation flow",
       "expected": "At least 2 comprehensive E2E test cases"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-23",
@@ -641,7 +641,7 @@
       "_note": "Verify security test cases cover auth and data isolation",
       "expected": "At least 5 security-focused test cases"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-24",
@@ -663,7 +663,7 @@
       "_note": "Verify error handling test cases cover failure scenarios",
       "expected": "At least 4 error handling test cases"
     },
-    "passes": false
+    "passes": true
   },
   {
     "id": "discovery-25",
@@ -686,6 +686,6 @@
       "_note": "Verify comprehensive test coverage",
       "expected": "All modules analyzed, at least 100 total test cases"
     },
-    "passes": false
+    "passes": true
   }
 ]
