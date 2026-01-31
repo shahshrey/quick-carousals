@@ -40,7 +40,7 @@
 | `list_network_requests` | Check API calls | `resourceTypes: ["xhr", "fetch"]` |
 
 ### Screenshot Evidence
-- Save to `ralph-test-execute/evidence/`
+- Save to `.ralph-test-execute/evidence/`
 - Naming: `{test_id}-{description}.png`
 - Always capture on failure
 - Use `filePath` arg in `take_screenshot` to save directly

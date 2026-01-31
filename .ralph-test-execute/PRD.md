@@ -78,7 +78,7 @@ After execution, each test case gets an `execution` field:
     "failure_reason": null,
     "failed_step": null,
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/TC-AUTH-001-step1.png"],
+      "screenshots": [".ralph-test-execute/evidence/TC-AUTH-001-step1.png"],
       "api_responses": [],
       "console_logs": []
     },
@@ -127,7 +127,7 @@ Do **not** create issues for `skipped` or `blocked` tests unless a real product 
     "actual_behavior": "Page shows 500 Internal Server Error. Console shows: 'TypeError: Cannot read property userId of undefined'",
     
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/ISSUE-TC-AUTH-001-failure.png"],
+      "screenshots": [".ralph-test-execute/evidence/ISSUE-TC-AUTH-001-failure.png"],
       "console_errors": ["TypeError: Cannot read property userId of undefined at AuthHandler.ts:45"],
       "network_logs": [
         {
@@ -185,7 +185,7 @@ Do **not** create issues for `skipped` or `blocked` tests unless a real product 
 ## File Structure
 
 ```
-ralph-test-execute/
+.ralph-test-execute/
 ├── PRD.md           # This file - framework documentation
 ├── prompt.md        # Agent prompt for test execution
 ├── ralph.sh         # Wrapper script

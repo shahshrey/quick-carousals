@@ -44,7 +44,7 @@ If ANY required service is not available (database, API, dev server, etc.):
 If you cannot fix a service issue after 5 attempts:
 
 1. **Mark the test as `blocked`** (not skipped) with clear reason
-2. **Document the issue** in `ralph-test-execute/errors.log`
+2. **Document the issue** in `.ralph-test-execute/errors.log`
 3. **Continue to next test** - don't stop the entire execution
 4. **Only output `<ralph>GUTTER</ralph>`** if ALL remaining tests are blocked by the same issue
 
@@ -52,10 +52,10 @@ If you cannot fix a service issue after 5 attempts:
 
 ## FIRST: Read These Files (In Order)
 
-1. Read `ralph-test-execute/knowledge.md` - Patterns from previous executions
+1. Read `.ralph-test-execute/knowledge.md` - Patterns from previous executions
 2. Read `.ralph-test/tests.json` - Find the next test case to execute
-3. Read `ralph-test-execute/progress.md` - Current execution state
-4. Read `ralph-test-execute/PRD.md` - Context about the execution framework
+3. Read `.ralph-test-execute/progress.md` - Current execution state
+4. Read `.ralph-test-execute/PRD.md` - Context about the execution framework
 
 ---
 
@@ -136,7 +136,7 @@ CallMcpTool({
 CallMcpTool({
   "server": "user-chrome-devtools",
   "toolName": "take_screenshot",
-  "arguments": {"filePath": "ralph-test-execute/evidence/TC-XXX-step1.png"}
+  "arguments": {"filePath": ".ralph-test-execute/evidence/TC-XXX-step1.png"}
 })
 
 // 4. Click elements (use uid from snapshot)
@@ -213,7 +213,7 @@ Update the test case in `.ralph-test/tests.json` with execution results:
     "failure_reason": null,
     "failed_step": null,
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/TC-XXX-step1.png"],
+      "screenshots": [".ralph-test-execute/evidence/TC-XXX-step1.png"],
       "api_responses": ["200 OK - {...}"],
       "console_logs": []
     },
@@ -257,7 +257,7 @@ Add an `issue` field to the test case with:
     "actual_behavior": "What ACTUALLY happened - be specific! Include error messages, wrong values, etc.",
     
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/ISSUE-TC-XXX-failure.png"],
+      "screenshots": [".ralph-test-execute/evidence/ISSUE-TC-XXX-failure.png"],
       "console_errors": ["Copy exact error messages from console"],
       "network_logs": [
         {
@@ -326,7 +326,7 @@ For failed tests, always capture:
 - Console error logs
 - Network request details
 
-Save evidence to `ralph-test-execute/evidence/` with naming convention:
+Save evidence to `.ralph-test-execute/evidence/` with naming convention:
 - `{test_id}-{step}.png` for screenshots
 - `{test_id}-response.json` for API responses
 
@@ -355,7 +355,7 @@ Process tests in this order:
     "failure_reason": null,
     "failed_step": null,
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/TC-XXX-success.png"]
+      "screenshots": [".ralph-test-execute/evidence/TC-XXX-success.png"]
     },
     "notes": "All 5 steps completed successfully"
   }
@@ -374,7 +374,7 @@ Process tests in this order:
     "failure_reason": "Expected status 200 but got 401 Unauthorized",
     "failed_step": 3,
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/TC-XXX-failure.png"],
+      "screenshots": [".ralph-test-execute/evidence/TC-XXX-failure.png"],
       "console_logs": ["Error: Unauthorized access"],
       "api_responses": [{"status": 401, "body": {"error": "UNAUTHORIZED"}}]
     },
@@ -401,7 +401,7 @@ Process tests in this order:
     "expected_behavior": "API should return 200 OK with list of user's projects",
     "actual_behavior": "API returns 401 Unauthorized with error: {\"error\": {\"code\": \"UNAUTHORIZED\", \"message\": \"Authentication required\"}}",
     "evidence": {
-      "screenshots": ["ralph-test-execute/evidence/ISSUE-TC-XXX-001-network.png"],
+      "screenshots": [".ralph-test-execute/evidence/ISSUE-TC-XXX-001-network.png"],
       "console_errors": [],
       "network_logs": [
         {
@@ -450,7 +450,7 @@ Process tests in this order:
     "failure_reason": "Database connection failed after 5 attempts",
     "notes": "PostgreSQL container not starting - docker daemon issue",
     "evidence": {
-      "console_logs": ["ralph-test-execute/evidence/TC-XXX-docker-error.log"]
+      "console_logs": [".ralph-test-execute/evidence/TC-XXX-docker-error.log"]
     }
   }
 }
@@ -469,7 +469,7 @@ Available during execution:
 |----------|---------|-------------|
 | `BASE_URL` | `http://localhost:3000` | Dev server URL |
 | `AUTH_TOKEN` | (from env) | Auth token for protected endpoints |
-| `EVIDENCE_DIR` | `ralph-test-execute/evidence` | Screenshot storage |
+| `EVIDENCE_DIR` | `.ralph-test-execute/evidence` | Screenshot storage |
 
 ---
 
@@ -502,7 +502,7 @@ After EVERY test execution, output ONE of these signals:
 
 ## Progress Logging
 
-After EVERY test, append to `ralph-test-execute/progress.md`:
+After EVERY test, append to `.ralph-test-execute/progress.md`:
 
 ```markdown
 ---
@@ -530,7 +530,7 @@ For FAILED tests, include issue summary:
 - **Severity**: 🔴 critical
 - **Type**: bug
 - **Summary**: Login API crashes when processing valid user credentials
-- **Evidence**: `ralph-test-execute/evidence/ISSUE-TC-XXX-failure.png`
+- **Evidence**: `.ralph-test-execute/evidence/ISSUE-TC-XXX-failure.png`
 ---
 ```
 
@@ -594,7 +594,7 @@ After all tests complete, generate summary in progress.md:
 
 ## Knowledge Logging
 
-After EVERY batch of tests, append to `ralph-test-execute/knowledge.md`:
+After EVERY batch of tests, append to `.ralph-test-execute/knowledge.md`:
 
 ```markdown
 ---
@@ -609,7 +609,7 @@ After EVERY batch of tests, append to `ralph-test-execute/knowledge.md`:
 
 ---
 
-Begin by reading `ralph-test-execute/knowledge.md`, then execute the next pending test case.
+Begin by reading `.ralph-test-execute/knowledge.md`, then execute the next pending test case.
 
 ---
 

@@ -3,7 +3,7 @@
 # Autonomous test execution agent - runs test cases and records results
 #
 # Usage:
-#   ./ralph-test-execute/ralph.sh [OPTIONS]
+#   ./.ralph-test-execute/ralph.sh [OPTIONS]
 #
 # Options:
 #   -w, --workspace PATH     Workspace directory (default: parent of script dir)
@@ -26,7 +26,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 MODEL="${RALPH_MODEL:-sonnet-4.5-thinking}"
 MAX_ITERATIONS="${RALPH_MAX_ITERATIONS:-100}"
-WORKSPACE="$(dirname "$SCRIPT_DIR")"  # Parent of ralph-test-execute
+WORKSPACE="$(dirname "$SCRIPT_DIR")"  # Parent of .ralph-test-execute
 VERBOSE=false
 DEBUG=false
 SHOW_TIMESTAMPS=false
@@ -39,7 +39,7 @@ ROTATE_THRESHOLD=160000
 AGENT_TIMEOUT="${RALPH_AGENT_TIMEOUT:-1800}"
 
 # Paths (relative to workspace)
-RALPH_DIR="ralph-test-execute"
+RALPH_DIR=".ralph-test-execute"
 TESTS_JSON=".ralph-test/tests.json"
 KNOWLEDGE_FILE="$RALPH_DIR/knowledge.md"
 PROGRESS_FILE="$RALPH_DIR/progress.md"
@@ -48,8 +48,8 @@ PROGRESS_FILE="$RALPH_DIR/progress.md"
 # ENVIRONMENT VARIABLES FOR TEST EXECUTION
 # =============================================================================
 export BASE_URL="${BASE_URL:-http://localhost:3000}"
-export EVIDENCE_DIR="${EVIDENCE_DIR:-ralph-test-execute/evidence}"
-export REPORT_DIR="${REPORT_DIR:-ralph-test-execute/reports}"
+export EVIDENCE_DIR="${EVIDENCE_DIR:-.ralph-test-execute/evidence}"
+export REPORT_DIR="${REPORT_DIR:-.ralph-test-execute/reports}"
 
 # =============================================================================
 # ARGUMENT PARSING
@@ -59,7 +59,7 @@ show_help() {
   cat << 'EOF'
 Ralph Test Execution Loop - Autonomous Test Execution
 
-Usage: ./ralph-test-execute/ralph.sh [OPTIONS]
+Usage: ./.ralph-test-execute/ralph.sh [OPTIONS]
 
 Options:
   -w, --workspace PATH     Workspace directory (default: repo root)
@@ -72,10 +72,10 @@ Options:
   -h, --help               Show this help
 
 Examples:
-  ./ralph-test-execute/ralph.sh                       # Run test execution
-  ./ralph-test-execute/ralph.sh -v                    # Verbose mode
-  ./ralph-test-execute/ralph.sh -m opus-4.5-thinking  # Use different model
-  ./ralph-test-execute/ralph.sh -i 200                # Allow 200 iterations
+  ./.ralph-test-execute/ralph.sh                       # Run test execution
+  ./.ralph-test-execute/ralph.sh -v                    # Verbose mode
+  ./.ralph-test-execute/ralph.sh -m opus-4.5-thinking  # Use different model
+  ./.ralph-test-execute/ralph.sh -i 200                # Allow 200 iterations
 
 Requirements:
   - .ralph-test/tests.json with test cases to execute
